@@ -29,47 +29,47 @@
   },
   {
     "content": "Phase 2: Set up Node.js/Express backend structure",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Implement MongoDB models (Hotel, Room, BookingStat)",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Implement authentication endpoints (register, login, JWT)",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Implement hotel owner dashboard APIs",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Implement public widget APIs (config, chat, book)",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Build React dashboard for hotel owners",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Build embeddable widget (vanilla JS)",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Integrate OpenAI conversation flow from POC",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Integrate QR code generation",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Integrate notification system",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: All user stories covered in Development and testing",
-    "status": "pending"
+    "status": "in_progress"
   },
   {
     "content": "Phase 2: End to End Testing using Testing Agent",
