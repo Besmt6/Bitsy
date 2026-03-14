@@ -32,8 +32,14 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static files for widget
-app.use('/widget', express.static(join(__dirname, '../public/widget')));
+// Static files for widget with proper mime types
+app.use('/widget', express.static(join(__dirname, '../public/widget'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+    }
+  }
+}));
 
 // MongoDB Connection
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017';
