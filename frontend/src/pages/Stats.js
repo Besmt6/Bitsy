@@ -174,6 +174,7 @@ const Stats = () => {
                 <thead>
                   <tr className="border-b">
                     <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Reference</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Guest</th>
                     <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Date</th>
                     <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Room</th>
                     <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Nights</th>
@@ -185,6 +186,17 @@ const Stats = () => {
                   {stats.recentBookings.map((booking) => (
                     <tr key={booking.bookingRef} className="border-b hover:bg-muted/50">
                       <td className="py-3 px-4 font-mono text-sm">{booking.bookingRef}</td>
+                      <td className="py-3 px-4">
+                        <div className="text-sm">
+                          <div className="font-medium">{booking.guest?.name || 'N/A'}</div>
+                          <div className="text-xs text-muted-foreground">{booking.guest?.email || 'N/A'}</div>
+                          {booking.guest?.isReturning && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-accent/10 text-accent mt-1">
+                              🔁 Returning
+                            </span>
+                          )}
+                        </div>
+                      </td>
                       <td className="py-3 px-4 text-sm">{formatDateTime(booking.date)}</td>
                       <td className="py-3 px-4 text-sm">{booking.roomType}</td>
                       <td className="py-3 px-4 text-sm">{booking.nights}</td>

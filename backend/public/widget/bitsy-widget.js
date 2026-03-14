@@ -17,7 +17,8 @@
     isOpen: false,
     hotelConfig: null,
     conversation: [],
-    bookingDetails: null
+    bookingDetails: null,
+    returningGuest: null
   };
   
   // Create widget button

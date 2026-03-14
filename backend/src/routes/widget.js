@@ -2,6 +2,7 @@ import express from 'express';
 import Hotel from '../models/Hotel.js';
 import Room from '../models/Room.js';
 import BookingStat from '../models/BookingStat.js';
+import Guest from '../models/Guest.js';
 import { getChatResponse } from '../services/llmService.js';
 import { generateQRCode } from '../services/qrService.js';
 import { sendNotification } from '../services/notificationService.js';
@@ -86,7 +87,7 @@ router.post('/:hotelId/chat', async (req, res) => {
 });
 
 // @route   POST /api/widget/:hotelId/book
-// @desc    Submit booking (creates stat record and sends notification)
+// @desc    Submit booking (saves guest data and creates booking record)
 // @access  Public
 router.post('/:hotelId/book', async (req, res) => {
   try {
@@ -113,9 +114,38 @@ router.post('/:hotelId/book', async (req, res) => {
     // Generate booking reference
     const bookingRef = `BIT-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 
-    // Create booking stat record (NO GUEST PII)
+    // Find or create guest
+    let guest = await Guest.findOne({ 
+      hotelId, 
+      email: bookingDetails.guest_email.toLowerCase() 
+    });
+
+    if (guest) {
+      // Update existing guest
+      guest.name = bookingDetails.guest_name;
+      guest.phone = bookingDetails.guest_phone || guest.phone;
+      guest.totalBookings += 1;
+      guest.totalSpent += bookingDetails.total_usd;
+      guest.lastBookingDate = new Date();
+      await guest.save();
+    } else {
+      // Create new guest
+      guest = new Guest({
+        hotelId,
+        name: bookingDetails.guest_name,
+        email: bookingDetails.guest_email.toLowerCase(),
+        phone: bookingDetails.guest_phone || '',
+        totalBookings: 1,
+        totalSpent: bookingDetails.total_usd,
+        lastBookingDate: new Date()
+      });
+      await guest.save();
+    }
+
+    // Create booking stat record with guest reference
     const bookingStat = new BookingStat({
       hotelId,
+      guestId: guest._id,
       bookingRef,
       date: new Date(),
       checkIn: bookingDetails.check_in,
@@ -143,7 +173,8 @@ router.post('/:hotelId/book', async (req, res) => {
       hotel,
       bookingRef,
       bookingDetails,
-      walletAddress
+      walletAddress,
+      isReturningGuest: guest.totalBookings > 1
     });
 
     res.json({
@@ -151,11 +182,53 @@ router.post('/:hotelId/book', async (req, res) => {
       bookingRef,
       qrCode,
       walletAddress,
+      isReturningGuest: guest.totalBookings > 1,
+      totalBookings: guest.totalBookings,
       message: 'Booking submitted successfully. Hotel has been notified.'
     });
   } catch (error) {
     console.error('Booking error:', error);
     res.status(500).json({ error: 'Server error processing booking' });
+  }
+});
+
+// @route   POST /api/widget/:hotelId/check-guest
+// @desc    Check if guest exists (for returning guest functionality)
+// @access  Public
+router.post('/:hotelId/check-guest', async (req, res) => {
+  try {
+    const { hotelId } = req.params;
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    const guest = await Guest.findOne({ 
+      hotelId, 
+      email: email.toLowerCase() 
+    });
+
+    if (guest) {
+      res.json({
+        success: true,
+        isReturningGuest: true,
+        guest: {
+          name: guest.name,
+          email: guest.email,
+          phone: guest.phone,
+          totalBookings: guest.totalBookings
+        }
+      });
+    } else {
+      res.json({
+        success: true,
+        isReturningGuest: false
+      });
+    }
+  } catch (error) {
+    console.error('Check guest error:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

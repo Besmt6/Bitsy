@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-export const sendNotification = async ({ hotel, bookingRef, bookingDetails, walletAddress }) => {
+export const sendNotification = async ({ hotel, bookingRef, bookingDetails, walletAddress, isReturningGuest = false }) => {
   try {
+    const returningBadge = isReturningGuest ? '🔁 RETURNING GUEST' : '🆕 NEW GUEST';
+    
     // Format console notification
     const consoleNotification = `
 ${'='.repeat(60)}
@@ -10,6 +12,7 @@ ${'='.repeat(60)}
 
 📋 Reference: ${bookingRef}
 🏨 Hotel: ${hotel.hotelName}
+${returningBadge}
 
 👤 Guest Details:
    Name: ${bookingDetails.guest_name}
@@ -40,6 +43,7 @@ ${'='.repeat(60)}
     if (hotel.telegramBotToken && hotel.telegramChatId) {
       try {
         const telegramMessage = `🔔 NEW BITSY BOOKING
+${isReturningGuest ? '🔁 RETURNING GUEST' : '🆕 NEW GUEST'}
 
 📋 Ref: ${bookingRef}
 👤 ${bookingDetails.guest_name}

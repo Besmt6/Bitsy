@@ -7,6 +7,12 @@ const bookingStatSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  guestId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Guest',
+    required: true,
+    index: true
+  },
   bookingRef: {
     type: String,
     required: true,

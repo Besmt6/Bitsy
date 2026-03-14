@@ -49,7 +49,8 @@ export const walletAPI = {
 
 // Stats API
 export const statsAPI = {
-  getStats: (period = '7d') => api.get('/api/stats', { params: { period } })
+  getStats: (period = '7d') => api.get('/api/stats', { params: { period } }),
+  getGuests: () => api.get('/api/stats/guests')
 };
 
 export default api;

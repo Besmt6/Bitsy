@@ -1,6 +1,7 @@
 import express from 'express';
 import { protect } from '../middleware/auth.js';
 import BookingStat from '../models/BookingStat.js';
+import Guest from '../models/Guest.js';
 
 const router = express.Router();
 
@@ -29,11 +30,13 @@ router.get('/', protect, async (req, res) => {
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     }
 
-    // Get all bookings for the period
+    // Get all bookings for the period with guest data
     const bookings = await BookingStat.find({
       hotelId: req.hotel._id,
       date: { $gte: startDate }
-    }).sort({ date: -1 });
+    })
+    .populate('guestId', 'name email phone totalBookings')
+    .sort({ date: -1 });
 
     // Calculate stats
     const totalBookings = bookings.length;
@@ -67,7 +70,7 @@ router.get('/', protect, async (req, res) => {
       new Date(a.date) - new Date(b.date)
     );
 
-    // Recent bookings (last 10)
+    // Recent bookings (last 10) with guest information
     const recentBookings = bookings.slice(0, 10).map(b => ({
       bookingRef: b.bookingRef,
       date: b.date,
@@ -76,7 +79,13 @@ router.get('/', protect, async (req, res) => {
       roomType: b.roomType,
       nights: b.nights,
       total: b.totalUsd,
-      crypto: b.cryptoType
+      crypto: b.cryptoType,
+      guest: b.guestId ? {
+        name: b.guestId.name,
+        email: b.guestId.email,
+        phone: b.guestId.phone,
+        isReturning: b.guestId.totalBookings > 1
+      } : null
     }));
 
     res.json({
@@ -93,6 +102,33 @@ router.get('/', protect, async (req, res) => {
     });
   } catch (error) {
     console.error('Get stats error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// @route   GET /api/stats/guests
+// @desc    Get all guests for the hotel
+// @access  Private
+router.get('/guests', protect, async (req, res) => {
+  try {
+    const guests = await Guest.find({ hotelId: req.hotel._id })
+      .sort({ lastBookingDate: -1 });
+
+    res.json({
+      success: true,
+      guests: guests.map(g => ({
+        id: g._id,
+        name: g.name,
+        email: g.email,
+        phone: g.phone,
+        totalBookings: g.totalBookings,
+        totalSpent: g.totalSpent,
+        lastBookingDate: g.lastBookingDate,
+        createdAt: g.createdAt
+      }))
+    });
+  } catch (error) {
+    console.error('Get guests error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
