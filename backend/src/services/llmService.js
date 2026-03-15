@@ -3,12 +3,15 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const EMERGENT_LLM_KEY = process.env.EMERGENT_LLM_KEY || 'sk-emergent-27d7167Cb35D3AdC5E';
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-// Initialize OpenAI with Emergent Universal Key - try direct OpenAI endpoint as fallback
+if (!OPENAI_API_KEY) {
+  console.error('❌ OPENAI_API_KEY is not set in environment variables');
+}
+
+// Initialize OpenAI with direct API key
 const openai = new OpenAI({
-  apiKey: EMERGENT_LLM_KEY,
-  baseURL: 'https://api.openai.com/v1'
+  apiKey: OPENAI_API_KEY
 });
 
 const BITSY_SYSTEM_PROMPT = (hotelName, rooms) => `You are Bitsy, a friendly AI booking assistant for ${hotelName}. 
