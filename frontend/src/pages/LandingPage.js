@@ -565,7 +565,7 @@ const LandingPage = () => {
                   <CardTitle className="text-lg">Do I need to create crypto wallets?</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground leading-relaxed">
-                  <p>Yes - you create wallets outside Bitsy (using <a href="https://metamask.io" target="_blank" className="text-primary hover:underline">MetaMask</a>, Coinbase, or any wallet app). Then just paste your <strong>public addresses</strong> into the Bitsy dashboard. Guests pay directly to YOUR wallets. We never touch your funds or private keys.</p>
+                  <p>You'll connect your existing wallet (MetaMask, Coinbase, Trust Wallet, etc.) directly through our <strong>secure in-app wizard</strong>. Just paste your <strong>public addresses</strong> into the Bitsy dashboard. Guests pay directly to YOUR wallets - we never touch your funds or private keys.</p>
                 </CardContent>
               </Card>
 

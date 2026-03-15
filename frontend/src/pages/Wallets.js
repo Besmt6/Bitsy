@@ -80,9 +80,8 @@ const Wallets = () => {
           <strong>Non-Refundable:</strong> All crypto bookings are final. Verify your wallet addresses carefully.
           <br />
           <strong className="mt-2 block">Don't have a wallet?</strong> 
-          <a href="https://metamask.io" target="_blank" rel="noopener" className="text-primary hover:underline">Get MetaMask</a> (Ethereum, Polygon, etc.) or 
-          <a href="https://bitcoin.org/en/choose-your-wallet" target="_blank" rel="noopener" className="text-primary hover:underline ml-1">Bitcoin Wallet</a>
-          <span className="block mt-1 text-xs">💡 You only need to enter <strong>public addresses</strong> (receive addresses). Never share private keys.</span>
+          <span className="block">Download wallet apps directly from your device's official app store (iOS App Store or Google Play). Popular options: MetaMask (for Ethereum, Polygon, Base, etc.) or BlueWallet (for Bitcoin).</span>
+          <span className="block mt-1 text-xs">💡 You only need to enter <strong>public addresses</strong> (receive addresses). Never share private keys or click suspicious links.</span>
         </AlertDescription>
       </Alert>
 
