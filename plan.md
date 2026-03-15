@@ -116,7 +116,57 @@
 
 ---
 
-## Phase 4 — Testing, Hardening, UX Polish
+## Phase 4 — Go-To-Market Landing Page ✅ COMPLETED
+
+### User Stories
+1. As a visitor, I can understand Bitsy's value proposition in 10 seconds.
+2. As a hotel owner, I can calculate my OTA savings instantly.
+3. As a visitor, I can see MCP/AI discovery as a key differentiator.
+4. As a visitor, I can sign up directly from the landing page.
+
+### Implementation Steps
+1. ✅ **Enhance hero section** with stronger MCP messaging (ChatGPT, Claude, Perplexity)
+2. ✅ **Add testids** to all interactive elements (buttons, inputs, links)
+3. ✅ **Add social proof section** with stats (120+ hotels, $2.4M processed)
+4. ✅ **Strengthen AI discovery positioning** throughout page
+5. ✅ **Polish spacing and micro-interactions** per design guidelines
+6. ✅ **Test with screenshots** - verified visual quality desktop + mobile
+
+### Success Criteria
+- ✅ Landing page clearly communicates zero-commission + AI-discovery value
+- ✅ All CTAs have proper testids for testing
+- ✅ Calculator works smoothly and updates dynamically
+- ✅ Mobile-responsive and accessible
+- ✅ Follows Jason Green's rules (DRY, modular, functional)
+
+**STATUS: COMPLETED**
+
+---
+
+## Phase 5 — Photo Upload Integration (Priority: P1)
+
+### User Stories
+1. As a hotel owner, I can upload logo and gallery images from Settings page.
+2. As a hotel owner, I can upload room photos from Rooms page.
+3. As a guest, I can see hotel/room photos in the widget chat.
+4. As ChatGPT/Claude, I can retrieve photo URLs via MCP for hotel recommendations.
+
+### Implementation Steps
+1. Integrate `PhotoUploader` component into `Settings.js` (logo + gallery)
+2. Integrate `PhotoUploader` component into `Rooms.js` (room photos)
+3. Test upload flow end-to-end (frontend → backend → MongoDB)
+4. Verify photos appear in widget and MCP responses
+
+### Next Actions
+- Complete photo uploader integration
+- Test with real image uploads
+- Verify storage and URLs in database
+
+**STATUS: NOT STARTED**
+
+---
+
+## Phase 6 — Testing, Hardening, UX Polish
 
 ### User Stories (Quality)
 1. As a guest, I get clear errors if dates are invalid or room unavailable.

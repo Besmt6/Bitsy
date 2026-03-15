@@ -1,78 +1,10 @@
 [
   {
-    "content": "Phase 1: Core POC - Test OpenAI conversation flow for booking extraction",
+    "content": "Test landing page with screenshots",
     "status": "completed"
   },
   {
-    "content": "Phase 1: Create Node.js test script with OpenAI integration using Emergent LLM Key",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 1: Test conversation flow extracting booking details (dates, room, guest info, crypto)",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 1: Test non-refundable policy flow and acknowledgment",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 1: Test QR code generation for crypto wallets",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 1: Test notification system (console log + Telegram)",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 1: Verify all POC user stories work end-to-end",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Set up Node.js/Express backend structure",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Implement MongoDB models (Hotel, Room, BookingStat)",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Implement authentication endpoints (register, login, JWT)",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Implement hotel owner dashboard APIs",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Implement public widget APIs (config, chat, book)",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Build React dashboard for hotel owners",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Build embeddable widget (vanilla JS)",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Integrate OpenAI conversation flow from POC",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Integrate QR code generation",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Integrate notification system",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: All user stories covered in Development and testing",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: End to End Testing using Testing Agent",
+    "content": "Fix any frontend errors before deployment",
     "status": "completed"
   }
 ]
