@@ -20,6 +20,11 @@
     conversation: [],
     bookingDetails: null,
     returningGuest: null,
+    datePickerMode: null, // 'checkin' | 'checkout' | null
+    selectedDates: {
+      checkIn: null,
+      checkOut: null
+    },
     web3: {
       connected: false,
       address: null,
@@ -140,7 +145,32 @@
         fetchHotelConfig();
       }
       if (widgetState.conversation.length === 0) {
-        addMessage('assistant', widgetState.hotelConfig?.widgetSettings?.greetingMessage || \"Hi! I'm Bitsy. Looking to book a room?\");
+        addMessage('assistant', widgetState.hotelConfig?.widgetSettings?.greetingMessage || "Hi! I'm Bitsy. Looking to book a room?");
+        
+        // Add quick action buttons after greeting
+        setTimeout(() => {
+          addQuickActions([
+            {
+              label: '📅 Pick dates from calendar',
+              onClick: () => {
+                addMessage('user', 'Show me a calendar');
+                setTimeout(() => {
+                  addMessage('assistant', 'Perfect! Let' + "'" + 's start with your check-in date.');
+                  showDatePicker('checkin');
+                }, 500);
+              }
+            },
+            {
+              label: '💬 Type my dates',
+              onClick: () => {
+                addMessage('user', 'I' + "'" + 'll type my dates');
+                setTimeout(() => {
+                  addMessage('assistant', 'Great! Just tell me your check-in and check-out dates, like "March 20-23" or "next weekend".');
+                }, 500);
+              }
+            }
+          ]);
+        }, 800);
       }
     } else {
       container.style.display = 'none';
@@ -155,16 +185,265 @@
       widgetState.hotelConfig = data.config;
     } catch (error) {
       console.error('Failed to fetch hotel config:', error);
-      addMessage('assistant', 'Sorry, I\\'m having trouble connecting. Please try again later.');
+      addMessage('assistant', 'Sorry, I' + "'" + 'm having trouble connecting. Please try again later.');
     }
   }
   
+  
+  // Date picker component
+  function showDatePicker(mode = 'checkin') {
+    widgetState.datePickerMode = mode;
+    
+    const messagesContainer = document.getElementById('bitsy-messages');
+    const calendarDiv = document.createElement('div');
+    calendarDiv.id = 'bitsy-date-picker';
+    calendarDiv.setAttribute('data-testid', 'widget-date-picker');
+    calendarDiv.style.cssText = `
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: flex-start;
+    `;
+    
+    const today = new Date();
+    const minDate = mode === 'checkin' ? today : widgetState.selectedDates.checkIn ? new Date(widgetState.selectedDates.checkIn) : today;
+    minDate.setHours(0, 0, 0, 0);
+    
+    const calendarCard = document.createElement('div');
+    calendarCard.style.cssText = `
+      background: white;
+      border: 2px solid #0e7490;
+      border-radius: 12px;
+      padding: 16px;
+      max-width: 90%;
+      box-shadow: 0 4px 12px rgba(14, 116, 144, 0.15);
+    `;
+    
+    const title = mode === 'checkin' ? 'Select Check-in Date' : 'Select Check-out Date';
+    
+    calendarCard.innerHTML = `
+      <div style="margin-bottom: 12px; font-weight: 600; font-size: 14px; color: #0e7490; font-family: 'Space Grotesk', sans-serif;">
+        📅 ${title}
+      </div>
+      <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 12px;">
+        <!-- Calendar will be rendered here -->
+      </div>
+      <div style="display: flex; gap: 8px; justify-content: flex-end;">
+        <button id="calendar-cancel" style="padding: 6px 12px; background: #e5e7eb; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">
+          Cancel
+        </button>
+      </div>
+    `;
+    
+    calendarDiv.appendChild(calendarCard);
+    messagesContainer.appendChild(calendarDiv);
+    
+    // Render calendar
+    renderCalendar(minDate);
+    
+    // Event listeners
+    document.getElementById('calendar-cancel').onclick = () => {
+      calendarDiv.remove();
+      widgetState.datePickerMode = null;
+      addMessage('assistant', 'No problem! You can also just type your dates like "March 20-23" or "next weekend".');
+    };
+    
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+  
+  function renderCalendar(minDate) {
+    const grid = document.getElementById('calendar-grid');
+    if (!grid) return;
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Days of week header
+    const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    daysOfWeek.forEach(day => {
+      const dayHeader = document.createElement('div');
+      dayHeader.textContent = day;
+      dayHeader.style.cssText = `
+        text-align: center;
+        font-size: 11px;
+        font-weight: 600;
+        color: #6b7280;
+        padding: 4px;
+      `;
+      grid.appendChild(dayHeader);
+    });
+    
+    // Calculate first day of month and total days
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    
+    // Add empty cells for days before month starts
+    for (let i = 0; i < firstDay; i++) {
+      grid.appendChild(document.createElement('div'));
+    }
+    
+    // Add day cells
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(currentYear, currentMonth, day);
+      date.setHours(0, 0, 0, 0);
+      
+      const dayCell = document.createElement('button');
+      dayCell.textContent = day;
+      dayCell.setAttribute('data-date', date.toISOString().split('T')[0]);
+      
+      const isPast = date < minDate;
+      const isToday = date.toDateString() === now.toDateString();
+      
+      dayCell.style.cssText = `
+        padding: 8px;
+        border: 1px solid ${isToday ? '#0e7490' : '#e5e7eb'};
+        border-radius: 6px;
+        background: ${isPast ? '#f9fafb' : 'white'};
+        cursor: ${isPast ? 'not-allowed' : 'pointer'};
+        font-size: 13px;
+        font-weight: ${isToday ? '600' : '400'};
+        color: ${isPast ? '#d1d5db' : '#111827'};
+        transition: all 0.15s ease;
+      `;
+      
+      if (!isPast) {
+        dayCell.onmouseover = () => {
+          dayCell.style.background = '#0e7490';
+          dayCell.style.color = 'white';
+          dayCell.style.transform = 'scale(1.05)';
+        };
+        dayCell.onmouseout = () => {
+          dayCell.style.background = 'white';
+          dayCell.style.color = '#111827';
+          dayCell.style.transform = 'scale(1)';
+        };
+        dayCell.onclick = () => selectDate(date);
+      } else {
+        dayCell.disabled = true;
+      }
+      
+      grid.appendChild(dayCell);
+    }
+  }
+  
+  function selectDate(date) {
+    const mode = widgetState.datePickerMode;
+    const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    
+    if (mode === 'checkin') {
+      widgetState.selectedDates.checkIn = date;
+      
+      // Remove calendar
+      const picker = document.getElementById('bitsy-date-picker');
+      if (picker) picker.remove();
+      
+      // Add confirmation message
+      addMessage('user', `Check-in: ${formattedDate}`);
+      
+      // Ask for check-out
+      setTimeout(() => {
+        addMessage('assistant', 'Great! Now when would you like to check out?');
+        showDatePicker('checkout');
+      }, 500);
+      
+    } else if (mode === 'checkout') {
+      const checkInDate = widgetState.selectedDates.checkIn;
+      
+      // Validate check-out is after check-in
+      if (date <= checkInDate) {
+        alert('Check-out date must be after check-in date');
+        return;
+      }
+      
+      widgetState.selectedDates.checkOut = date;
+      
+      // Remove calendar
+      const picker = document.getElementById('bitsy-date-picker');
+      if (picker) picker.remove();
+      
+      // Calculate nights
+      const nights = Math.ceil((date - checkInDate) / (1000 * 60 * 60 * 24));
+      
+      // Add confirmation message
+      const checkInFormatted = checkInDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const checkOutFormatted = formattedDate;
+      addMessage('user', `Check-out: ${checkOutFormatted}`);
+      
+      // Send to AI for room options
+      setTimeout(() => {
+        const dateMessage = `I need a room from ${checkInFormatted} to ${checkOutFormatted} (${nights} night${nights > 1 ? 's' : ''})`;
+        sendMessageToAI(dateMessage);
+      }, 800);
+      
+      widgetState.datePickerMode = null;
+    }
+  }
+  
+  // Helper to send message without user typing
+  async function sendMessageToAI(messageText) {
+    const typingId = Date.now();
+    addTypingIndicator(typingId);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/widget/${HOTEL_ID}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: messageText,
+          sessionId: HOTEL_ID,
+          conversationHistory: widgetState.conversation.slice(-10).map(m => ({
+            role: m.role === 'assistant' ? 'assistant' : 'user',
+            content: m.text
+          }))
+        })
+      });
+      
+      const data = await response.json();
+      removeTypingIndicator(typingId);
+      
+      if (data.response) {
+        addMessage('assistant', data.response);
+        
+        // Check if response contains booking details
+        if (data.response.includes('"action": "generate_payment"')) {
+          try {
+            const jsonMatch = data.response.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              const bookingData = JSON.parse(jsonMatch[0]);
+              widgetState.bookingDetails = bookingData.booking_details;
+              showNonRefundableWarning();
+            }
+          } catch (e) {
+            // Not JSON, continue
+          }
+        }
+      }
+    } catch (error) {
+      removeTypingIndicator(typingId);
+      console.error('Failed to send message:', error);
+      addMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+    }
+  }
+
   // Send message
   async function sendMessage() {
     const input = document.getElementById('bitsy-input');
     const message = input.value.trim();
     
     if (!message) return;
+    
+    // Check for calendar triggers
+    const calendarTriggers = ['show calendar', 'pick dates', 'open calendar', 'calendar', 'date picker'];
+    if (calendarTriggers.some(trigger => message.toLowerCase().includes(trigger))) {
+      addMessage('user', message);
+      input.value = '';
+      
+      setTimeout(() => {
+        addMessage('assistant', 'Sure! Let me show you a calendar. When would you like to check in?');
+        showDatePicker('checkin');
+      }, 500);
+      return;
+    }
     
     addMessage('user', message);
     input.value = '';
@@ -213,6 +492,61 @@
       addMessage('assistant', 'Sorry, I encountered an error. Please try again.');
     }
   }
+
+  // Add quick action buttons (including calendar trigger)
+  function addQuickActions(actions) {
+    const messagesContainer = document.getElementById('bitsy-messages');
+    const actionsDiv = document.createElement('div');
+    actionsDiv.className = 'bitsy-quick-actions';
+    actionsDiv.style.cssText = `
+      margin-bottom: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-left: 0;
+    `;
+    
+    actions.forEach(action => {
+      const btn = document.createElement('button');
+      btn.textContent = action.label;
+      btn.setAttribute('data-testid', `quick-action-${action.label.toLowerCase().replace(/\s+/g, '-')}`);
+      btn.style.cssText = `
+        padding: 8px 14px;
+        background: white;
+        border: 1.5px solid #0e7490;
+        color: #0e7490;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        font-family: 'Inter', sans-serif;
+      `;
+      
+      btn.onmouseover = () => {
+        btn.style.background = '#0e7490';
+        btn.style.color = 'white';
+        btn.style.transform = 'translateY(-2px)';
+      };
+      btn.onmouseout = () => {
+        btn.style.background = 'white';
+        btn.style.color = '#0e7490';
+        btn.style.transform = 'translateY(0)';
+      };
+      
+      btn.onclick = () => {
+        // Remove all quick actions after clicking one
+        document.querySelectorAll('.bitsy-quick-actions').forEach(el => el.remove());
+        action.onClick();
+      };
+      
+      actionsDiv.appendChild(btn);
+    });
+    
+    messagesContainer.appendChild(actionsDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
   
   // Add message to chat
   function addMessage(role, text, images = []) {

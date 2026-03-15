@@ -50,59 +50,65 @@ const Stats = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in-50 duration-500">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card data-testid="stats-kpi-bookings">
+        <Card 
+          data-testid="stats-kpi-bookings"
+          className="transition-all duration-200 hover:shadow-md hover:-translate-y-1"
+        >
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-muted-foreground">Total Bookings</p>
                 <h3 className="text-2xl font-heading font-bold mt-1">{stats?.totalBookings || 0}</h3>
               </div>
-              <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center transition-transform duration-200 hover:scale-110">
                 <Calendar className="h-5 w-5 text-primary" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card data-testid="stats-kpi-revenue">
+        <Card 
+          data-testid="stats-kpi-revenue"
+          className="transition-all duration-200 hover:shadow-md hover:-translate-y-1"
+        >
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-muted-foreground">Total Revenue</p>
                 <h3 className="text-2xl font-heading font-bold mt-1">{formatCurrency(stats?.totalRevenue || 0)}</h3>
               </div>
-              <div className="h-10 w-10 bg-[hsl(var(--success))]/10 rounded-xl flex items-center justify-center">
+              <div className="h-10 w-10 bg-[hsl(var(--success))]/10 rounded-xl flex items-center justify-center transition-transform duration-200 hover:scale-110">
                 <DollarSign className="h-5 w-5 text-[hsl(var(--success))]" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-1">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-muted-foreground">Avg. Stay</p>
                 <h3 className="text-2xl font-heading font-bold mt-1">{stats?.avgStay || 0} nights</h3>
               </div>
-              <div className="h-10 w-10 bg-accent/10 rounded-xl flex items-center justify-center">
+              <div className="h-10 w-10 bg-accent/10 rounded-xl flex items-center justify-center transition-transform duration-200 hover:scale-110">
                 <Clock className="h-5 w-5 text-accent" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-1">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-muted-foreground">Growth</p>
                 <h3 className="text-2xl font-heading font-bold mt-1">+{((stats?.totalBookings || 0) * 12).toFixed(0)}%</h3>
               </div>
-              <div className="h-10 w-10 bg-accent/10 rounded-xl flex items-center justify-center">
+              <div className="h-10 w-10 bg-accent/10 rounded-xl flex items-center justify-center transition-transform duration-200 hover:scale-110">
                 <TrendingUp className="h-5 w-5 text-accent" />
               </div>
             </div>

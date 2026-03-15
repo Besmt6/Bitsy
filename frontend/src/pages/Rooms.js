@@ -96,7 +96,7 @@ const Rooms = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in-50 duration-500">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-heading font-semibold">Room Management</h2>
@@ -225,13 +225,17 @@ const Rooms = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {rooms.map((room) => (
-            <Card key={room._id} data-testid={`room-card-${room._id}`}>
+            <Card 
+              key={room._id} 
+              data-testid={`room-card-${room._id}`}
+              className="transition-all duration-200 hover:shadow-lg hover:-translate-y-1 group"
+            >
               {room.photos && room.photos.length > 0 && (
                 <div className="relative h-48 overflow-hidden rounded-t-2xl">
                   <img
                     src={room.photos[0].url}
                     alt={room.roomType}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
               )}
@@ -244,6 +248,7 @@ const Rooms = () => {
                       size="icon"
                       onClick={() => openEditDialog(room)}
                       data-testid={`edit-room-${room._id}`}
+                      className="transition-all duration-200 hover:scale-110"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -253,6 +258,7 @@ const Rooms = () => {
                           variant="ghost"
                           size="icon"
                           data-testid={`delete-room-${room._id}`}
+                          className="transition-all duration-200 hover:scale-110"
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>

@@ -7,13 +7,15 @@ import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { PhotoUploader } from '../components/PhotoUploader';
+import { PageLoadingSkeleton } from '../components/LoadingSkeletons';
 import { hotelAPI } from '../lib/api';
 import { toast } from 'sonner';
 import { Save, AlertCircle, CheckCircle } from 'lucide-react';
 
 const Settings = () => {
   const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({
     hotelName: '',
     logoUrl: '',
@@ -39,12 +41,13 @@ const Settings = () => {
         telegramBotToken: user.telegramBotToken || '',
         telegramChatId: user.telegramChatId || ''
       });
+      setLoading(false);
     }
   }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setSaving(true);
 
     try {
       await hotelAPI.updateSettings(settings);
@@ -53,12 +56,16 @@ const Settings = () => {
       console.error('Failed to save settings:', error);
       toast.error('Failed to save settings');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
+  if (loading) {
+    return <PageLoadingSkeleton type="wallets" />;
+  }
+
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="max-w-4xl space-y-6 animate-in fade-in-50 duration-500">
       <div>
         <h2 className="text-2xl font-heading font-semibold">Hotel Settings</h2>
         <p className="text-muted-foreground mt-1">Manage your hotel information and notification preferences</p>
@@ -206,9 +213,14 @@ const Settings = () => {
         </Card>
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={loading} data-testid="settings-save-button">
+          <Button 
+            type="submit" 
+            disabled={saving} 
+            data-testid="settings-save-button"
+            className="transition-all duration-200 hover:scale-105 active:scale-95"
+          >
             <Save className="h-4 w-4 mr-2" />
-            {loading ? 'Saving...' : 'Save Settings'}
+            {saving ? 'Saving...' : 'Save Settings'}
           </Button>
         </div>
       </form>

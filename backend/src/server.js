@@ -47,6 +47,15 @@ app.use('/widget', express.static(join(__dirname, '../public/widget'), {
 // Static files for uploads
 app.use('/uploads', express.static(join(__dirname, '../public/uploads')));
 
+// Static files for demo assets
+app.use('/demo-assets', express.static(join(__dirname, '../public/demo-assets')));
+
+// Serve widget test page
+app.get('/widget-test.html', (req, res) => {
+  res.sendFile(join(__dirname, '../public/widget-test.html'));
+});
+
+
 // MongoDB Connection
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017';
 const DB_NAME = process.env.DB_NAME || 'bitsy_saas';

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/button';
+import ErrorBoundary from '../ErrorBoundary';
 import { 
   LayoutDashboard, 
   Settings, 
@@ -82,10 +83,10 @@ const DashboardLayout = () => {
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
-                    "flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-colors",
+                    "flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200",
                     isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground hover:translate-x-1"
                   )}
                 >
                   <Icon className="mr-3 h-5 w-5" />
@@ -137,7 +138,9 @@ const DashboardLayout = () => {
         {/* Page content */}
         <main className="p-4 lg:p-8">
           <div className="max-w-7xl mx-auto">
-            <Outlet />
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
           </div>
         </main>
       </div>

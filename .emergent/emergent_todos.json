@@ -1,38 +1,38 @@
 [
   {
-    "content": "Clean up sensitive data and test files",
+    "content": "Test hybrid date picker flow (conversational + calendar) with screenshots",
+    "status": "pending"
+  },
+  {
+    "content": "Add loading skeletons to Stats.js page",
     "status": "completed"
   },
   {
-    "content": "Add loading skeletons to Stats, Rooms, Wallets pages",
+    "content": "Add loading skeletons and empty states to Rooms.js page",
+    "status": "completed"
+  },
+  {
+    "content": "Add loading skeletons and empty states to Wallets.js page",
+    "status": "completed"
+  },
+  {
+    "content": "Add loading skeletons to Settings.js page",
+    "status": "completed"
+  },
+  {
+    "content": "Add loading skeletons to Analytics.js page",
+    "status": "completed"
+  },
+  {
+    "content": "Add micro-animations (hover/focus states) across all dashboard pages",
+    "status": "completed"
+  },
+  {
+    "content": "Implement error boundaries for all dashboard pages",
+    "status": "completed"
+  },
+  {
+    "content": "Run comprehensive testing via testing_agent for all changes",
     "status": "in_progress"
-  },
-  {
-    "content": "Improve empty states across dashboard",
-    "status": "pending"
-  },
-  {
-    "content": "Add micro-animations to buttons and cards",
-    "status": "pending"
-  },
-  {
-    "content": "Better error messages and error boundaries",
-    "status": "pending"
-  },
-  {
-    "content": "Create hotel onboarding guide",
-    "status": "pending"
-  },
-  {
-    "content": "Write API documentation",
-    "status": "pending"
-  },
-  {
-    "content": "Create MCP integration guide for Claude/ChatGPT",
-    "status": "pending"
-  },
-  {
-    "content": "Write widget embedding tutorial",
-    "status": "pending"
   }
 ]

@@ -1,9 +1,11 @@
-# Bitsy SaaS — Complete Development Plan
+# Bitsy SaaS — Complete Development Plan (Updated)
 
 ## Objectives
-- Prove the **core workflow** works end-to-end: AI chat → structured booking fields → pricing → non‑refundable gate → payment QR payload → booking submission → notification + stats (no guest PII stored).
-- Build an MVP SaaS with **Node.js/Express + MongoDB + React dashboard + embeddable vanilla JS widget**.
+- Prove the **core workflow** works end-to-end: AI chat → structured booking fields → pricing → non‑refundable gate → payment (wallet connect + QR fallback) → booking submission → notification + stats (**no guest PII stored**).
+- Build a production-ready MVP SaaS with **Node.js/Express + MongoDB + React dashboard + embeddable vanilla JS widget**.
 - Enforce **privacy-first** rules and the **non-refundable** policy in UX and API.
+- Improve guest booking UX by supporting **hybrid date capture**: conversational dates **and** a visual calendar fallback.
+- Polish owner dashboard experience for production (loading/empty states, micro-interactions, resilience).
 
 ---
 
@@ -68,7 +70,7 @@
    - Hard privacy guardrails: request logging scrubber; ensure booking payload never written to DB.
 2. **Widget (Vanilla JS served by backend)**
    - Serve `GET /widget.js` (reads `data-hotel-id`).
-   - Modal UI: chat messages, quick replies, room list, date inputs fallback.
+   - Modal UI: chat messages, quick replies, room list, **date inputs fallback**.
    - Non-refundable popup gating before payment.
    - QR generation (client-side lib) from server response (address + amount + network).
 3. **Hotel Dashboard (React)**
@@ -84,13 +86,13 @@
 - Run one full manual E2E: widget booking creates stats + logs notification.
 
 ### Success Criteria
-- Widget can be embedded and completes flow.
-- Booking creates `booking_stats` only (verify DB).
-- Dashboard can configure rooms/wallets and immediately affects widget config.
+- ✅ Widget can be embedded and completes flow.
+- ✅ Booking creates `booking_stats` only (verify DB).
+- ✅ Dashboard can configure rooms/wallets and immediately affects widget config.
 
 ---
 
-## Phase 3 — Add Auth + Owner Experience (JWT) + Telegram Config
+## Phase 3 — Add Auth + Owner Experience (JWT) + Telegram Config ✅ COMPLETED
 
 ### User Stories (Owner)
 1. As a hotel owner, I can register and log in securely.
@@ -111,8 +113,8 @@
 - Validate tenant isolation with 2 seeded accounts.
 
 ### Success Criteria
-- Unauthorized requests rejected; owner sees only their rooms/wallets/settings.
-- Telegram message sent on booking when configured.
+- ✅ Unauthorized requests rejected; owner sees only their rooms/wallets/settings.
+- ✅ Telegram message sent on booking when configured.
 
 ---
 
@@ -133,11 +135,11 @@
 6. ✅ **Test with screenshots** - verified visual quality desktop + mobile
 
 ### Success Criteria
-- ✅ Landing page clearly communicates zero-commission + AI-discovery value
-- ✅ All CTAs have proper testids for testing
-- ✅ Calculator works smoothly and updates dynamically
-- ✅ Mobile-responsive and accessible
-- ✅ Follows Jason Green's rules (DRY, modular, functional)
+- ✅ Landing page clearly communicates zero-commission + AI-discovery value.
+- ✅ All CTAs have proper testids for testing.
+- ✅ Calculator works smoothly and updates dynamically.
+- ✅ Mobile-responsive and accessible.
+- ✅ Follows Jason Green's rules (DRY, modular, functional).
 
 **STATUS: COMPLETED**
 
@@ -158,8 +160,8 @@
 4. ✅ Verify photos appear in UI
 
 ### Next Actions
-- ✅ Photo upload system fully integrated
-- ✅ Hotels can now upload images directly from dashboard
+- ✅ Photo upload system fully integrated.
+- ✅ Hotels can now upload images directly from dashboard.
 
 **STATUS: COMPLETED**
 
@@ -168,24 +170,24 @@
 ## Phase 6 — Web3 Wallet Integration ✅ COMPLETED
 
 ### User Stories
-1. As a guest, I can connect my MetaMask/crypto wallet directly in the widget
-2. As a guest, I can select which blockchain to pay on (6 chains supported)
-3. As a guest, I can sign and send payment transactions directly from widget
-4. As a system, I verify payments on-chain automatically
+1. As a guest, I can connect my MetaMask/crypto wallet directly in the widget.
+2. As a guest, I can select which blockchain to pay on (6 chains supported).
+3. As a guest, I can sign and send payment transactions directly from widget.
+4. As a system, I verify payments on-chain automatically.
 
 ### Implementation Steps
-1. ✅ Added Web3 wallet connection to widget (MetaMask support)
-2. ✅ Integrated Reown project key: `8303063b1790537186dbfba7e31b625c`
-3. ✅ Added chain selector (Ethereum, Polygon, Base, Arbitrum, Optimism)
-4. ✅ Implemented wallet signing flow with backend verification
-5. ✅ Fixed OpenAI chat endpoint (added OpenAI API key)
-6. ✅ Fixed login/register redirects to dashboard
+1. ✅ Added Web3 wallet connection to widget (WalletConnect/Reown).
+2. ✅ Integrated Reown project key: `8303063b1790537186dbfba7e31b625c`.
+3. ✅ Added chain selector (Ethereum, Polygon, Base, Arbitrum, Optimism).
+4. ✅ Implemented wallet signing flow with backend verification.
+5. ✅ Fixed OpenAI chat endpoint (added OpenAI API key).
+6. ✅ Fixed login/register redirects to dashboard.
 
 ### Success Criteria
-- ✅ Widget shows both Web3 wallet option AND QR code fallback
-- ✅ Users can connect wallet, select chain, and sign transactions
-- ✅ Backend verifies signatures and processes payments
-- ✅ Chat endpoint working with OpenAI integration
+- ✅ Widget shows both Web3 wallet option AND QR code fallback.
+- ✅ Users can connect wallet, select chain, and sign transactions.
+- ✅ Backend verifies signatures and processes payments.
+- ✅ Chat endpoint working with OpenAI integration.
 
 **STATUS: COMPLETED**
 
@@ -194,15 +196,15 @@
 ## Phase 7 — AI Discovery Analytics ✅ COMPLETED
 
 ### User Stories
-1. As a hotel owner, I can see how many times my hotel appeared in AI searches (ChatGPT, Claude, Perplexity)
-2. As a hotel owner, I can see which AI platforms are discovering my hotel
-3. As a hotel owner, I can see top search queries that found my hotel
-4. As a hotel owner, I can track appearance trends over time
+1. As a hotel owner, I can see how many times my hotel appeared in AI searches (ChatGPT, Claude, Perplexity).
+2. As a hotel owner, I can see which AI platforms are discovering my hotel.
+3. As a hotel owner, I can see top search queries that found my hotel.
+4. As a hotel owner, I can track appearance trends over time.
 
 ### Implementation
-1. ✅ Created `MCPSearchLog` model to track every MCP search
-2. ✅ Added logging to `/api/mcp/tools/search_hotels` endpoint
-3. ✅ Detects AI source from User-Agent (ChatGPT, Claude, Perplexity)
+1. ✅ Created `MCPSearchLog` model to track every MCP search.
+2. ✅ Added logging to `/api/mcp/tools/search_hotels` endpoint.
+3. ✅ Detects AI source from User-Agent (ChatGPT, Claude, Perplexity).
 4. ✅ Created `/api/analytics/mcp-discovery` endpoint with:
    - Total appearances (last 7/30/90 days)
    - This month count
@@ -211,40 +213,118 @@
    - Top search locations
    - Daily timeline chart
    - Recent searches list
-5. ✅ Built Analytics dashboard page with visualizations
-6. ✅ Added "AI Discovery" navigation link in sidebar
+5. ✅ Built Analytics dashboard page with visualizations.
+6. ✅ Added "AI Discovery" navigation link in sidebar.
 
 ### Success Criteria
-- ✅ Every MCP search is logged automatically
-- ✅ Hotels can see "Your hotel appeared in X AI searches this month"
-- ✅ Analytics show which AI (ChatGPT/Claude) found the hotel
-- ✅ Timeline chart shows trends over time
-- ✅ Recent searches show what travelers are looking for
+- ✅ Every MCP search is logged automatically.
+- ✅ Hotels can see "Your hotel appeared in X AI searches this month".
+- ✅ Analytics show which AI (ChatGPT/Claude) found the hotel.
+- ✅ Timeline chart shows trends over time.
+- ✅ Recent searches show what travelers are looking for.
 
 **STATUS: COMPLETED**
 
 ---
 
-## Phase 8 — Testing, Hardening, UX Polish (Priority: P1)
+## Phase 8 — Guest UX Enhancement: Hybrid Date Picker (Conversational + Visual Calendar) 🟡 PLANNED (P0)
+
+### Rationale
+The widget currently supports **conversational date capture** (guests can type dates naturally). To reduce friction and improve clarity (especially for demos), add an optional **visual calendar** fallback.
+
+### User Stories (Guest)
+1. As a guest, I can provide dates conversationally ("Mar 20–23", "next weekend", "tomorrow for 2 nights").
+2. As a guest, if I prefer, I can select check-in/check-out dates from a **calendar UI**.
+3. As a guest, I can switch between typing and calendar selection without losing progress.
+4. As a guest, selected calendar dates are echoed back into chat (clear confirmation).
+5. As a guest, invalid date ranges are blocked with a clear message (e.g., check-out before check-in).
+
+### Implementation Steps
+1. **Widget UI additions (vanilla JS)**
+   - Add a lightweight calendar/date-range UI inside the widget (two-step: choose check-in then check-out, or date-range if available).
+   - Add CTA under date-collection moments: “Prefer a calendar? Pick dates” (button).
+   - Add a user command to trigger calendar: “show calendar”, “pick dates”, “open calendar”.
+2. **Conversation + state integration**
+   - Store `checkIn` / `checkOut` in widget state when selected via calendar.
+   - After selection, auto-send a message into chat such as: “Check-in Mar 20, check-out Mar 23”.
+   - Continue existing booking flow (room selection → quote → non-refundable gate → payment).
+3. **Validation and edge cases**
+   - Prevent past dates.
+   - Enforce minimum stay rules if any.
+   - Handle timezone/date formatting consistently (ISO dates sent to backend).
+4. **Testing**
+   - Manual: desktop + mobile.
+   - Confirm no regressions in conversational-only flow.
+
+### Success Criteria
+- Calendar is optional; conversational flow remains primary and works unchanged.
+- Date selection reliably populates booking details and results in correct pricing.
+- Guest can complete full booking flow using calendar-selected dates.
+
+---
+
+## Phase 9 — Testing, Hardening, UX Polish (Owner Dashboard + Widget Resilience) 🟡 IN PROGRESS (P0)
 
 ### User Stories (Quality)
 1. As a guest, I get clear errors if dates are invalid or room unavailable.
 2. As a guest, I can restart the chat without reloading the page.
-3. As a hotel owner, I can safely delete rooms without breaking the widget.
-4. As a hotel owner, I can preview widget theme changes instantly.
-5. As an admin/dev, I can run automated tests to ensure privacy constraints remain intact.
+3. As a hotel owner, I see professional loading states (skeletons) and clear empty states.
+4. As a hotel owner, tables/charts/forms feel responsive (micro-animations) and never “jump”.
+5. As an owner, I get graceful errors (error boundaries) instead of blank/white screens.
+6. As an admin/dev, I can run automated checks to ensure privacy constraints remain intact.
 
 ### Implementation Steps
-1. Add backend validation (Zod/Joi) for all endpoints.
-2. Add unit tests for pricing, state machine, privacy guard.
-3. Add E2E smoke tests: config fetch, chat, booking submission, stats update.
-4. UI polish: loading states, retries, offline handling.
-5. Security hardening: rate limiting on public widget endpoints, CORS, helmet.
-
-### Next Actions
-- Run tests + one more E2E pass.
-- Fix until stable.
+1. **Dashboard UI polish (React)**
+   - Add loading skeletons for: Stats, Rooms, Wallets, Settings, Analytics.
+   - Add empty states with clear CTAs (e.g., “Add your first room”).
+   - Add micro-interactions (hover/active/press states; subtle entrance animations).
+   - Add resilient error UI: page-level error boundaries + retry controls.
+2. **Widget resilience improvements**
+   - Clear, consistent error messages for network failures, validation failures.
+   - Add “Restart chat” action to reset state cleanly.
+3. **Backend hardening (as needed)**
+   - Add request validation (Zod/Joi) for public endpoints.
+   - Add rate limiting for widget endpoints.
+   - Add helmet + CORS tightening.
+4. **Testing**
+   - E2E smoke tests: config fetch, chat, booking submission, stats update.
+   - Validate **no guest PII persisted**.
 
 ### Success Criteria
-- All tests green; no guest PII persisted.
-- Widget is stable and embeddable across simple HTML pages.
+- Dashboard feels production-grade (loading/empty/error states everywhere).
+- Widget handles bad inputs and transient failures gracefully.
+- All tests green; privacy constraints remain intact.
+
+---
+
+## Phase 10 — Demo Video + Landing Page Embed 🟡 BLOCKED (P1)
+
+### User Stories
+1. As a visitor, I can watch a demo video directly on the landing page.
+2. As a visitor, the demo clarifies the guest booking experience (including optional calendar date picking).
+
+### Implementation Steps
+1. Provide downloadable/copyable demo assets for HeyGen.
+2. Once final HeyGen video URL is available:
+   - Update `/app/frontend/src/pages/LandingPage.js` to embed the video (replace or complement “Watch Demo”).
+   - Ensure responsive layout and performance (lazy-load).
+
+### Success Criteria
+- Landing page includes an embedded demo video with strong conversion impact.
+
+---
+
+## Phase 11 — Production Deployment (AWS) 🟡 UPCOMING
+
+### Notes
+- Node.js/Web3 stack is **not compatible** with Emergent’s default deployment environment.
+- Target deployment is **AWS** (App Runner or ECS) + MongoDB Atlas.
+
+### Implementation Steps
+1. Follow `DEPLOYMENT_AWS.md`.
+2. Configure environment variables in AWS.
+3. Set up CI/CD via GitHub.
+4. Validate production: widget embed, OpenAI key behavior, WalletConnect project id, uploads.
+
+### Success Criteria
+- Stable production environment with monitoring and predictable releases.

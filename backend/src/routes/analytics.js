@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect } from '../middleware/auth.js';
+import { protect as authMiddleware } from '../middleware/auth.js';
 import MCPSearchLog from '../models/MCPSearchLog.js';
 import Hotel from '../models/Hotel.js';
 import Room from '../models/Room.js';
@@ -9,7 +9,7 @@ const router = express.Router();
 // @route   GET /api/analytics/mcp-discovery
 // @desc    Get MCP search analytics for the authenticated hotel
 // @access  Private
-router.get('/mcp-discovery', protect, async (req, res) => {
+router.get('/mcp-discovery', authMiddleware, async (req, res) => {
   try {
     const hotelId = req.hotel._id.toString();
     
@@ -115,7 +115,7 @@ router.get('/mcp-discovery', protect, async (req, res) => {
 // @route   GET /api/analytics/overview
 // @desc    Get overall platform analytics (for future admin dashboard)
 // @access  Private
-router.get('/overview', protect, async (req, res) => {
+router.get('/overview', authMiddleware, async (req, res) => {
   try {
     const hotelId = req.hotel._id.toString();
     const hotel = await Hotel.findById(hotelId);

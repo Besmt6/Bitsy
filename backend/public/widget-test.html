@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitsy Widget Test - Calendar Feature</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .test-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            color: #0e7490;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .instructions {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 24px rgba(14, 116, 144, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .instructions h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            color: #0e7490;
+            margin-bottom: 16px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 2;
+            color: #374151;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .features {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 24px rgba(14, 116, 144, 0.1);
+        }
+        
+        .features h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            color: #0e7490;
+            margin-bottom: 12px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+            color: #374151;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-list li strong {
+            color: #0e7490;
+        }
+        
+        .cta {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(14, 116, 144, 0.1), rgba(20, 184, 166, 0.1));
+            border-radius: 12px;
+        }
+        
+        .cta p {
+            font-size: 1.1rem;
+            color: #0e7490;
+            font-weight: 600;
+        }
+        
+        .cta .arrow {
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🗓️ Bitsy Widget - Calendar Feature Test</h1>
+        
+        <div class="instructions">
+            <h2>Test Instructions</h2>
+            <ol>
+                <li>Click the <strong>blue chat button</strong> in the bottom-right corner</li>
+                <li>You'll see <strong>two options</strong>: "📅 Pick dates from calendar" or "💬 Type my dates"</li>
+                <li><strong>Option 1:</strong> Click "Pick dates from calendar" to use the visual calendar</li>
+                <li><strong>Option 2:</strong> Click "Type my dates" and say "March 20-23" or "next weekend"</li>
+                <li>You can also type <strong>"show calendar"</strong> at any time to trigger the calendar</li>
+            </ol>
+        </div>
+        
+        <div class="features">
+            <h3>✨ New Hybrid Date Input Features</h3>
+            <ul class="feature-list">
+                <li><strong>Conversational First:</strong> Type dates naturally like humans do</li>
+                <li><strong>Visual Calendar:</strong> Click to pick dates if you prefer</li>
+                <li><strong>Smart Validation:</strong> Can't pick past dates or invalid ranges</li>
+                <li><strong>Seamless Flow:</strong> Both methods feed into the same booking flow</li>
+                <li><strong>Mobile-Friendly:</strong> Calendar adapts to small screens</li>
+            </ul>
+        </div>
+        
+        <div class="cta">
+            <p>👇 Click the chat button below to test the new calendar! 👇</p>
+            <div class="arrow">↘️</div>
+        </div>
+    </div>
+    
+    <!-- Bitsy Widget (use a real hotel ID from your database) -->
+    <script src="/widget/bitsy-widget.js" data-hotel-id="69b6a9edebe08a1c1637ed03"></script>
+</body>
+</html>

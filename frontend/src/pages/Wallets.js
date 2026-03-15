@@ -5,9 +5,10 @@ import { Label } from '../components/ui/label';
 import { Button } from '../components/ui/button';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { PageLoadingSkeleton } from '../components/LoadingSkeletons';
 import { walletAPI } from '../lib/api';
 import { toast } from 'sonner';
-import { Bitcoin, Wallet, AlertCircle, Save } from 'lucide-react';
+import { Bitcoin, Wallet, AlertCircle, Save, CheckCircle2 } from 'lucide-react';
 
 const cryptoInfo = [
   { key: 'bitcoin', label: 'Bitcoin', placeholder: 'bc1q...' },
@@ -61,19 +62,11 @@ const Wallets = () => {
   };
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <Card>
-          <CardContent className="p-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <PageLoadingSkeleton type="wallets" />;
   }
 
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="max-w-4xl space-y-6 animate-in fade-in-50 duration-500">
       <div>
         <h2 className="text-2xl font-heading font-semibold">Crypto Wallets</h2>
         <p className="text-muted-foreground mt-1">Configure your cryptocurrency wallet addresses for payments</p>
@@ -99,11 +92,11 @@ const Wallets = () => {
           </TabsList>
 
           {cryptoInfo.map((crypto) => (
-            <TabsContent key={crypto.key} value={crypto.key}>
-              <Card>
+            <TabsContent key={crypto.key} value={crypto.key} className="mt-6">
+              <Card className="transition-all duration-200 hover:shadow-md">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Wallet className="h-5 w-5" />
+                    <Wallet className="h-5 w-5 text-primary" />
                     {crypto.label} Wallet
                   </CardTitle>
                   <CardDescription>
@@ -118,7 +111,7 @@ const Wallets = () => {
                       placeholder={crypto.placeholder}
                       value={wallets[crypto.key] || ''}
                       onChange={(e) => setWallets({...wallets, [crypto.key]: e.target.value})}
-                      className="font-mono text-sm"
+                      className="font-mono text-sm transition-all duration-200 focus:scale-[1.01]"
                       data-testid={`wallet-${crypto.key}-input`}
                     />
                     <p className="text-xs text-muted-foreground">
@@ -127,8 +120,9 @@ const Wallets = () => {
                   </div>
 
                   {wallets[crypto.key] && (
-                    <Alert>
-                      <AlertDescription className="text-xs font-mono break-all">
+                    <Alert className="border-[hsl(var(--success))]/30 bg-[hsl(var(--success))]/5 animate-in fade-in-50 duration-300">
+                      <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))]" />
+                      <AlertDescription className="text-xs font-mono break-all text-[hsl(var(--success))]">
                         ✅ Address configured: {wallets[crypto.key]}
                       </AlertDescription>
                     </Alert>
@@ -140,7 +134,12 @@ const Wallets = () => {
         </Tabs>
 
         <div className="flex justify-end mt-6">
-          <Button type="submit" disabled={saving} data-testid="wallets-save-button">
+          <Button 
+            type="submit" 
+            disabled={saving} 
+            data-testid="wallets-save-button"
+            className="transition-all duration-200 hover:scale-105 active:scale-95"
+          >
             <Save className="h-4 w-4 mr-2" />
             {saving ? 'Saving...' : 'Save Wallet Addresses'}
           </Button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { analyticsAPI } from '../lib/api';
@@ -62,7 +63,7 @@ const Analytics = () => {
   const { summary, bySource, topLocations, dailyAppearances, recentSearches } = analytics;
 
   return (
-    <div className="space-y-6" data-testid="analytics-page">
+    <div className="space-y-6 animate-in fade-in-50 duration-500" data-testid="analytics-page">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -84,11 +85,14 @@ const Analytics = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-2" data-testid="analytics-total-card">
+        <Card 
+          className="border-2 transition-all duration-200 hover:shadow-lg hover:-translate-y-1" 
+          data-testid="analytics-total-card"
+        >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground">Total Appearances</CardTitle>
-              <Eye className="h-4 w-4 text-primary" />
+              <Eye className="h-4 w-4 text-primary transition-transform duration-200 hover:scale-125" />
             </div>
           </CardHeader>
           <CardContent>
@@ -101,11 +105,14 @@ const Analytics = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-2" data-testid="analytics-month-card">
+        <Card 
+          className="border-2 transition-all duration-200 hover:shadow-lg hover:-translate-y-1" 
+          data-testid="analytics-month-card"
+        >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground">This Month</CardTitle>
-              <Calendar className="h-4 w-4 text-accent" />
+              <Calendar className="h-4 w-4 text-accent transition-transform duration-200 hover:scale-125" />
             </div>
           </CardHeader>
           <CardContent>
@@ -118,11 +125,14 @@ const Analytics = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-2" data-testid="analytics-average-card">
+        <Card 
+          className="border-2 transition-all duration-200 hover:shadow-lg hover:-translate-y-1" 
+          data-testid="analytics-average-card"
+        >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground">Daily Average</CardTitle>
-              <TrendingUp className="h-4 w-4 text-[hsl(var(--success))]" />
+              <TrendingUp className="h-4 w-4 text-[hsl(var(--success))] transition-transform duration-200 hover:scale-125" />
             </div>
           </CardHeader>
           <CardContent>
@@ -230,13 +240,13 @@ const Analytics = () => {
                   const heightPercent = (day.count / maxCount) * 100;
                   
                   return (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                    <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
                       <div 
-                        className="w-full bg-primary/80 hover:bg-primary rounded-t transition-colors cursor-pointer"
+                        className="w-full bg-primary/80 hover:bg-primary rounded-t transition-all duration-300 cursor-pointer group-hover:scale-110"
                         style={{ height: `${heightPercent}%`, minHeight: day.count > 0 ? '8px' : '2px' }}
                         title={`${day.date}: ${day.count} appearances`}
                       />
-                      <span className="text-[10px] text-muted-foreground">
+                      <span className="text-[10px] text-muted-foreground group-hover:text-foreground group-hover:font-semibold transition-all duration-200">
                         {new Date(day.date).getDate()}
                       </span>
                     </div>
@@ -270,7 +280,7 @@ const Analytics = () => {
               {recentSearches.map((search, i) => (
                 <div 
                   key={i} 
-                  className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all duration-200 hover:shadow-sm hover:translate-x-1 cursor-pointer"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
@@ -299,10 +309,18 @@ const Analytics = () => {
           ) : (
             <div className="text-center py-12">
               <Search className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-sm text-muted-foreground mb-2">No searches recorded yet</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm font-medium text-foreground mb-2">No searches recorded yet</p>
+              <p className="text-xs text-muted-foreground mb-4">
                 Your hotel will appear here when AI assistants discover it
               </p>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open('https://chatgpt.com', '_blank')}
+                className="transition-all duration-200 hover:scale-105"
+              >
+                Test with ChatGPT →
+              </Button>
             </div>
           )}
         </CardContent>
