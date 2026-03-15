@@ -162,7 +162,7 @@ const LandingPage = () => {
                   data-testid="demo-video-player"
                   preload="metadata"
                 >
-                  <source src={`${process.env.REACT_APP_BACKEND_URL}/videos/bitsy-demo.mp4`} type="video/mp4" />
+                  <source src={`${process.env.REACT_APP_BACKEND_URL}/api/videos/bitsy-demo.mp4`} type="video/mp4" />
                   Your browser doesn't support video playback.
                 </video>
               </div>

@@ -57,7 +57,19 @@ app.use('/uploads', express.static(join(__dirname, '../public/uploads')));
 app.use('/demo-assets', express.static(join(__dirname, '../public/demo-assets')));
 
 // Static files for videos
-app.use('/videos', express.static(join(__dirname, '../public/videos')));
+// Serve static files with proper headers for video streaming
+app.use('/api/videos', (req, res, next) => {
+  res.setHeader('Accept-Ranges', 'bytes');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  next();
+}, express.static(join(__dirname, '../public/videos'), {
+  maxAge: '1d',
+  setHeaders: (res, path) => {
+    if (path.endsWith('.mp4')) {
+      res.setHeader('Content-Type', 'video/mp4');
+    }
+  }
+}));
 
 // Serve widget test page
 app.get('/widget-test.html', (req, res) => {
