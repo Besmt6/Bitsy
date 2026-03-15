@@ -1,34 +1,30 @@
 [
   {
-    "content": "Add publicSlug field to Hotel model for human-readable URLs",
+    "content": "Add rate limiting middleware to prevent DDoS/brute force attacks",
     "status": "completed"
   },
   {
-    "content": "Create backend API: GET /api/public/hotels/search (search by city/name)",
+    "content": "Add Helmet.js for security headers (XSS, clickjacking protection)",
     "status": "completed"
   },
   {
-    "content": "Create backend API: GET /api/public/hotels/:slug (get hotel profile by slug)",
+    "content": "Add input sanitization to prevent MongoDB injection",
     "status": "completed"
   },
   {
-    "content": "Create frontend PublicHotelPage.js at route /book/:hotelSlug with marketplace theme",
+    "content": "Implement on-chain verification for commission billing payments",
     "status": "completed"
   },
   {
-    "content": "Create frontend BrowseHotels.js at route /browse with search by location",
+    "content": "Add comprehensive error logging with Winston",
     "status": "completed"
   },
   {
-    "content": "Add public link display + copy button in hotel Settings page",
+    "content": "Add API request validation to all public endpoints",
     "status": "completed"
   },
   {
-    "content": "Update MCP routes to return public page URLs instead of ?hotel=id format",
-    "status": "completed"
-  },
-  {
-    "content": "Test public pages with screenshots and verify SEO-friendly structure",
+    "content": "Test critical security fixes and create completion report",
     "status": "completed"
   }
 ]

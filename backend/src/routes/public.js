@@ -1,31 +1,48 @@
 import express from 'express';
+import { query, param, validationResult } from 'express-validator';
 import Hotel from '../models/Hotel.js';
 import Room from '../models/Room.js';
+import logger from '../config/logger.js';
 
 const router = express.Router();
+
+// Validation middleware
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: 'Validation failed', details: errors.array() });
+  }
+  next();
+};
 
 // @route   GET /api/public/hotels/search
 // @desc    Search hotels by city/name (public)
 // @access  Public
-router.get('/hotels/search', async (req, res) => {
+router.get('/hotels/search', 
+  [
+    query('query')
+      .trim()
+      .notEmpty()
+      .withMessage('Search query is required')
+      .isLength({ min: 2, max: 100 })
+      .withMessage('Query must be between 2 and 100 characters'),
+    validate
+  ],
+  async (req, res) => {
   try {
-    const { query } = req.query;
+    const { query: searchQuery } = req.query;
 
-    if (!query || query.trim().length === 0) {
-      return res.status(400).json({ error: 'Search query is required' });
-    }
-
-    const searchQuery = {
+    const queryFilter = {
       isActive: true,
       $or: [
-        { hotelName: { $regex: query, $options: 'i' } },
-        { 'locationVerification.city': { $regex: query, $options: 'i' } },
-        { 'locationVerification.country': { $regex: query, $options: 'i' } },
-        { 'locationVerification.state': { $regex: query, $options: 'i' } }
+        { hotelName: { $regex: searchQuery, $options: 'i' } },
+        { 'locationVerification.city': { $regex: searchQuery, $options: 'i' } },
+        { 'locationVerification.country': { $regex: searchQuery, $options: 'i' } },
+        { 'locationVerification.state': { $regex: searchQuery, $options: 'i' } }
       ]
     };
 
-    const hotels = await Hotel.find(searchQuery).select(
+    const hotels = await Hotel.find(queryFilter).select(
       'hotelName publicSlug logoUrl photos locationVerification.city locationVerification.country'
     );
 
@@ -63,13 +80,18 @@ router.get('/hotels/search', async (req, res) => {
     // Filter out hotels with no rooms
     const availableHotels = results.filter(h => h.availableRooms > 0);
 
+    logger.info('Public hotel search', { 
+      query: searchQuery, 
+      resultsCount: availableHotels.length 
+    });
+
     res.json({
       success: true,
       count: availableHotels.length,
       hotels: availableHotels
     });
   } catch (error) {
-    console.error('Public hotel search error:', error);
+    logger.error('Public hotel search error', { error: error.message });
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -77,7 +99,17 @@ router.get('/hotels/search', async (req, res) => {
 // @route   GET /api/public/hotels/:identifier
 // @desc    Get hotel profile by slug or ID (public)
 // @access  Public
-router.get('/hotels/:identifier', async (req, res) => {
+router.get('/hotels/:identifier',
+  [
+    param('identifier')
+      .trim()
+      .notEmpty()
+      .withMessage('Hotel identifier is required')
+      .isLength({ min: 3, max: 100 })
+      .withMessage('Invalid identifier format'),
+    validate
+  ],
+  async (req, res) => {
   try {
     const { identifier } = req.params;
 
@@ -90,6 +122,7 @@ router.get('/hotels/:identifier', async (req, res) => {
     }
 
     if (!hotel) {
+      logger.info('Public hotel not found', { identifier });
       return res.status(404).json({ error: 'Hotel not found' });
     }
 
@@ -98,6 +131,11 @@ router.get('/hotels/:identifier', async (req, res) => {
       hotelId: hotel._id,
       isActive: true
     }).select('roomType description photos amenities rate availableCount');
+
+    logger.info('Public hotel details fetched', { 
+      hotelId: hotel._id,
+      slug: hotel.publicSlug 
+    });
 
     const response = {
       success: true,
@@ -134,7 +172,7 @@ router.get('/hotels/:identifier', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error('Public hotel details error:', error);
+    logger.error('Public hotel details error', { error: error.message });
     res.status(500).json({ error: 'Server error' });
   }
 });

@@ -2,6 +2,7 @@ import express from 'express';
 import { protect } from '../middleware/auth.js';
 import { getBillingDashboard, updateBillingStatus } from '../services/billingService.js';
 import Hotel from '../models/Hotel.js';
+import logger from '../config/logger.js';
 
 const router = express.Router();
 
@@ -50,44 +51,111 @@ router.post('/refresh', protect, async (req, res) => {
 // @access  Private (Hotel owner)
 router.post('/payment', protect, async (req, res) => {
   try {
-    const { txHash, amount, chain, notes } = req.body;
+    const { txHash, amount, chain } = req.body;
     
-    if (!txHash || !amount) {
-      return res.status(400).json({ error: 'Transaction hash and amount are required' });
+    if (!txHash || !amount || !chain) {
+      return res.status(400).json({ 
+        error: 'Transaction hash, amount, and blockchain are required' 
+      });
     }
 
-    // TODO: Verify transaction on-chain (similar to marketplace verification)
-    // For now, just log and mark as pending admin review
+    // Import web3 service for verification
+    const { verifyPayment } = await import('../services/web3Service.js');
     
-    console.log(`💰 Payment submitted by ${req.hotel.hotelName}:`, {
+    // Get Bitsy's receiving address for the specified chain
+    // TODO: Replace with actual production addresses from env variables
+    const bitsyAddresses = {
+      ethereum: process.env.BITSY_ETH_ADDRESS || '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+      polygon: process.env.BITSY_POLYGON_ADDRESS || '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+      base: process.env.BITSY_BASE_ADDRESS || '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+      arbitrum: process.env.BITSY_ARBITRUM_ADDRESS || '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+      optimism: process.env.BITSY_OPTIMISM_ADDRESS || '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+      avalanche: process.env.BITSY_AVALANCHE_ADDRESS || '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+      bsc: process.env.BITSY_BSC_ADDRESS || '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+      // Add Solana, Bitcoin, Tron when ready
+    };
+
+    const expectedRecipient = bitsyAddresses[chain.toLowerCase()];
+    
+    if (!expectedRecipient) {
+      return res.status(400).json({ 
+        error: `Chain '${chain}' not supported for commission payments yet. Please use: ${Object.keys(bitsyAddresses).join(', ')}` 
+      });
+    }
+
+    logger.info('💰 Verifying commission payment', {
+      hotel: req.hotel.hotelName,
+      hotelId: req.hotel._id,
       txHash,
       amount,
-      chain,
-      hotelId: req.hotel._id
+      chain
     });
 
-    // Store payment record (simplified - in production, create a Payment model)
+    // Verify transaction on-chain
+    const verification = await verifyPayment(
+      txHash,
+      expectedRecipient,
+      amount,
+      chain
+    );
+
+    if (!verification.isValid) {
+      logger.warn('❌ Invalid commission payment submitted', {
+        hotel: req.hotel.hotelName,
+        txHash,
+        reason: verification.error,
+        chain
+      });
+
+      return res.status(400).json({
+        error: 'Payment verification failed',
+        details: verification.error,
+        verified: false
+      });
+    }
+
+    // Payment verified successfully
+    logger.info('✅ Commission payment verified on-chain', {
+      hotel: req.hotel.hotelName,
+      txHash,
+      amount: verification.amount,
+      chain
+    });
+
+    // Update hotel billing status
     const hotel = await Hotel.findById(req.hotel._id);
     hotel.billing.lastPaymentReceivedAt = new Date();
     
-    // If they've paid, move them to 'active' status (no longer blocked)
+    // Reactivate account if blocked or in grace
     if (hotel.billing.billingStatus === 'blocked' || hotel.billing.billingStatus === 'grace') {
       hotel.billing.billingStatus = 'active';
-      console.log(`✅ Hotel ${hotel.hotelName} reactivated after payment`);
+      logger.info(`✅ Hotel ${hotel.hotelName} reactivated after verified payment`);
     }
     
     await hotel.save();
 
     res.json({
       success: true,
-      message: 'Payment submitted successfully. Your account has been reactivated.',
+      verified: true,
+      message: 'Payment verified on-chain. Your account has been reactivated.',
+      verification: {
+        txHash: verification.txHash,
+        amount: verification.amount,
+        from: verification.from,
+        to: verification.to,
+        chain: chain,
+        timestamp: verification.timestamp
+      },
       billing: {
         billingStatus: hotel.billing.billingStatus,
         lastPaymentReceivedAt: hotel.billing.lastPaymentReceivedAt
       }
     });
   } catch (error) {
-    console.error('Submit payment error:', error);
+    logger.error('Submit payment error', { 
+      error: error.message,
+      hotelId: req.hotel._id 
+    });
     res.status(500).json({ error: 'Server error processing payment' });
   }
 });

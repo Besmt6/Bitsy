@@ -1,4 +1,4 @@
-# plan.md — Bitsy: Payment Flexibility + Guest Dashboard + Crypto Marketplace + Billing Enforcement + Multi-Wallet UX + Public Hotel Pages (UPDATED)
+# plan.md — Bitsy: Payment Flexibility + Guest Dashboard + Crypto Marketplace + Billing Enforcement + Multi-Wallet UX + Public Hotel Pages + Security Hardening (UPDATED)
 
 ## 1) Objectives
 - ✅ Ship a **crypto-first** booking system where **crypto is the default** payment method.
@@ -8,13 +8,14 @@
 - ✅ Ship a **secondary marketplace** (**crypto bookings only**, **zero commission**) to list/transfer bookings with on-chain-verifiable payment proof.
 - ✅ Implement **auto-cancel** for unconfirmed pay-at-property bookings at **exactly 48 hours before check-in**, plus marketplace listing expiry cleanup.
 - ⚠️ Demo video reliability: self-hosted routing fixed, but **optimize/host video** to prevent production timeouts.
-- ✅ Security/UX hardening: **remove external wallet download links** (avoid phishing/spam links); direct users to official app stores and avoid spam URLs.
+- ✅ Security/UX hardening (phishing prevention): **remove external wallet download links**; guide users to safe wallet connect flow.
 - ✅ **Monetization**: Implement **“Pay What You Save” billing enforcement** (free $5,000, then commission) with trial tracking, grace period, and booking blocking after grace.
 - ✅ **Spam prevention**: Add **hotel location verification** (address submission + status tracking) to reduce fake/spam hotel listings.
 - ✅ **Wallet UX clarification**: Ensure hotels/guests understand modern wallets (MetaMask 2026) support multiple networks; document address-format differences and reduce setup mistakes.
 - ✅ Landing page navigation: clear CTAs for **Guests** vs **Hotel owners**, plus **Browse Hotels** discovery.
 - ⚠️ (In progress) **Multi-wallet guest UX**: Improve the widget so guests can seamlessly use **MetaMask + Phantom** (and other injected providers) where possible while keeping the QR flow as the universal fallback.
 - ✅ Provide **Public Hotel Pages** (AI-first, display-only) + **Browse/Search** so hotels without websites can share a link and MCP can reference a canonical page.
+- ✅ **Production security hardening**: rate limiting, security headers, injection sanitization, structured logging, public API validation, and **on-chain commission payment verification**.
 
 ---
 
@@ -208,7 +209,7 @@
   - State machine:
     - `trial` → `grace` at $5k crossing (sets `trialExceededAt` + `graceEndsAt = +7d`)
     - `grace` → `blocked` after `graceEndsAt`
-    - `blocked/grace` → `active` when payment is submitted
+    - `blocked/grace` → `active` when payment is verified
 
 #### 6.4 Server-side enforcement points ✅ Delivered
 - **Widget booking** (`POST /api/widget/:hotelId/book`):
@@ -222,8 +223,8 @@
 - Added `backend/src/routes/billing.js` and registered in `server.js`:
   - `GET /api/billing/status`
   - `POST /api/billing/refresh`
-  - `POST /api/billing/payment` (submit tx hash; currently reactivates account without on-chain verification)
-  - `GET /api/billing/payment-instructions` (provides Bitsy addresses; placeholders until real addresses added)
+  - ✅ `POST /api/billing/payment` (**now verifies on-chain before reactivation**)
+  - `GET /api/billing/payment-instructions` (provides Bitsy addresses; requires real production wallets)
   - `POST /api/billing/verify-location`
 
 #### 6.6 Dashboard UX ✅ Delivered
@@ -280,7 +281,7 @@
 - ⚠️ **Guest widget multi-wallet connect**:
   - Align widget “Pay with Crypto Wallet” with actual supported behaviors (avoid implying it sends on-chain transfers unless implemented).
   - Add clear wallet detection and routing for:
-    - MetaMask (`window.ethereum`) for EVM (and potentially other networks if supported)
+    - MetaMask (`window.ethereum`) for EVM
     - Phantom (`window.phantom.solana`) for Solana
   - Keep QR as the universal fallback for all chains.
 - ⚠️ Decide whether to integrate **Reown AppKit** (WalletConnect) for:
@@ -309,6 +310,7 @@
   - No date picker / checkout / payment UI
 - ✅ Guests can **browse/search by town/city name**.
 - ✅ Canonical URL format: `/book/:hotelSlug` (human-readable slug).
+- ✅ Applies to **all hotels** (even those with their own websites): hotels can still embed the widget *and* have Bitsy public pages.
 
 #### 8.2 Data / URL requirements ✅ Delivered
 - ✅ Added a stable public identifier:
@@ -350,15 +352,61 @@
 
 ---
 
+### Phase 9 — Production Security Hardening (Critical Fixes) ✅ COMPLETED
+
+> Goal: close critical gaps identified in the technical audit and ensure production-grade security posture.
+
+#### 9.1 Rate limiting ✅ Delivered
+- ✅ Added `express-rate-limit` with endpoint-specific policies:
+  - General API limiter (100/15min)
+  - Auth limiter (5/15min)
+  - Public endpoints limiter (50/5min)
+  - Booking limiter (10/hour)
+- ✅ Tested and confirmed HTTP 429 enforcement.
+
+#### 9.2 Security headers ✅ Delivered
+- ✅ Added `helmet` with CSP and safe defaults.
+- ✅ Configured `crossOriginEmbedderPolicy: false` to allow widget embedding.
+
+#### 9.3 MongoDB injection sanitization ✅ Delivered
+- ✅ Added `express-mongo-sanitize` to strip `$` / `.` operators.
+- ✅ Logs sanitization attempts.
+
+#### 9.4 Structured logging ✅ Delivered
+- ✅ Added Winston logger:
+  - Console + rotating log files (`logs/combined.log`, `logs/error.log`)
+  - Exception/rejection handlers
+- ✅ Replaced critical `console.log/error` usage in server/billing/public routes with structured logs.
+
+#### 9.5 Public API validation ✅ Delivered
+- ✅ Added `express-validator` to `publicRoutes` for query/param validation.
+
+#### 9.6 On-chain billing commission payment verification ✅ Delivered
+- ✅ Updated `POST /api/billing/payment` to verify submitted tx hashes on-chain before reactivating hotel.
+- ⚠️ Requires setting production Bitsy receiving addresses via env vars:
+  - `BITSY_ETH_ADDRESS`, `BITSY_POLYGON_ADDRESS`, etc.
+
+#### 9.7 Testing / exit criteria ✅ Met
+- ✅ Rate limiting tested (HTTP 429)
+- ✅ MongoDB injection blocked
+- ✅ Input validation enforced (HTTP 400)
+- ✅ Logging confirmed writing to file
+- ✅ Public pages functional after middleware
+
+---
+
 ## 3) Next Actions (Immediate)
 1. ✅ Public pages are live in preview; confirm desired production domain structure for `/browse` and `/book/:slug`.
-2. ⚠️ Finalize widget wallet-connect UX (Phase 7.3):
+2. ✅ Security hardening complete; confirm desired rate-limit thresholds for production traffic.
+3. ⚠️ Configure **real Bitsy receiving addresses** in production env:
+   - `BITSY_ETH_ADDRESS`, `BITSY_POLYGON_ADDRESS`, `BITSY_BASE_ADDRESS`, etc.
+4. ⚠️ Finalize widget wallet-connect UX (Phase 7.3):
    - Decide between (A) Reown AppKit integration or (B) lightweight injected-provider detection.
    - Ensure the widget does not mislead users about automatic payment sending.
-3. ⚠️ Replace placeholder Bitsy receiving addresses with real production wallets and decide commission payment verification workflow.
-4. ⚠️ Add production-grade email delivery (SES/Resend) for booking + marketplace notifications.
-5. ⚠️ Optimize or CDN-host demo video to ensure reliable playback.
-6. ✅ Deploy to AWS using `/app/DEPLOYMENT_AWS.md` (Emergent native deployment is incompatible with Node + Web3).
+5. ⚠️ Add production-grade email delivery (SES/Resend) for booking + marketplace notifications.
+6. ⚠️ Optimize or CDN-host demo video to ensure reliable playback.
+7. ✅ Deploy to AWS using `/app/DEPLOYMENT_AWS.md` (Emergent native deployment is incompatible with Node + Web3).
+8. ⚠️ Production ops: add monitoring/alerting (Sentry + CloudWatch) and backups.
 
 ---
 
@@ -377,10 +425,19 @@
 - ✅ Wallet UX clarified: Hotels understand EVM vs Solana/Bitcoin address formats; Wallets page guidance updated; setup doc created.
 - ✅ Landing page has clear navigation for guests vs hotels and includes **Browse Hotels**.
 - ✅ Public Pages + Browse/Search are implemented and MCP returns canonical public URLs.
+- ✅ Critical production security gaps closed:
+  - rate limiting
+  - helmet security headers
+  - mongo sanitize
+  - structured logging
+  - public API validation
+  - on-chain commission payment verification
 
 **Remaining / Future**
-- ⚠️ Automated commission reconciliation (on-chain verification of billing payment tx hash; admin review workflow).
-- ⚠️ Policy decisions: whether to restrict marketplace visibility or public listing until hotel location is verified.
 - ⚠️ Finalize multi-wallet guest connect UX in widget (MetaMask + Phantom + QR fallback).
+- ⚠️ Configure real Bitsy receiving addresses (required for commission verification in production).
 - ⚠️ Full AWS production deployment + environment hardening.
+- ⚠️ Production monitoring: Sentry + CloudWatch alarms.
 - ⚠️ Demo video optimization/CDN hosting.
+- ⚠️ Optional: automated tests (Jest/Supertest + React Testing Library).
+- ⚠️ Policy decisions: whether to restrict marketplace visibility or public listing until hotel location is verified.

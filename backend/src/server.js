@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import mongoose from 'mongoose';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
 
 // Routes
 import authRoutes from './routes/auth.js';
@@ -22,7 +24,9 @@ import passwordRoutes from './routes/password.js';
 import billingRoutes from './routes/billing.js';
 import publicRoutes from './routes/public.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { generalLimiter, authLimiter, publicLimiter, bookingLimiter } from './middleware/rateLimiter.js';
 import { initializeCronJobs } from './services/cronService.js';
+import logger from './config/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -33,7 +37,37 @@ dotenv.config({ path: join(__dirname, '../.env') });
 const app = express();
 const PORT = process.env.PORT || 8001;
 
-// Middleware
+// Security Middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "http:"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      connectSrc: ["'self'", "https:", "wss:"],
+    },
+  },
+  crossOriginEmbedderPolicy: false, // Allow widget embedding
+}));
+
+// Data sanitization against NoSQL injection
+app.use(mongoSanitize({
+  replaceWith: '_',
+  onSanitize: ({ req, key }) => {
+    logger.warn(`MongoDB injection attempt detected`, { 
+      ip: req.ip, 
+      key, 
+      path: req.path 
+    });
+  }
+}));
+
+// Apply general rate limiting to all routes
+app.use('/api', generalLimiter);
+
+// Core Middleware
 app.use(cors({
   origin: process.env.CORS_ORIGINS?.split(',') || '*',
   credentials: true
@@ -84,14 +118,13 @@ const DB_NAME = process.env.DB_NAME || 'bitsy_saas';
 
 mongoose.connect(`${MONGO_URL}/${DB_NAME}`)
   .then(() => {
-    console.log('✅ Connected to MongoDB');
-    console.log(`   Database: ${DB_NAME}`);
+    logger.info('✅ Connected to MongoDB', { database: DB_NAME });
     
     // Initialize cron jobs after DB connection
     initializeCronJobs();
   })
   .catch((err) => {
-    console.error('❌ MongoDB connection error:', err);
+    logger.error('❌ MongoDB connection error', { error: err.message });
     process.exit(1);
   });
 
@@ -104,12 +137,12 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API Routes
-app.use('/api/auth', authRoutes);
+// API Routes with specific rate limiters
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/hotel', hotelRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/wallets', walletRoutes);
-app.use('/api/widget', widgetRoutes);
+app.use('/api/widget', bookingLimiter, widgetRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/mcp', mcpRoutes);
 app.use('/api/upload', uploadRoutes);
@@ -117,9 +150,9 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/guest', guestRoutes);
-app.use('/api/password', passwordRoutes);
+app.use('/api/password', authLimiter, passwordRoutes);
 app.use('/api/billing', billingRoutes);
-app.use('/api/public', publicRoutes);
+app.use('/api/public', publicLimiter, publicRoutes);
 
 // Root route
 app.get('/api', (req, res) => {
@@ -134,17 +167,14 @@ app.use(errorHandler);
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
+  logger.info('🚀 Bitsy SaaS Backend Started', {
+    port: PORT,
+    environment: process.env.NODE_ENV || 'development',
+    apiPrefix: '/api'
+  });
   console.log(`\n🚀 Bitsy SaaS Backend`);
   console.log(`   Server running on http://0.0.0.0:${PORT}`);
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`   API Prefix: /api`);
-  console.log(`\n📡 Available Routes:`);
-  console.log(`   POST /api/auth/register`);
-  console.log(`   POST /api/auth/login`);
-  console.log(`   GET  /api/hotel/settings`);
-  console.log(`   GET  /api/widget/:hotelId/config`);
-  console.log(`   POST /api/widget/:hotelId/chat`);
-  console.log(`   POST /api/widget/:hotelId/book`);
   console.log(`\n`);
 });
 

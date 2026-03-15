@@ -293,3 +293,42 @@ export const getSupportedChains = () => {
     explorer: CHAINS[key].explorer
   }));
 };
+
+/**
+ * Verify a payment transaction (simplified wrapper)
+ * @param {string} txHash - Transaction hash
+ * @param {string} recipientAddress - Expected recipient address
+ * @param {number} expectedAmountUSD - Expected amount in USD
+ * @param {string} chain - Blockchain network
+ * @returns {Promise<Object>} Verification result
+ */
+export const verifyPayment = async (txHash, recipientAddress, expectedAmountUSD, chain) => {
+  try {
+    const web3Service = getWeb3Service(chain.toLowerCase());
+    
+    // For now, verify native transaction (most common)
+    // In production, detect token transfers vs native
+    const result = await web3Service.verifyNativeTransaction(
+      txHash,
+      expectedAmountUSD,
+      recipientAddress
+    );
+    
+    return {
+      isValid: result.isValid,
+      txHash: result.txHash,
+      amount: result.amountUSD,
+      from: result.from,
+      to: result.to,
+      timestamp: result.timestamp,
+      error: result.error || null
+    };
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    return {
+      isValid: false,
+      error: error.message || 'Verification failed'
+    };
+  }
+};
+
