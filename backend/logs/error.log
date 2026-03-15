@@ -1,0 +1,76 @@
+2026-03-15 20:09:07 [error]: ❌ Failed to send booking_confirmation email
+{
+  "attempt": 1,
+  "error": "BadRequestError\nStatus code: 400\nBody: {\n  \"code\": \"invalid_parameter\",\n  \"message\": \"email is not valid in to\"\n}",
+  "recipient": "invalid-email-format"
+}
+2026-03-15 20:09:07 [error]: Email test failed
+{
+  "error": "Failed to send booking_confirmation email after 1 attempts: BadRequestError\nStatus code: 400\nBody: {\n  \"code\": \"invalid_parameter\",\n  \"message\": \"email is not valid in to\"\n}"
+}
+2026-03-15 20:09:15 [error]: ❌ Failed to send booking_confirmation email
+{
+  "attempt": 1,
+  "error": "BadRequestError\nStatus code: 400\nBody: {\n  \"code\": \"invalid_parameter\",\n  \"message\": \"email is not valid in to\"\n}",
+  "recipient": "invalid-email-format"
+}
+2026-03-15 20:09:15 [error]: Email test failed
+{
+  "error": "Failed to send booking_confirmation email after 1 attempts: BadRequestError\nStatus code: 400\nBody: {\n  \"code\": \"invalid_parameter\",\n  \"message\": \"email is not valid in to\"\n}"
+}
+2026-03-15 20:52:43 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 20:52:43 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:10:44 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:10:44 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:17:23 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:17:23 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:47 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:47 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:49 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:49 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:52 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:52 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:55 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:55 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}

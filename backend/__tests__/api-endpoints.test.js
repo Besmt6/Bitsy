@@ -13,7 +13,7 @@ describe('API Endpoints - Critical Paths', () => {
         .post('/api/admin/auth/login')
         .send({
           email: 'hello@getbitsy.ai',
-          password: 'bitsy-admin-2026'
+          password: 'newSecurePassword123!'
         });
 
       expect(response.status).toBe(200);

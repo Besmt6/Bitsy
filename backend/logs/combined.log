@@ -1,0 +1,895 @@
+2026-03-15 18:44:58 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 18:44:58 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 18:45:17 [info]: Public hotel search
+{
+  "query": "$ne",
+  "resultsCount": 0
+}
+2026-03-15 18:45:24 [info]: Public hotel search
+{
+  "query": "test",
+  "resultsCount": 1
+}
+2026-03-15 18:45:29 [info]: Public hotel search
+{
+  "query": "test",
+  "resultsCount": 1
+}
+2026-03-15 18:45:47 [info]: Public hotel search
+{
+  "query": "$ne",
+  "resultsCount": 0
+}
+2026-03-15 18:46:25 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 18:46:25 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 18:48:16 [info]: Public hotel search
+{
+  "query": "test",
+  "resultsCount": 1
+}
+2026-03-15 18:48:17 [info]: Public hotel details fetched
+{
+  "hotelId": "69b61f2901b3d6c67b02086b",
+  "slug": "test-hotel-photo-upload"
+}
+2026-03-15 18:48:28 [info]: Public hotel search
+{
+  "query": "test",
+  "resultsCount": 1
+}
+2026-03-15 19:56:57 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 19:56:57 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 19:57:40 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 19:57:40 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 20:03:27 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 20:03:27 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 20:03:57 [info]: Public hotel search
+{
+  "query": "test",
+  "resultsCount": 1
+}
+2026-03-15 20:04:13 [info]: 📧 Sending booking_confirmation email
+{
+  "attempt": 1,
+  "recipient": "emailtest@bitsy.ai"
+}
+2026-03-15 20:04:13 [info]: ✅ booking_confirmation email sent successfully
+{
+  "messageId": "<202603152004.70019400072@smtp-relay.mailin.fr>",
+  "recipient": "emailtest@bitsy.ai"
+}
+2026-03-15 20:04:13 [info]: 📧 Test email sent
+{
+  "emailType": "booking_confirmation",
+  "recipient": "emailtest@bitsy.ai",
+  "messageId": "<202603152004.70019400072@smtp-relay.mailin.fr>"
+}
+2026-03-15 20:04:23 [info]: 📧 Sending new_booking_alert email
+{
+  "attempt": 1,
+  "recipient": "emailtest@bitsy.ai"
+}
+2026-03-15 20:04:23 [info]: ✅ new_booking_alert email sent successfully
+{
+  "messageId": "<202603152004.13411225326@smtp-relay.mailin.fr>",
+  "recipient": "emailtest@bitsy.ai"
+}
+2026-03-15 20:04:23 [info]: 📧 Test email sent
+{
+  "emailType": "new_booking_alert",
+  "recipient": "emailtest@bitsy.ai",
+  "messageId": "<202603152004.13411225326@smtp-relay.mailin.fr>"
+}
+2026-03-15 20:04:24 [info]: 📧 Sending password_reset email
+{
+  "attempt": 1,
+  "recipient": "emailtest@bitsy.ai"
+}
+2026-03-15 20:04:24 [info]: ✅ password_reset email sent successfully
+{
+  "messageId": "<202603152004.10048416298@smtp-relay.mailin.fr>",
+  "recipient": "emailtest@bitsy.ai"
+}
+2026-03-15 20:04:24 [info]: 📧 Test email sent
+{
+  "emailType": "password_reset",
+  "recipient": "emailtest@bitsy.ai",
+  "messageId": "<202603152004.10048416298@smtp-relay.mailin.fr>"
+}
+2026-03-15 20:04:24 [info]: 📧 Sending grace_period_alert email
+{
+  "attempt": 1,
+  "recipient": "emailtest@bitsy.ai"
+}
+2026-03-15 20:04:24 [info]: ✅ grace_period_alert email sent successfully
+{
+  "messageId": "<202603152004.75115448883@smtp-relay.mailin.fr>",
+  "recipient": "emailtest@bitsy.ai"
+}
+2026-03-15 20:04:24 [info]: 📧 Test email sent
+{
+  "emailType": "grace_period",
+  "recipient": "emailtest@bitsy.ai",
+  "messageId": "<202603152004.75115448883@smtp-relay.mailin.fr>"
+}
+2026-03-15 20:04:24 [info]: 📧 Sending account_blocked_alert email
+{
+  "attempt": 1,
+  "recipient": "emailtest@bitsy.ai"
+}
+2026-03-15 20:04:25 [info]: ✅ account_blocked_alert email sent successfully
+{
+  "messageId": "<202603152004.97851333433@smtp-relay.mailin.fr>",
+  "recipient": "emailtest@bitsy.ai"
+}
+2026-03-15 20:04:25 [info]: 📧 Test email sent
+{
+  "emailType": "account_blocked",
+  "recipient": "emailtest@bitsy.ai",
+  "messageId": "<202603152004.97851333433@smtp-relay.mailin.fr>"
+}
+2026-03-15 20:08:58 [info]: 📧 Sending booking_confirmation email
+{
+  "attempt": 1,
+  "recipient": "testing@getbitsy.ai"
+}
+2026-03-15 20:08:59 [info]: ✅ booking_confirmation email sent successfully
+{
+  "messageId": "<202603152008.49196879856@smtp-relay.mailin.fr>",
+  "recipient": "testing@getbitsy.ai"
+}
+2026-03-15 20:08:59 [info]: 📧 Test email sent
+{
+  "emailType": "booking_confirmation",
+  "recipient": "testing@getbitsy.ai",
+  "messageId": "<202603152008.49196879856@smtp-relay.mailin.fr>"
+}
+2026-03-15 20:09:00 [info]: 📧 Sending new_booking_alert email
+{
+  "attempt": 1,
+  "recipient": "test_email_hotel_200858@bitsy.test"
+}
+2026-03-15 20:09:00 [info]: ✅ new_booking_alert email sent successfully
+{
+  "messageId": "<202603152009.67857714587@smtp-relay.mailin.fr>",
+  "recipient": "test_email_hotel_200858@bitsy.test"
+}
+2026-03-15 20:09:00 [info]: 📧 Test email sent
+{
+  "emailType": "new_booking_alert",
+  "recipient": "testing@getbitsy.ai",
+  "messageId": "<202603152009.67857714587@smtp-relay.mailin.fr>"
+}
+2026-03-15 20:09:01 [info]: 📧 Sending password_reset email
+{
+  "attempt": 1,
+  "recipient": "testing@getbitsy.ai"
+}
+2026-03-15 20:09:02 [info]: ✅ password_reset email sent successfully
+{
+  "messageId": "<202603152009.58215881423@smtp-relay.mailin.fr>",
+  "recipient": "testing@getbitsy.ai"
+}
+2026-03-15 20:09:02 [info]: 📧 Test email sent
+{
+  "emailType": "password_reset",
+  "recipient": "testing@getbitsy.ai",
+  "messageId": "<202603152009.58215881423@smtp-relay.mailin.fr>"
+}
+2026-03-15 20:09:03 [info]: 📧 Sending grace_period_alert email
+{
+  "attempt": 1,
+  "recipient": "test_email_hotel_200858@bitsy.test"
+}
+2026-03-15 20:09:03 [info]: ✅ grace_period_alert email sent successfully
+{
+  "messageId": "<202603152009.58583767482@smtp-relay.mailin.fr>",
+  "recipient": "test_email_hotel_200858@bitsy.test"
+}
+2026-03-15 20:09:03 [info]: 📧 Test email sent
+{
+  "emailType": "grace_period",
+  "recipient": "testing@getbitsy.ai",
+  "messageId": "<202603152009.58583767482@smtp-relay.mailin.fr>"
+}
+2026-03-15 20:09:05 [info]: 📧 Sending account_blocked_alert email
+{
+  "attempt": 1,
+  "recipient": "test_email_hotel_200858@bitsy.test"
+}
+2026-03-15 20:09:05 [info]: ✅ account_blocked_alert email sent successfully
+{
+  "messageId": "<202603152009.43585449609@smtp-relay.mailin.fr>",
+  "recipient": "test_email_hotel_200858@bitsy.test"
+}
+2026-03-15 20:09:05 [info]: 📧 Test email sent
+{
+  "emailType": "account_blocked",
+  "recipient": "testing@getbitsy.ai",
+  "messageId": "<202603152009.43585449609@smtp-relay.mailin.fr>"
+}
+2026-03-15 20:09:06 [info]: 📧 Sending booking_confirmation email
+{
+  "attempt": 1,
+  "recipient": "emailtest@getbitsy.ai"
+}
+2026-03-15 20:09:06 [info]: 📧 Sending new_booking_alert email
+{
+  "attempt": 1,
+  "recipient": "test_email_hotel_200858@bitsy.test"
+}
+2026-03-15 20:09:06 [info]: 📧 Sending password_reset email
+{
+  "attempt": 1,
+  "recipient": "test_email_hotel_200858@bitsy.test"
+}
+2026-03-15 20:09:06 [info]: ✅ booking_confirmation email sent successfully
+{
+  "messageId": "<202603152009.48186155210@smtp-relay.mailin.fr>",
+  "recipient": "emailtest@getbitsy.ai"
+}
+2026-03-15 20:09:06 [info]: 📧 Sending booking_confirmation email
+{
+  "attempt": 1,
+  "recipient": "template@test.com"
+}
+2026-03-15 20:09:07 [info]: ✅ new_booking_alert email sent successfully
+{
+  "messageId": "<202603152009.54605937467@smtp-relay.mailin.fr>",
+  "recipient": "test_email_hotel_200858@bitsy.test"
+}
+2026-03-15 20:09:07 [info]: ✅ password_reset email sent successfully
+{
+  "messageId": "<202603152009.98081397914@smtp-relay.mailin.fr>",
+  "recipient": "test_email_hotel_200858@bitsy.test"
+}
+2026-03-15 20:09:07 [info]: ✅ booking_confirmation email sent successfully
+{
+  "messageId": "<202603152009.81992489997@smtp-relay.mailin.fr>",
+  "recipient": "template@test.com"
+}
+2026-03-15 20:09:07 [info]: 📧 Test email sent
+{
+  "emailType": "booking_confirmation",
+  "recipient": "template@test.com",
+  "messageId": "<202603152009.81992489997@smtp-relay.mailin.fr>"
+}
+2026-03-15 20:09:07 [info]: 📧 Sending booking_confirmation email
+{
+  "attempt": 1,
+  "recipient": "invalid-email-format"
+}
+2026-03-15 20:09:07 [error]: ❌ Failed to send booking_confirmation email
+{
+  "attempt": 1,
+  "error": "BadRequestError\nStatus code: 400\nBody: {\n  \"code\": \"invalid_parameter\",\n  \"message\": \"email is not valid in to\"\n}",
+  "recipient": "invalid-email-format"
+}
+2026-03-15 20:09:07 [error]: Email test failed
+{
+  "error": "Failed to send booking_confirmation email after 1 attempts: BadRequestError\nStatus code: 400\nBody: {\n  \"code\": \"invalid_parameter\",\n  \"message\": \"email is not valid in to\"\n}"
+}
+2026-03-15 20:09:14 [info]: 📧 Sending booking_confirmation email
+{
+  "attempt": 1,
+  "recipient": "invalid-email-format"
+}
+2026-03-15 20:09:15 [error]: ❌ Failed to send booking_confirmation email
+{
+  "attempt": 1,
+  "error": "BadRequestError\nStatus code: 400\nBody: {\n  \"code\": \"invalid_parameter\",\n  \"message\": \"email is not valid in to\"\n}",
+  "recipient": "invalid-email-format"
+}
+2026-03-15 20:09:15 [error]: Email test failed
+{
+  "error": "Failed to send booking_confirmation email after 1 attempts: BadRequestError\nStatus code: 400\nBody: {\n  \"code\": \"invalid_parameter\",\n  \"message\": \"email is not valid in to\"\n}"
+}
+2026-03-15 20:15:09 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 20:15:09 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 20:16:49 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 20:16:49 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 20:44:23 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 20:44:23 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 20:48:07 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 20:48:07 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:48:07 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:48:21 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 20:48:21 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:48:21 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:49:15 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 20:49:15 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:49:15 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:49:16 [info]: Admin fetched hotels list
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "count": 23
+}
+2026-03-15 20:49:16 [info]: Admin fetched hotels list
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "count": 23
+}
+2026-03-15 20:49:18 [info]: Admin fetched commissions
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:49:18 [info]: Admin fetched commissions
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:50:41 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 20:50:41 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:50:41 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:50:57 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 20:50:57 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:50:57 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:50:58 [info]: Admin fetched commissions
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:50:58 [info]: Admin fetched commissions
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:52:05 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 20:52:05 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:52:05 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:52:07 [info]: Admin fetched commissions
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:52:07 [info]: Admin fetched commissions
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:52:10 [info]: Admin fetched billing alerts
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:52:10 [info]: Admin fetched billing alerts
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:52:43 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 20:52:43 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 20:52:45 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 20:52:45 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:52:45 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:52:46 [info]: Admin fetched activity
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:52:46 [info]: Admin fetched activity
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:53:07 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 20:53:08 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:53:08 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 20:53:09 [info]: Admin fetched hotels list
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "count": 23
+}
+2026-03-15 20:53:09 [info]: Admin fetched hotels list
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "count": 23
+}
+2026-03-15 20:53:11 [info]: Admin fetched hotel details
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "hotelId": "69b711ead6cccc076df0c470"
+}
+2026-03-15 20:53:11 [info]: Admin fetched hotel details
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "hotelId": "69b711ead6cccc076df0c470"
+}
+2026-03-15 21:10:44 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 21:10:44 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 21:13:07 [info]: Chat AI response
+{
+  "query": "Find me hotels in Miami"
+}
+2026-03-15 21:13:30 [info]: Chat AI response
+{
+  "query": "Show me hotels in Miami under $300 per night"
+}
+2026-03-15 22:10:08 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 22:10:08 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 22:10:44 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:10:44 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:14:50 [info]: 💰 Verifying commission payment
+{
+  "hotel": "Test Hotel 1773612889",
+  "hotelId": "69b72f59161431dd5540f2d8",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "amount": 100,
+  "chain": "ethereum"
+}
+2026-03-15 22:15:00 [warn]: ❌ Invalid commission payment submitted
+{
+  "hotel": "Test Hotel 1773612889",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "reason": "Transaction with hash \"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef\" could not be found.\n\nVersion: viem@2.47.4",
+  "chain": "ethereum"
+}
+2026-03-15 22:15:29 [info]: 💰 Verifying commission payment
+{
+  "hotel": "Test Hotel 1773612928",
+  "hotelId": "69b72f80161431dd5540f2e6",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "amount": 100,
+  "chain": "ethereum"
+}
+2026-03-15 22:15:29 [warn]: ❌ Invalid commission payment submitted
+{
+  "hotel": "Test Hotel 1773612928",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "reason": "Transaction with hash \"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef\" could not be found.\n\nVersion: viem@2.47.4",
+  "chain": "ethereum"
+}
+2026-03-15 22:15:37 [info]: 💰 Verifying commission payment
+{
+  "hotel": "Test Hotel 1773612937",
+  "hotelId": "69b72f89161431dd5540f2f3",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "amount": 100,
+  "chain": "ethereum"
+}
+2026-03-15 22:15:38 [warn]: ❌ Invalid commission payment submitted
+{
+  "hotel": "Test Hotel 1773612937",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "reason": "Transaction with hash \"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef\" could not be found.\n\nVersion: viem@2.47.4",
+  "chain": "ethereum"
+}
+2026-03-15 22:16:06 [info]: 💰 Verifying commission payment
+{
+  "hotel": "Test Hotel 1773612965",
+  "hotelId": "69b72fa5161431dd5540f2fb",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "amount": 100,
+  "chain": "ethereum"
+}
+2026-03-15 22:16:06 [warn]: ❌ Invalid commission payment submitted
+{
+  "hotel": "Test Hotel 1773612965",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "reason": "Transaction with hash \"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef\" could not be found.\n\nVersion: viem@2.47.4",
+  "chain": "ethereum"
+}
+2026-03-15 22:16:14 [info]: 💰 Verifying commission payment
+{
+  "hotel": "Test Hotel 1773612974",
+  "hotelId": "69b72fae161431dd5540f308",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "amount": 100,
+  "chain": "ethereum"
+}
+2026-03-15 22:16:25 [warn]: ❌ Invalid commission payment submitted
+{
+  "hotel": "Test Hotel 1773612974",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "reason": "Transaction with hash \"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef\" could not be found.\n\nVersion: viem@2.47.4",
+  "chain": "ethereum"
+}
+2026-03-15 22:16:42 [info]: 💰 Verifying commission payment
+{
+  "hotel": "Test Hotel 1773613001",
+  "hotelId": "69b72fca161431dd5540f310",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "amount": 100,
+  "chain": "ethereum"
+}
+2026-03-15 22:16:42 [warn]: ❌ Invalid commission payment submitted
+{
+  "hotel": "Test Hotel 1773613001",
+  "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "reason": "Transaction with hash \"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef\" could not be found.\n\nVersion: viem@2.47.4",
+  "chain": "ethereum"
+}
+2026-03-15 22:17:23 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:17:23 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:47 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:47 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:49 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:49 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:52 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:52 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:55 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:18:55 [error]: Admin auth error
+{
+  "error": "jwt malformed"
+}
+2026-03-15 22:21:07 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 22:34:49 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 22:34:49 [info]: Public hotel search
+{
+  "query": "Miami",
+  "resultsCount": 0
+}
+2026-03-15 22:34:49 [info]: Public hotel search
+{
+  "query": "test",
+  "resultsCount": 1
+}
+2026-03-15 22:35:30 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 22:35:30 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 22:35:30 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 22:36:18 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 22:36:19 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 22:36:19 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 22:37:00 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 22:37:00 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 22:37:00 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 22:37:15 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 22:37:15 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 22:37:15 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 22:41:07 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 22:41:07 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 22:53:09 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 22:53:09 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 22:58:15 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 22:58:15 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 22:58:41 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 22:58:41 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 22:59:31 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 22:59:32 [info]: Public hotel search
+{
+  "query": "Miami",
+  "resultsCount": 0
+}
+2026-03-15 22:59:32 [info]: Public hotel search
+{
+  "query": "test",
+  "resultsCount": 1
+}
+2026-03-15 22:59:39 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 22:59:39 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 22:59:39 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 23:23:50 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 23:23:50 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 23:23:50 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 23:23:53 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 23:25:57 [info]: 🚀 Bitsy SaaS Backend Started
+{
+  "port": "8001",
+  "environment": "development",
+  "apiPrefix": "/api"
+}
+2026-03-15 23:25:57 [info]: ✅ Connected to MongoDB
+{
+  "database": "bitsy_saas"
+}
+2026-03-15 23:27:10 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 23:27:11 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 23:27:11 [info]: Admin fetched platform stats
+{
+  "adminId": "69b71a14bd50f3a58cc1b504"
+}
+2026-03-15 23:27:16 [info]: Admin password changed
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
+2026-03-15 23:27:29 [info]: Admin logged in
+{
+  "adminId": "69b71a14bd50f3a58cc1b504",
+  "email": "hello@getbitsy.ai"
+}
