@@ -1,30 +1,34 @@
 [
   {
-    "content": "Add rate limiting middleware to prevent DDoS/brute force attacks",
-    "status": "completed"
+    "content": "Get Brevo API key and sender email from user",
+    "status": "in_progress"
   },
   {
-    "content": "Add Helmet.js for security headers (XSS, clickjacking protection)",
-    "status": "completed"
+    "content": "Install Brevo SDK and dependencies",
+    "status": "pending"
   },
   {
-    "content": "Add input sanitization to prevent MongoDB injection",
-    "status": "completed"
+    "content": "Create email service with core transactional emails",
+    "status": "pending"
   },
   {
-    "content": "Implement on-chain verification for commission billing payments",
-    "status": "completed"
+    "content": "Implement booking confirmation emails (guest + hotel)",
+    "status": "pending"
   },
   {
-    "content": "Add comprehensive error logging with Winston",
-    "status": "completed"
+    "content": "Implement password reset emails",
+    "status": "pending"
   },
   {
-    "content": "Add API request validation to all public endpoints",
-    "status": "completed"
+    "content": "Implement billing alert emails (grace period, blocked)",
+    "status": "pending"
   },
   {
-    "content": "Test critical security fixes and create completion report",
-    "status": "completed"
+    "content": "Integrate email service into booking/auth/billing routes",
+    "status": "pending"
+  },
+  {
+    "content": "Test email delivery with real Brevo API",
+    "status": "pending"
   }
 ]
