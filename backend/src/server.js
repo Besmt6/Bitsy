@@ -7,6 +7,9 @@ import mongoose from 'mongoose';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 
+// Sentry (must be imported early)
+import { initializeSentry, sentryRequestHandler, sentryTracingHandler, sentryErrorHandler } from './config/sentry.js';
+
 // Routes
 import authRoutes from './routes/auth.js';
 import hotelRoutes from './routes/hotel.js';
@@ -40,6 +43,9 @@ dotenv.config({ path: join(__dirname, '../.env') });
 const app = express();
 const PORT = process.env.PORT || 8001;
 
+// Initialize Sentry (must be first, before other middleware)
+initializeSentry(app);
+
 // Trust proxy - for Kubernetes ingress/nginx
 // Using true to trust all proxies (safe in managed K8s environment)
 app.set('trust proxy', true);
@@ -70,6 +76,10 @@ app.use(mongoSanitize({
     });
   }
 }));
+
+// Sentry request handler (must be before routes)
+app.use(sentryRequestHandler());
+app.use(sentryTracingHandler());
 
 // Apply general rate limiting to all routes (temporarily disabled for debugging)
 // app.use('/api', generalLimiter);
@@ -181,6 +191,9 @@ app.get('/api', (req, res) => {
     version: '1.0.0'
   });
 });
+
+// Sentry error handler (must be after routes, before custom error handler)
+app.use(sentryErrorHandler());
 
 // Error handler (must be last)
 app.use(errorHandler);

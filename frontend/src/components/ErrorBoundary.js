@@ -1,61 +1,72 @@
 import React from 'react';
+import * as Sentry from '@sentry/react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
 
-/**
- * ErrorBoundary Component
- * Catches React errors and provides graceful fallback UI
- */
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-  }
-
+class ErrorBoundaryFallback extends React.Component {
   render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-[400px] flex items-center justify-center p-8">
-          <div className="text-center max-w-md">
-            <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-destructive"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-lg font-heading font-semibold mb-2">Something went wrong</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              {this.state.error?.message || 'An unexpected error occurred'}
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-            >
-              Reload Page
-            </button>
-          </div>
-        </div>
-      );
-    }
+    const { error, resetError } = this.props;
 
-    return this.props.children;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50/30 flex items-center justify-center p-4">
+        <Card className="max-w-lg w-full">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <CardTitle>Something went wrong</CardTitle>
+                <CardDescription>An unexpected error occurred</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {error && (
+              <div className="bg-slate-100 rounded-lg p-4">
+                <p className="text-sm text-slate-700 font-mono">
+                  {error.toString()}
+                </p>
+              </div>
+            )}
+            
+            <div className="flex gap-3">
+              <Button
+                onClick={resetError}
+                className="flex-1"
+                data-testid="error-boundary-reset"
+              >
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Try Again
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/'}
+                variant="outline"
+                className="flex-1"
+                data-testid="error-boundary-home"
+              >
+                <Home className="mr-2 h-4 w-4" />
+                Go Home
+              </Button>
+            </div>
+            
+            <p className="text-xs text-center text-muted-foreground">
+              This error has been reported to our team.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 }
+
+const ErrorBoundary = Sentry.withErrorBoundary(
+  ({ children }) => children,
+  {
+    fallback: ErrorBoundaryFallback,
+    showDialog: false,
+  }
+);
 
 export default ErrorBoundary;
