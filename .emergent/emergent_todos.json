@@ -1,18 +1,38 @@
 [
   {
-    "content": "Create Widget Chat mockup component",
+    "content": "Clean up sensitive data and test files",
     "status": "completed"
   },
   {
-    "content": "Create MetaMask payment mockup component",
-    "status": "completed"
-  },
-  {
-    "content": "Create ChatGPT MCP search mockup",
-    "status": "completed"
-  },
-  {
-    "content": "Screenshot all mockups at high quality",
+    "content": "Add loading skeletons to Stats, Rooms, Wallets pages",
     "status": "in_progress"
+  },
+  {
+    "content": "Improve empty states across dashboard",
+    "status": "pending"
+  },
+  {
+    "content": "Add micro-animations to buttons and cards",
+    "status": "pending"
+  },
+  {
+    "content": "Better error messages and error boundaries",
+    "status": "pending"
+  },
+  {
+    "content": "Create hotel onboarding guide",
+    "status": "pending"
+  },
+  {
+    "content": "Write API documentation",
+    "status": "pending"
+  },
+  {
+    "content": "Create MCP integration guide for Claude/ChatGPT",
+    "status": "pending"
+  },
+  {
+    "content": "Write widget embedding tutorial",
+    "status": "pending"
   }
 ]
