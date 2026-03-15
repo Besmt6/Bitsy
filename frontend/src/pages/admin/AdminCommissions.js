@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { AdminShell } from '../../components/admin/AdminShell';
 import { StatusPill } from '../../components/admin/StatusPill';
-import { Button } from '../../components/ui/button';
-import { Card } from '../../components/ui/card';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Skeleton } from '../../components/ui/skeleton';
-import { Badge } from '../../components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../components/ui/table';
+} from '@/components/ui/table';
 import {
   Sheet,
   SheetContent,
@@ -22,7 +22,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '../../components/ui/sheet';
+} from '@/components/ui/sheet';
 import { CheckCircle, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
 

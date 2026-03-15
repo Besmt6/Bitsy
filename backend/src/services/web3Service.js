@@ -1,10 +1,12 @@
-import { ethers } from 'ethers';
+import { createPublicClient, http, parseUnits, formatUnits, decodeEventLog } from 'viem';
+import { mainnet, polygon, base, arbitrum, optimism, bsc } from 'viem/chains';
 
 // Chain configurations
 export const CHAINS = {
   ethereum: {
     id: 1,
     name: 'Ethereum',
+    viemChain: mainnet,
     rpcUrl: process.env.ETHEREUM_RPC || 'https://eth.llamarpc.com',
     explorer: 'https://etherscan.io',
     nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
@@ -17,6 +19,7 @@ export const CHAINS = {
   polygon: {
     id: 137,
     name: 'Polygon',
+    viemChain: polygon,
     rpcUrl: process.env.POLYGON_RPC || 'https://polygon-rpc.com',
     explorer: 'https://polygonscan.com',
     nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
@@ -28,6 +31,7 @@ export const CHAINS = {
   base: {
     id: 8453,
     name: 'Base',
+    viemChain: base,
     rpcUrl: process.env.BASE_RPC || 'https://mainnet.base.org',
     explorer: 'https://basescan.org',
     nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
@@ -38,6 +42,7 @@ export const CHAINS = {
   arbitrum: {
     id: 42161,
     name: 'Arbitrum',
+    viemChain: arbitrum,
     rpcUrl: process.env.ARBITRUM_RPC || 'https://arb1.arbitrum.io/rpc',
     explorer: 'https://arbiscan.io',
     nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
@@ -49,6 +54,7 @@ export const CHAINS = {
   optimism: {
     id: 10,
     name: 'Optimism',
+    viemChain: optimism,
     rpcUrl: process.env.OPTIMISM_RPC || 'https://mainnet.optimism.io',
     explorer: 'https://optimistic.etherscan.io',
     nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
@@ -60,6 +66,7 @@ export const CHAINS = {
   bsc: {
     id: 56,
     name: 'BNB Chain',
+    viemChain: bsc,
     rpcUrl: process.env.BSC_RPC || 'https://bsc-dataseed.binance.org',
     explorer: 'https://bscscan.com',
     nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
@@ -72,10 +79,39 @@ export const CHAINS = {
 
 // ERC20 ABI for token transfers
 const ERC20_ABI = [
-  'function transfer(address to, uint256 amount) returns (bool)',
-  'function balanceOf(address owner) view returns (uint256)',
-  'function decimals() view returns (uint8)',
-  'event Transfer(address indexed from, address indexed to, uint256 value)'
+  {
+    type: 'function',
+    name: 'transfer',
+    inputs: [
+      { name: 'to', type: 'address' },
+      { name: 'amount', type: 'uint256' }
+    ],
+    outputs: [{ name: '', type: 'bool' }],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    name: 'balanceOf',
+    inputs: [{ name: 'owner', type: 'address' }],
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'decimals',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint8' }],
+    stateMutability: 'view'
+  },
+  {
+    type: 'event',
+    name: 'Transfer',
+    inputs: [
+      { name: 'from', type: 'address', indexed: true },
+      { name: 'to', type: 'address', indexed: true },
+      { name: 'value', type: 'uint256', indexed: false }
+    ]
+  }
 ];
 
 export class Web3Service {
@@ -86,7 +122,12 @@ export class Web3Service {
     
     this.chain = CHAINS[chainKey];
     this.chainKey = chainKey;
-    this.provider = new ethers.JsonRpcProvider(this.chain.rpcUrl);
+    
+    // Create public client (replaces ethers JsonRpcProvider)
+    this.client = createPublicClient({
+      chain: this.chain.viemChain,
+      transport: http(this.chain.rpcUrl)
+    });
   }
 
   /**
@@ -96,20 +137,26 @@ export class Web3Service {
     try {
       console.log(`🔍 Verifying native tx: ${txHash} on ${this.chain.name}`);
       
-      const tx = await this.provider.getTransaction(txHash);
+      // Get transaction details
+      const tx = await this.client.getTransaction({ 
+        hash: txHash 
+      });
       
       if (!tx) {
         return { verified: false, error: 'Transaction not found' };
       }
 
-      // Wait for confirmation
-      const receipt = await tx.wait(1); // 1 confirmation
+      // Wait for confirmation (1 block)
+      const receipt = await this.client.waitForTransactionReceipt({ 
+        hash: txHash,
+        confirmations: 1
+      });
       
-      if (!receipt || receipt.status !== 1) {
+      if (!receipt || receipt.status !== 'success') {
         return { verified: false, error: 'Transaction failed' };
       }
 
-      // Verify recipient
+      // Verify recipient (viem returns checksummed addresses)
       if (tx.to.toLowerCase() !== recipientAddress.toLowerCase()) {
         return { 
           verified: false, 
@@ -117,8 +164,8 @@ export class Web3Service {
         };
       }
 
-      // Convert amount from wei to token units
-      const actualAmount = parseFloat(ethers.formatEther(tx.value));
+      // Convert amount from wei to token units (viem uses bigint)
+      const actualAmount = parseFloat(formatUnits(tx.value, this.chain.nativeCurrency.decimals));
 
       // For crypto payments, we accept the amount sent (not verifying USD equivalent)
       // Hotels should use stablecoins for USD-pegged pricing
@@ -132,7 +179,7 @@ export class Web3Service {
         to: tx.to,
         amount: actualAmount,
         currency: this.chain.nativeCurrency.symbol,
-        blockNumber: receipt.blockNumber,
+        blockNumber: Number(receipt.blockNumber),
         confirmations: 1,
         explorerUrl: `${this.chain.explorer}/tx/${tx.hash}`,
         timestamp: new Date().toISOString()
@@ -159,26 +206,38 @@ export class Web3Service {
         };
       }
 
-      const receipt = await this.provider.getTransactionReceipt(txHash);
+      // Get transaction receipt
+      const receipt = await this.client.waitForTransactionReceipt({ 
+        hash: txHash,
+        confirmations: 1
+      });
       
       if (!receipt) {
         return { verified: false, error: 'Transaction not found' };
       }
       
-      if (receipt.status !== 1) {
+      if (receipt.status !== 'success') {
         return { verified: false, error: 'Transaction failed' };
       }
 
-      // Parse Transfer event
-      const iface = new ethers.Interface(ERC20_ABI);
+      // Find Transfer event in logs
       let transferEvent = null;
       
       for (const log of receipt.logs) {
+        // Only process logs from the token contract
+        if (log.address.toLowerCase() !== tokenAddress.toLowerCase()) {
+          continue;
+        }
+        
         try {
-          const parsed = iface.parseLog(log);
-          if (parsed && parsed.name === 'Transfer' && 
-              log.address.toLowerCase() === tokenAddress.toLowerCase()) {
-            transferEvent = { log, parsed };
+          const decoded = decodeEventLog({
+            abi: ERC20_ABI,
+            data: log.data,
+            topics: log.topics
+          });
+          
+          if (decoded.eventName === 'Transfer') {
+            transferEvent = decoded;
             break;
           }
         } catch {
@@ -190,9 +249,7 @@ export class Web3Service {
         return { verified: false, error: 'No Transfer event found' };
       }
 
-      const { parsed } = transferEvent;
-      const to = parsed.args.to;
-      const amount = parsed.args.value;
+      const { from, to, value } = transferEvent.args;
 
       // Verify recipient
       if (to.toLowerCase() !== recipientAddress.toLowerCase()) {
@@ -204,7 +261,7 @@ export class Web3Service {
 
       // Get token decimals (USDC/USDT = 6, DAI = 18)
       const decimals = tokenSymbol === 'DAI' ? 18 : 6;
-      const actualAmount = parseFloat(ethers.formatUnits(amount, decimals));
+      const actualAmount = parseFloat(formatUnits(value, decimals));
 
       // For stablecoins, verify amount matches expected USD (with 2% tolerance)
       const expected = parseFloat(expectedAmountUSD);
@@ -222,12 +279,12 @@ export class Web3Service {
       return {
         verified: true,
         txHash,
-        from: parsed.args.from,
+        from,
         to,
         amount: actualAmount,
         currency: tokenSymbol,
         token: tokenAddress,
-        blockNumber: receipt.blockNumber,
+        blockNumber: Number(receipt.blockNumber),
         explorerUrl: `${this.chain.explorer}/tx/${txHash}`,
         timestamp: new Date().toISOString()
       };
@@ -242,11 +299,36 @@ export class Web3Service {
    */
   async getGasPrice() {
     try {
-      const feeData = await this.provider.getFeeData();
+      // viem's getGasPrice returns gas price in wei as bigint
+      const gasPrice = await this.client.getGasPrice();
+      
+      // Convert to gwei for display
+      const gasPriceGwei = formatUnits(gasPrice, 9); // gwei = 9 decimals
+      
+      // For EIP-1559 chains, get fee data
+      try {
+        const block = await this.client.getBlock({ blockTag: 'latest' });
+        
+        if (block.baseFeePerGas) {
+          const baseFeeGwei = formatUnits(block.baseFeePerGas, 9);
+          // Estimate max priority fee (typically 1-2 gwei)
+          const maxPriorityFeeGwei = '2';
+          const maxFeeGwei = (parseFloat(baseFeeGwei) + parseFloat(maxPriorityFeeGwei)).toString();
+          
+          return {
+            gasPrice: gasPriceGwei,
+            maxFeePerGas: maxFeeGwei,
+            maxPriorityFeePerGas: maxPriorityFeeGwei
+          };
+        }
+      } catch (err) {
+        // Chain doesn't support EIP-1559, fallback to legacy
+      }
+      
       return {
-        gasPrice: feeData.gasPrice ? ethers.formatUnits(feeData.gasPrice, 'gwei') : '0',
-        maxFeePerGas: feeData.maxFeePerGas ? ethers.formatUnits(feeData.maxFeePerGas, 'gwei') : '0',
-        maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ? ethers.formatUnits(feeData.maxPriorityFeePerGas, 'gwei') : '0'
+        gasPrice: gasPriceGwei,
+        maxFeePerGas: gasPriceGwei,
+        maxPriorityFeePerGas: '0'
       };
     } catch (error) {
       console.error('Gas price fetch error:', error);
@@ -315,9 +397,9 @@ export const verifyPayment = async (txHash, recipientAddress, expectedAmountUSD,
     );
     
     return {
-      isValid: result.isValid,
+      isValid: result.verified,
       txHash: result.txHash,
-      amount: result.amountUSD,
+      amount: result.amount,
       from: result.from,
       to: result.to,
       timestamp: result.timestamp,
@@ -331,4 +413,3 @@ export const verifyPayment = async (txHash, recipientAddress, expectedAmountUSD,
     };
   }
 };
-

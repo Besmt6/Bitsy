@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { AdminShell } from '../../components/admin/AdminShell';
 import { StatusPill } from '../../components/admin/StatusPill';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Card, CardContent } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
-import { Skeleton } from '../../components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Table,
   TableBody,
@@ -13,21 +13,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../components/ui/table';
+} from '@/components/ui/table';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select';
+} from '@/components/ui/select';
 import { Search, MoreVertical, CheckCircle, XCircle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../../components/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 

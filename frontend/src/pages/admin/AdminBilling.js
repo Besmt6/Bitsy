@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { AdminShell } from '../../components/admin/AdminShell';
 import { StatusPill } from '../../components/admin/StatusPill';
-import { Button } from '../../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
-import { Skeleton } from '../../components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertTriangle, XCircle, Clock, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';

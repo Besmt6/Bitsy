@@ -3,10 +3,10 @@ import { useParams, Link } from 'react-router-dom';
 import { AdminShell } from '../../components/admin/AdminShell';
 import { StatusPill } from '../../components/admin/StatusPill';
 import { KpiCard } from '../../components/admin/KpiCard';
-import { Button } from '../../components/ui/button';
-import { Card, CardContent } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
-import { Skeleton } from '../../components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../components/ui/table';
+} from '@/components/ui/table';
 import { ArrowLeft, Building2, DollarSign, TrendingUp, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 

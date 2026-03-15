@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { AdminShell } from '../../components/admin/AdminShell';
 import { StatusPill } from '../../components/admin/StatusPill';
-import { Card, CardContent } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
-import { Skeleton } from '../../components/ui/skeleton';
-import { Input } from '../../components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 import { Activity as ActivityIcon, Search, DollarSign, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 

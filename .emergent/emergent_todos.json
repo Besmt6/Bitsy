@@ -1,42 +1,38 @@
 [
   {
-    "content": "Get viem integration playbook",
+    "content": "Fix admin component import paths (../../components/ui → @/components/ui) across all 7 admin pages",
+    "status": "completed"
+  },
+  {
+    "content": "Install viem library in backend",
+    "status": "completed"
+  },
+  {
+    "content": "Migrate web3Service.js: Replace ethers imports and provider initialization with viem",
+    "status": "completed"
+  },
+  {
+    "content": "Migrate verifyNativeTransaction to use viem's getTransaction and waitForTransactionReceipt",
+    "status": "completed"
+  },
+  {
+    "content": "Migrate verifyTokenTransaction to use viem's getLogs and decodeEventLog",
+    "status": "completed"
+  },
+  {
+    "content": "Migrate getGasPrice to use viem's getGasPrice",
+    "status": "completed"
+  },
+  {
+    "content": "Remove ethers.js from package.json dependencies",
+    "status": "completed"
+  },
+  {
+    "content": "Test wallet connection and transaction verification with viem implementation",
+    "status": "completed"
+  },
+  {
+    "content": "Run comprehensive testing via testing_agent for both frontend and backend",
     "status": "in_progress"
-  },
-  {
-    "content": "Review current ethers.js implementation",
-    "status": "pending"
-  },
-  {
-    "content": "Migrate web3Service.js to viem",
-    "status": "pending"
-  },
-  {
-    "content": "Update wallet connection in frontend",
-    "status": "pending"
-  },
-  {
-    "content": "Replace ethers.js with viem in package.json",
-    "status": "pending"
-  },
-  {
-    "content": "Test wallet connection and transaction verification",
-    "status": "pending"
-  },
-  {
-    "content": "Add automated test suite (Jest + Playwright)",
-    "status": "pending"
-  },
-  {
-    "content": "Integrate Sentry error monitoring",
-    "status": "pending"
-  },
-  {
-    "content": "Setup CI/CD with GitHub Actions",
-    "status": "pending"
-  },
-  {
-    "content": "Create AWS deployment guide for staging + production",
-    "status": "pending"
   }
 ]
