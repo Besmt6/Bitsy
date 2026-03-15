@@ -13,6 +13,7 @@ import walletRoutes from './routes/wallet.js';
 import widgetRoutes from './routes/widget.js';
 import statsRoutes from './routes/stats.js';
 import mcpRoutes from './routes/mcp.js';
+import uploadRoutes from './routes/upload.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -41,6 +42,9 @@ app.use('/widget', express.static(join(__dirname, '../public/widget'), {
     }
   }
 }));
+
+// Static files for uploads
+app.use('/uploads', express.static(join(__dirname, '../public/uploads')));
 
 // MongoDB Connection
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017';
@@ -73,6 +77,7 @@ app.use('/api/wallets', walletRoutes);
 app.use('/api/widget', widgetRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/mcp', mcpRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Root route
 app.get('/api', (req, res) => {
