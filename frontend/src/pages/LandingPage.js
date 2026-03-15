@@ -20,6 +20,7 @@ import {
   Building2
 } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
+import { PaymentMethodComparison } from '../components/PaymentMethodComparison';
 
 const LandingPage = () => {
   const [bookings, setBookings] = useState(200000);
@@ -382,6 +383,36 @@ const LandingPage = () => {
                 </Card>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* Payment Methods Education */}
+      <section id="payment-methods" className="py-20 md:py-28 bg-gradient-to-br from-primary/5 to-accent/5" data-testid="landing-payment-methods-section">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 space-y-4">
+            <Badge className="mb-2">Payment Options</Badge>
+            <h2 className="text-4xl md:text-5xl font-heading font-bold">
+              Choose What Works for You
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Crypto-first with traditional fallback. Hotels and guests both win.
+            </p>
+          </div>
+
+          <div className="max-w-6xl mx-auto">
+            <PaymentMethodComparison variant="full" />
+            
+            <Card className="mt-8 bg-primary text-primary-foreground border-0">
+              <CardContent className="p-8 text-center">
+                <h3 className="text-2xl font-heading font-bold mb-3">💡 Pro Tip</h3>
+                <p className="text-lg opacity-90 leading-relaxed">
+                  Start with <strong>crypto-only</strong> to attract Web3 travelers and get instant settlements. 
+                  Enable <strong>pay-at-property</strong> later if you want to serve traditional guests.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

@@ -23,6 +23,7 @@ import GuestBookings from './pages/GuestBookings';
 import GuestBookingDetails from './pages/GuestBookingDetails';
 import Marketplace from './pages/Marketplace';
 import HotelBookings from './pages/HotelBookings';
+import ForgotPassword from './pages/ForgotPassword';
 
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -51,6 +52,7 @@ const AppRoutes = () => {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       
       {/* Video Mockup Routes */}
       <Route path="/mockup/widget" element={<WidgetMockup />} />

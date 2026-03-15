@@ -12,11 +12,14 @@ import { PageLoadingSkeleton } from '../components/LoadingSkeletons';
 import { hotelAPI } from '../lib/api';
 import { toast } from 'sonner';
 import { Save, AlertCircle, CheckCircle, CreditCard } from 'lucide-react';
+import TelegramSetupWizard from '../components/TelegramSetupWizard';
+import { PaymentMethodComparison } from '../components/PaymentMethodComparison';
 
 const Settings = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showTelegramWizard, setShowTelegramWizard] = useState(false);
   const [settings, setSettings] = useState({
     hotelName: '',
     logoUrl: '',
@@ -215,6 +218,11 @@ const Settings = () => {
                     value={settings.telegramChatId}
                     onChange={(e) => setSettings({...settings, telegramChatId: e.target.value})}
                   />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Payment Methods */}
         <Card>
@@ -287,9 +295,14 @@ const Settings = () => {
           </CardContent>
         </Card>
 
-                </div>
-              </div>
-            </div>
+        {/* Payment Methods Comparison */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Payment Methods Comparison</CardTitle>
+            <CardDescription>Understand the benefits and considerations of each payment option</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <PaymentMethodComparison variant="full" />
           </CardContent>
         </Card>
 
