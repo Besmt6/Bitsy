@@ -5,10 +5,10 @@ dotenv.config();
 
 const EMERGENT_LLM_KEY = process.env.EMERGENT_LLM_KEY || 'sk-emergent-27d7167Cb35D3AdC5E';
 
-// Initialize OpenAI with Emergent Universal Key
+// Initialize OpenAI with Emergent Universal Key - try direct OpenAI endpoint as fallback
 const openai = new OpenAI({
   apiKey: EMERGENT_LLM_KEY,
-  baseURL: 'https://llm.emergentmethods.ai/v1'
+  baseURL: 'https://api.openai.com/v1'
 });
 
 const BITSY_SYSTEM_PROMPT = (hotelName, rooms) => `You are Bitsy, a friendly AI booking assistant for ${hotelName}. 

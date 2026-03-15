@@ -1,14 +1,22 @@
 [
   {
-    "content": "Test photo upload flow end-to-end",
+    "content": "Run comprehensive testing agent on all features",
     "status": "completed"
   },
   {
-    "content": "Run comprehensive testing agent on all features",
+    "content": "Fix widget chat endpoint 500 error (HIGH priority)",
     "status": "in_progress"
   },
   {
-    "content": "Fix all bugs reported by testing agent",
+    "content": "Fix registration form validation issue (HIGH priority)",
+    "status": "pending"
+  },
+  {
+    "content": "Fix widget.js content-type issue (MEDIUM priority)",
+    "status": "pending"
+  },
+  {
+    "content": "Verify all fixes with targeted tests",
     "status": "pending"
   }
 ]
