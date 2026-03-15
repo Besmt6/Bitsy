@@ -39,6 +39,9 @@ import AdminActivity from './pages/admin/AdminActivity';
 // Guest Chat
 import ChatPage from './pages/ChatPage';
 
+// Test Pages (Development)
+import TestSentry from './pages/TestSentry';
+
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
 
@@ -96,6 +99,9 @@ const AppRoutes = () => {
       <Route path="/admin/commissions" element={<AdminCommissions />} />
       <Route path="/admin/billing" element={<AdminBilling />} />
       <Route path="/admin/activity" element={<AdminActivity />} />
+      
+      {/* Test Routes (Development) */}
+      <Route path="/test-sentry" element={<TestSentry />} />
       
       <Route path="/dashboard" element={
         <ProtectedRoute>
