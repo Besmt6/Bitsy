@@ -33,7 +33,7 @@ jobs:
 
       - name: Run backend tests
         working-directory: ./backend
-        run: yarn test -- __tests__/web3Service.test.js
+        run: yarn test -- __tests__/web3Service.test.js __tests__/unit.test.js
         env:
           NODE_ENV: test
           JWT_SECRET: test-secret-ci
