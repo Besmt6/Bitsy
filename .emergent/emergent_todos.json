@@ -1,6 +1,6 @@
 [
   {
-    "content": "Feature 8: Take final screenshots of all pages",
+    "content": "Test complete billing flow: create bookings to exceed $5k, verify grace period, test blocking",
     "status": "completed"
   }
 ]

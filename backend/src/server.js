@@ -19,6 +19,7 @@ import marketplaceRoutes from './routes/marketplace.js';
 import bookingsRoutes from './routes/bookings.js';
 import guestRoutes from './routes/guest.js';
 import passwordRoutes from './routes/password.js';
+import billingRoutes from './routes/billing.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { initializeCronJobs } from './services/cronService.js';
 
@@ -104,6 +105,7 @@ app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/guest', guestRoutes);
 app.use('/api/password', passwordRoutes);
+app.use('/api/billing', billingRoutes);
 
 // Root route
 app.get('/api', (req, res) => {

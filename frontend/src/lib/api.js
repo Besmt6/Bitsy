@@ -66,4 +66,13 @@ export const analyticsAPI = {
   }
 };
 
+// Billing API
+export const billingAPI = {
+  getStatus: () => api.get('/api/billing/status'),
+  refresh: () => api.post('/api/billing/refresh'),
+  submitPayment: (data) => api.post('/api/billing/payment', data),
+  getPaymentInstructions: () => api.get('/api/billing/payment-instructions'),
+  verifyLocation: (data) => api.post('/api/billing/verify-location', data)
+};
+
 export default api;

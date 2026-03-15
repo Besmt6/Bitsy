@@ -3,6 +3,7 @@ import BookingStat from '../models/BookingStat.js';
 import Guest from '../models/Guest.js';
 import Hotel from '../models/Hotel.js';
 import { protect } from '../middleware/auth.js';
+import { updateBillingStatus } from '../services/billingService.js';
 
 const router = express.Router();
 
@@ -116,9 +117,16 @@ router.post('/:bookingRef/confirm', protect, async (req, res) => {
     booking.confirmedBy = 'hotel';
     await booking.save();
 
-    // TODO: Send confirmation email to guest
+    // Recalculate and update hotel billing status
+    try {
+      const billingInfo = await updateBillingStatus(req.hotel);
+      console.log(`✅ Booking confirmed: ${booking.bookingRef} | Trial usage: $${billingInfo.trialUsedUsd}/$${billingInfo.trialLimitUsd} (${billingInfo.billingStatus})`);
+    } catch (billingError) {
+      console.error('Error updating billing status:', billingError);
+      // Don't fail the confirmation if billing update fails
+    }
 
-    console.log(`✅ Booking confirmed: ${booking.bookingRef}`);
+    // TODO: Send confirmation email to guest
 
     res.json({
       success: true,

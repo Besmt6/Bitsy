@@ -72,6 +72,45 @@ const hotelSchema = new mongoose.Schema({
     position: { type: String, default: 'bottom-right' },
     greetingMessage: { type: String, default: "Hi! I'm Bitsy. Looking to book a room?" }
   },
+  // Billing & Plan
+  tier: {
+    type: String,
+    enum: ['starter', 'growth', 'enterprise'],
+    default: 'starter'
+  },
+  billing: {
+    trialLimitUsd: { type: Number, default: 5000 },
+    trialUsedUsd: { type: Number, default: 0 }, // Cached/computed value
+    trialExceededAt: { type: Date, default: null },
+    graceEndsAt: { type: Date, default: null },
+    billingStatus: {
+      type: String,
+      enum: ['trial', 'grace', 'blocked', 'active'],
+      default: 'trial'
+    },
+    commissionRateBps: { type: Number, default: 200 }, // 2% = 200 basis points
+    lastPaymentReceivedAt: { type: Date, default: null }
+  },
+  // Location Verification (Anti-spam)
+  locationVerification: {
+    address: { type: String, default: '' },
+    city: { type: String, default: '' },
+    state: { type: String, default: '' },
+    country: { type: String, default: '' },
+    postalCode: { type: String, default: '' },
+    coordinates: {
+      lat: { type: Number, default: null },
+      lng: { type: Number, default: null }
+    },
+    isVerified: { type: Boolean, default: false },
+    verifiedAt: { type: Date, default: null },
+    verificationStatus: {
+      type: String,
+      enum: ['unverified', 'pending', 'verified', 'rejected'],
+      default: 'unverified'
+    },
+    verificationNotes: { type: String, default: '' }
+  },
   isActive: {
     type: Boolean,
     default: true

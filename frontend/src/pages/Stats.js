@@ -2,27 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Skeleton } from '../components/ui/skeleton';
-import { statsAPI } from '../lib/api';
+import { statsAPI, billingAPI } from '../lib/api';
 import { formatCurrency, formatDateTime } from '../lib/utils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Calendar, DollarSign, Clock } from 'lucide-react';
+import { BillingStatusCard } from '../components/BillingStatusCard';
 
 const Stats = () => {
   const [stats, setStats] = useState(null);
+  const [billing, setBilling] = useState(null);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('7d');
 
   useEffect(() => {
-    fetchStats();
+    fetchData();
   }, [period]);
 
-  const fetchStats = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await statsAPI.getStats(period);
-      setStats(response.data.stats);
+      const [statsResponse, billingResponse] = await Promise.all([
+        statsAPI.getStats(period),
+        billingAPI.getStatus()
+      ]);
+      setStats(statsResponse.data.stats);
+      setBilling(billingResponse.data.billing);
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      console.error('Failed to fetch data:', error);
     } finally {
       setLoading(false);
     }
@@ -51,6 +57,9 @@ const Stats = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in-50 duration-500">
+      {/* Billing Status Card - Top Priority */}
+      <BillingStatusCard billing={billing} />
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card 

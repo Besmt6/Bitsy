@@ -7,6 +7,7 @@ import { getChatResponse } from '../services/llmService.js';
 import { generateQRCode } from '../services/qrService.js';
 import { sendNotification } from '../services/notificationService.js';
 import { getWeb3Service, getSupportedChains } from '../services/web3Service.js';
+import { updateBillingStatus } from '../services/billingService.js';
 
 const router = express.Router();
 
@@ -110,6 +111,17 @@ router.post('/:hotelId/book', async (req, res) => {
       return res.status(404).json({ error: 'Hotel not found' });
     }
 
+    // 🚨 CHECK BILLING STATUS - Block if hotel is blocked
+    if (hotel.billing.billingStatus === 'blocked') {
+      const graceDaysAgo = Math.floor((new Date() - hotel.billing.graceEndsAt) / (24 * 60 * 60 * 1000));
+      
+      return res.status(403).json({ 
+        error: 'Bookings temporarily unavailable',
+        message: `This property is currently unavailable for new bookings. Please check back later or contact the hotel directly.`,
+        billingBlocked: true
+      });
+    }
+
     // Validate payment method
     const paymentMethod = bookingDetails.payment_method || 'crypto';
     
@@ -191,6 +203,16 @@ router.post('/:hotelId/book', async (req, res) => {
 
     await bookingStat.save();
 
+    // 🧮 Update billing status for crypto bookings (auto-confirmed)
+    if (paymentMethod === 'crypto') {
+      try {
+        await updateBillingStatus(hotel);
+      } catch (billingError) {
+        console.error('Error updating billing after crypto booking:', billingError);
+        // Don't fail the booking
+      }
+    }
+
     // Prepare response based on payment method
     let response = {
       success: true,
@@ -230,6 +252,15 @@ router.post('/:hotelId/book', async (req, res) => {
       walletAddress: paymentMethod === 'crypto' ? hotel.wallets[bookingDetails.crypto_choice] : null,
       isReturningGuest: guest.totalBookings > 1
     });
+
+    // Add grace period warning if applicable
+    if (hotel.billing.billingStatus === 'grace') {
+      const daysRemaining = Math.ceil((hotel.billing.graceEndsAt - new Date()) / (24 * 60 * 60 * 1000));
+      response.billingWarning = {
+        message: `Note: This hotel is in a grace period. Service may be interrupted in ${daysRemaining} days.`,
+        graceDaysRemaining: daysRemaining
+      };
+    }
 
     res.json(response);
   } catch (error) {

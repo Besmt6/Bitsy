@@ -1,4 +1,4 @@
-# plan.md — Bitsy: Payment Flexibility + Guest Dashboard + Crypto Marketplace (UPDATED)
+# plan.md — Bitsy: Payment Flexibility + Guest Dashboard + Crypto Marketplace + Billing Enforcement (UPDATED)
 
 ## 1) Objectives
 - ✅ Ship a **crypto-first** booking system where **crypto is the default** payment method.
@@ -8,6 +8,9 @@
 - ✅ Ship a **secondary marketplace** (**crypto bookings only**, **zero commission**) to list/transfer bookings with on-chain-verifiable payment proof.
 - ✅ Implement **auto-cancel** for unconfirmed pay-at-property bookings at **exactly 48 hours before check-in**, plus marketplace listing expiry cleanup.
 - ✅ Self-host the **demo video** (remove HeyGen dependency / monthly fee).
+- ✅ Security/UX hardening: **remove external wallet download links** (avoid phishing/spam links); direct users to official app stores and in-app wallet connection.
+- ✅ **Monetization**: Implement **“Pay What You Save” billing enforcement** (free $5,000, then commission) with trial tracking, grace period, and booking blocking after grace.
+- ✅ **Spam prevention**: Add **hotel location verification** (address submission + status tracking) to reduce fake/spam hotel listings.
 
 ---
 
@@ -154,6 +157,7 @@
 - ✅ Demo video self-hosted:
   - Video stored at `backend/public/videos/bitsy-demo.mp4`
   - Served at `/videos/bitsy-demo.mp4`
+- ✅ Security: Removed external wallet download links from landing FAQ and wallets page; updated copy to recommend official app stores and warn about suspicious links.
 
 **Optional future enhancements (not required for MVP, recommended next)**
 - Add email templates for:
@@ -166,17 +170,102 @@
 
 ---
 
-## 3) Next Actions (Immediate)
-1. ✅ Deploy to AWS using `/app/DEPLOYMENT_AWS.md` (Emergent native deployment is incompatible with Node + Web3).
-2. ⚠️ Add production-grade email delivery (SES/Resend) for booking + marketplace notifications.
-3. ⚠️ Add the billing/plan enforcement logic for the “Pay What You Save” model (free $5k, then 2–4%).
+### Phase 6 — Billing Enforcement System (“Pay What You Save”) + Anti-Spam Hotel Verification ✅ COMPLETED
+
+#### 6.1 Billing model decisions (confirmed)
+- **Trial allowance**: $5,000 gross booking volume.
+- **What counts**:
+  - ✅ Crypto bookings count (auto-confirmed).
+  - ✅ Pay-at-property bookings count **only when confirmed by hotel**.
+- **Post-trial commission**: Hotels that accept crypto will be asked to pay Bitsy in **crypto**.
+- **Grace period**: 7 days after crossing $5,000.
+- **Enforcement**: Do not block immediately at $5,000; block only after grace period ends.
+- **Starter tier limit**: **One hotel per email** (already enforced by unique email constraint).
+
+#### 6.2 Data model changes ✅ Delivered
+- **Hotel**
+  - Added `tier: starter | growth | enterprise` (default `starter`).
+  - Added `billing`:
+    - `trialLimitUsd` (default `5000`)
+    - `trialUsedUsd` (cached)
+    - `trialExceededAt`
+    - `graceEndsAt`
+    - `billingStatus: trial | grace | blocked | active`
+    - `commissionRateBps` (default `200` = 2%)
+    - `lastPaymentReceivedAt`
+  - Added `locationVerification`:
+    - address fields + `verificationStatus` + `isVerified` + timestamps.
+
+#### 6.3 Billing calculation + state machine ✅ Delivered
+- Implemented `backend/src/services/billingService.js`:
+  - Aggregates confirmed bookings to compute `trialUsedUsd`.
+  - State machine:
+    - `trial` → `grace` at $5k crossing (sets `trialExceededAt` + `graceEndsAt = +7d`)
+    - `grace` → `blocked` after `graceEndsAt`
+    - `blocked/grace` → `active` when payment is submitted
+
+#### 6.4 Server-side enforcement points ✅ Delivered
+- **Widget booking** (`POST /api/widget/:hotelId/book`):
+  - If `billingStatus === 'blocked'` → returns **403** with a guest-safe message.
+  - Crypto bookings auto-refresh billing status.
+  - In grace period → booking is allowed; response includes `billingWarning`.
+- **Pay-at-property confirmation** (`POST /api/bookings/:bookingRef/confirm`):
+  - On confirmation, recalculates trial usage and updates billing state.
+
+#### 6.5 Billing API ✅ Delivered
+- Added `backend/src/routes/billing.js` and registered in `server.js`:
+  - `GET /api/billing/status`
+  - `POST /api/billing/refresh`
+  - `POST /api/billing/payment` (submit tx hash; currently reactivates account without on-chain verification)
+  - `GET /api/billing/payment-instructions` (provides Bitsy addresses; placeholders until real addresses added)
+  - `POST /api/billing/verify-location`
+
+#### 6.6 Dashboard UX ✅ Delivered
+- Added `BillingStatusCard` shown at top of `/dashboard/stats`:
+  - Progress bar `$used / $5,000`
+  - Status badges: Trial | Grace | Blocked | Active
+  - Commission owed calculation for grace state
+  - Clear copy about 7-day grace period
+
+#### 6.7 Settings UX (Location Verification + Payment Due UI) ✅ Delivered
+- Added Location Verification form to `/dashboard/settings`:
+  - Address + city + state + country + postal code
+  - Status badge: unverified/pending/verified/rejected
+  - Submits to `/api/billing/verify-location` → marks pending
+- Added commission payment due panel (shows in grace/blocked):
+  - Trial limit / bookings total / commission owed
+  - Tx hash submission calls `/api/billing/payment`
+
+#### 6.8 Testing / exit criteria ✅ Met
+- Verified full lifecycle works:
+  - `trial → grace → blocked → active`
+  - Booking API blocks in `blocked` state (403)
+  - UI indicators render correctly for trial/grace/blocked/active
 
 ---
 
-## 4) Success Criteria ✅ Achieved
+## 3) Next Actions (Immediate)
+1. ✅ Billing enforcement + location verification are now live (Phase 6 complete).
+2. ⚠️ Add production-grade email delivery (SES/Resend) for booking + marketplace notifications.
+3. ⚠️ Replace placeholder Bitsy receiving addresses with real production wallets and decide payment verification workflow.
+4. ✅ Deploy to AWS using `/app/DEPLOYMENT_AWS.md` (Emergent native deployment is incompatible with Node + Web3).
+
+---
+
+## 4) Success Criteria
+**Achieved**
 - ✅ Hotels can toggle pay-at-property; crypto remains default.
 - ✅ Pay-at-property bookings show exact 48h confirmation deadline; auto-cancel works.
 - ✅ Guests can lookup bookings via email+phone, cancel eligible bookings, and list crypto bookings.
 - ✅ Marketplace supports crypto-only listings with on-chain proof and reliable transfer.
 - ✅ Demo video is self-hosted and working.
-- ✅ No regressions detected in existing hotel dashboard or widget core flows (frontend builds cleanly; backend running with cron jobs).
+- ✅ Trial usage accurately tracked ($5k) across crypto + confirmed pay-at-property.
+- ✅ Grace period begins at $5k and lasts 7 days.
+- ✅ Bookings blocked only after grace period ends (not immediately).
+- ✅ Dashboard shows clear trial/grace/blocked/active state + progress indicator.
+- ✅ Location verification UI and status tracking implemented to reduce spam hotel listings.
+
+**Remaining / Future**
+- ⚠️ Automated commission reconciliation (on-chain verification of payment tx hash; admin review workflow).
+- ⚠️ Policy decisions: whether to restrict widget activation or marketplace visibility until location is verified.
+- ⚠️ Full AWS production deployment + environment hardening.
