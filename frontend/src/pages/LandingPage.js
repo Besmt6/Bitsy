@@ -63,16 +63,16 @@ const LandingPage = () => {
           <div className="max-w-5xl mx-auto text-center space-y-10">
             <Badge className="bg-accent/10 text-accent border-accent/20 hover:bg-accent/20 transition-colors" data-testid="hero-badge">
               <Sparkles className="h-3 w-3 mr-1" />
-              First MCP-Enabled Hotel Platform
+              MCP-Enabled • Zero Commission • Multi-Chain Crypto
             </Badge>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-heading font-bold tracking-tight leading-[1.1]">
-              Break Free From{' '}
-              <span className="text-primary">OTA Commissions</span>
+              Your Hotel. Your Wallets.{' '}
+              <span className="text-primary">Zero Commissions</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              The first booking platform discoverable in <span className="font-semibold text-foreground">ChatGPT</span>, <span className="font-semibold text-foreground">Claude</span> & <span className="font-semibold text-foreground">Perplexity</span>. Accept crypto payments. Pay zero commissions.
+              Accept crypto payments across 6 blockchains. Get discovered in <span className="font-semibold text-foreground">ChatGPT & Claude</span> via MCP. Keep 100% of every booking.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
@@ -119,20 +119,20 @@ const LandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
             <div className="text-center space-y-1">
-              <div className="text-3xl md:text-4xl font-heading font-bold text-primary" data-testid="stat-hotels">120+</div>
-              <div className="text-sm text-muted-foreground">Hotels Live</div>
+              <div className="text-3xl md:text-4xl font-heading font-bold text-primary" data-testid="stat-hotels">Built for Growth</div>
+              <div className="text-sm text-muted-foreground">Independent Hotels</div>
             </div>
             <div className="text-center space-y-1">
-              <div className="text-3xl md:text-4xl font-heading font-bold text-primary" data-testid="stat-bookings">$2.4M</div>
-              <div className="text-sm text-muted-foreground">Crypto Processed</div>
+              <div className="text-3xl md:text-4xl font-heading font-bold text-primary" data-testid="stat-savings">100%</div>
+              <div className="text-sm text-muted-foreground">Revenue Retained</div>
             </div>
             <div className="text-center space-y-1">
-              <div className="text-3xl md:text-4xl font-heading font-bold text-primary" data-testid="stat-savings">0%</div>
+              <div className="text-3xl md:text-4xl font-heading font-bold text-primary" data-testid="stat-commission">0%</div>
               <div className="text-sm text-muted-foreground">Commission Rate</div>
             </div>
             <div className="text-center space-y-1">
-              <div className="text-3xl md:text-4xl font-heading font-bold text-accent" data-testid="stat-chains">6</div>
-              <div className="text-sm text-muted-foreground">Blockchains</div>
+              <div className="text-3xl md:text-4xl font-heading font-bold text-accent" data-testid="stat-chains">6 Chains</div>
+              <div className="text-sm text-muted-foreground">Crypto Networks</div>
             </div>
           </div>
         </div>
@@ -205,10 +205,10 @@ const LandingPage = () => {
           <div className="text-center mb-16 space-y-4">
             <Badge className="mb-2" data-testid="features-badge">Why Bitsy</Badge>
             <h2 className="text-4xl md:text-5xl font-heading font-bold">
-              Everything You Need to Escape OTAs
+              Built for Independent Hotels
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              AI-powered, crypto-native, commission-free booking platform
+              The only platform combining MCP AI discovery, multi-chain crypto, and zero commissions in one system
             </p>
           </div>
 
@@ -230,9 +230,9 @@ const LandingPage = () => {
                 <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
                   <Bot className="h-7 w-7 text-accent" />
                 </div>
-                <CardTitle className="text-xl">AI-Discoverable (MCP)</CardTitle>
+                <CardTitle className="text-xl">AI Discovery (MCP)</CardTitle>
                 <CardDescription className="text-base leading-relaxed pt-2">
-                  First MCP-enabled platform. Get found when travelers ask ChatGPT, Claude, or Perplexity for hotels.
+                  Get discovered when travelers ask ChatGPT or Claude for hotel recommendations. Direct bookings, no OTA fees.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -467,7 +467,7 @@ const LandingPage = () => {
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <a href="https://getbitsy.ai" className="hover:text-foreground transition-colors" data-testid="footer-home-link">getbitsy.ai</a>
               <span>•</span>
-              <span>The first MCP-enabled hotel booking platform</span>
+              <span>Zero-commission crypto booking platform</span>
             </div>
             
             <p className="text-sm text-muted-foreground">
