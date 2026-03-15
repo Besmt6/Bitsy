@@ -154,8 +154,11 @@ const LandingPage = () => {
               <CardContent className="space-y-8 px-6 md:px-10 pb-10">
                 <div>
                   <label className="text-sm font-medium mb-3 block" htmlFor="revenue-input">
-                    Annual Booking Revenue
+                    Your Annual Booking Revenue (from OTAs)
                   </label>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Enter your total yearly revenue from platforms like Booking.com, Expedia, etc.
+                  </p>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">$</span>
                     <Input
@@ -164,6 +167,7 @@ const LandingPage = () => {
                       value={bookings}
                       onChange={(e) => setBookings(Number(e.target.value))}
                       className="pl-8 text-lg h-14 font-heading"
+                      placeholder="200000"
                       data-testid="calculator-revenue-input"
                     />
                   </div>
