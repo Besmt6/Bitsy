@@ -16,6 +16,7 @@
   // Widget state
   let widgetState = {
     isOpen: false,
+    language: detectLanguage(),
     hotelConfig: null,
     conversation: [],
     bookingDetails: null,
@@ -32,6 +33,184 @@
       provider: null
     }
   };
+
+  // Translations for multi-language support
+  const translations = {
+    en: {
+      send: 'Send',
+      typeMessage: 'Type a message...',
+      bookNow: 'Book Now',
+      payWithCrypto: 'Pay with Crypto Wallet',
+      payWithQR: 'Pay with QR Code',
+      cancel: 'Cancel',
+      confirmBooking: 'Confirm Booking',
+      checkIn: 'Check-in',
+      checkOut: 'Check-out',
+      selectDate: 'Select Date',
+      pickDates: '📅 Pick dates from calendar',
+      typeDates: '💬 Type my dates',
+      showCalendar: 'Show me a calendar',
+      greeting: "Hi! I'm Bitsy. Looking to book a room?",
+      calendarPrompt: 'Perfect! Let' + "'" + 's start with your check-in date.',
+      typePrompt: 'Great! Just tell me your check-in and check-out dates, like "March 20-23" or "next weekend".',
+      days: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    },
+    es: {
+      send: 'Enviar',
+      typeMessage: 'Escribe un mensaje...',
+      bookNow: 'Reservar Ahora',
+      payWithCrypto: 'Pagar con Cripto',
+      payWithQR: 'Pagar con Código QR',
+      cancel: 'Cancelar',
+      confirmBooking: 'Confirmar Reserva',
+      checkIn: 'Entrada',
+      checkOut: 'Salida',
+      selectDate: 'Seleccionar Fecha',
+      pickDates: '📅 Elegir fechas del calendario',
+      typeDates: '💬 Escribir mis fechas',
+      showCalendar: 'Mostrar calendario',
+      greeting: '¡Hola! Soy Bitsy. ¿Buscas reservar una habitación?',
+      calendarPrompt: '¡Perfecto! Comencemos con tu fecha de entrada.',
+      typePrompt: '¡Genial! Solo dime tus fechas de entrada y salida, como "20-23 de marzo" o "el próximo fin de semana".',
+      days: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+      months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+    },
+    fr: {
+      send: 'Envoyer',
+      typeMessage: 'Tapez un message...',
+      bookNow: 'Réserver',
+      payWithCrypto: 'Payer avec Crypto',
+      payWithQR: 'Payer avec QR',
+      cancel: 'Annuler',
+      confirmBooking: 'Confirmer la Réservation',
+      checkIn: 'Arrivée',
+      checkOut: 'Départ',
+      selectDate: 'Sélectionner la Date',
+      pickDates: '📅 Choisir les dates du calendrier',
+      typeDates: '💬 Taper mes dates',
+      showCalendar: 'Afficher le calendrier',
+      greeting: 'Bonjour! Je suis Bitsy. Vous cherchez à réserver une chambre?',
+      calendarPrompt: 'Parfait! Commençons par votre date d' + "'" + 'arrivée.',
+      typePrompt: 'Super! Dites-moi vos dates d' + "'" + 'arrivée et de départ, comme "20-23 mars".',
+      days: ['Di', 'Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa'],
+      months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+    },
+    de: {
+      send: 'Senden',
+      typeMessage: 'Nachricht eingeben...',
+      bookNow: 'Jetzt Buchen',
+      payWithCrypto: 'Mit Krypto Bezahlen',
+      payWithQR: 'Mit QR-Code Bezahlen',
+      cancel: 'Abbrechen',
+      confirmBooking: 'Buchung Bestätigen',
+      checkIn: 'Anreise',
+      checkOut: 'Abreise',
+      selectDate: 'Datum Wählen',
+      pickDates: '📅 Daten aus Kalender wählen',
+      typeDates: '💬 Daten eingeben',
+      showCalendar: 'Kalender anzeigen',
+      greeting: 'Hallo! Ich bin Bitsy. Möchten Sie ein Zimmer buchen?',
+      calendarPrompt: 'Perfekt! Beginnen wir mit Ihrem Anreisedatum.',
+      typePrompt: 'Großartig! Sagen Sie mir einfach Ihre An- und Abreisedaten.',
+      days: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+      months: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
+    },
+    ja: {
+      send: '送信',
+      typeMessage: 'メッセージを入力...',
+      bookNow: '今すぐ予約',
+      payWithCrypto: '暗号通貨で支払う',
+      payWithQR: 'QRコードで支払う',
+      cancel: 'キャンセル',
+      confirmBooking: '予約を確認',
+      checkIn: 'チェックイン',
+      checkOut: 'チェックアウト',
+      selectDate: '日付を選択',
+      pickDates: '📅 カレンダーから日付を選択',
+      typeDates: '💬 日付を入力',
+      showCalendar: 'カレンダーを表示',
+      greeting: 'こんにちは！Bitsyです。お部屋の予約をお探しですか？',
+      calendarPrompt: '完璧です！チェックイン日から始めましょう。',
+      typePrompt: '素晴らしい！「3月20-23日」のようにチェックインとチェックアウトの日付を教えてください。',
+      days: ['日', '月', '火', '水', '木', '金', '土'],
+      months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+    },
+    zh: {
+      send: '发送',
+      typeMessage: '输入消息...',
+      bookNow: '立即预订',
+      payWithCrypto: '加密货币支付',
+      payWithQR: '二维码支付',
+      cancel: '取消',
+      confirmBooking: '确认预订',
+      checkIn: '入住',
+      checkOut: '退房',
+      selectDate: '选择日期',
+      pickDates: '📅 从日历选择日期',
+      typeDates: '💬 输入日期',
+      showCalendar: '显示日历',
+      greeting: '你好！我是Bitsy。想预订房间吗？',
+      calendarPrompt: '完美！让我们从入住日期开始。',
+      typePrompt: '太好了！告诉我入住和退房日期，比如"3月20-23日"。',
+      days: ['日', '一', '二', '三', '四', '五', '六'],
+      months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+    },
+    pt: {
+      send: 'Enviar',
+      typeMessage: 'Digite uma mensagem...',
+      bookNow: 'Reservar Agora',
+      payWithCrypto: 'Pagar com Cripto',
+      payWithQR: 'Pagar com QR',
+      cancel: 'Cancelar',
+      confirmBooking: 'Confirmar Reserva',
+      checkIn: 'Check-in',
+      checkOut: 'Check-out',
+      selectDate: 'Selecionar Data',
+      pickDates: '📅 Escolher datas do calendário',
+      typeDates: '💬 Digitar minhas datas',
+      showCalendar: 'Mostrar calendário',
+      greeting: 'Oi! Eu sou Bitsy. Procura reservar um quarto?',
+      calendarPrompt: 'Perfeito! Vamos começar com a data de check-in.',
+      typePrompt: 'Ótimo! Me diga as datas de check-in e check-out, como "20-23 de março".',
+      days: ['Do', 'Se', 'Te', 'Qa', 'Qi', 'Se', 'Sa'],
+      months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+    },
+    it: {
+      send: 'Invia',
+      typeMessage: 'Scrivi un messaggio...',
+      bookNow: 'Prenota Ora',
+      payWithCrypto: 'Paga con Cripto',
+      payWithQR: 'Paga con QR',
+      cancel: 'Annulla',
+      confirmBooking: 'Conferma Prenotazione',
+      checkIn: 'Check-in',
+      checkOut: 'Check-out',
+      selectDate: 'Seleziona Data',
+      pickDates: '📅 Scegli date dal calendario',
+      typeDates: '💬 Digita le mie date',
+      showCalendar: 'Mostra calendario',
+      greeting: 'Ciao! Sono Bitsy. Cerchi di prenotare una camera?',
+      calendarPrompt: 'Perfetto! Iniziamo con la data di check-in.',
+      typePrompt: 'Ottimo! Dimmi le date di check-in e check-out, come "20-23 marzo".',
+      days: ['Do', 'Lu', 'Ma', 'Me', 'Gi', 'Ve', 'Sa'],
+      months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre']
+    }
+  };
+  
+  // Detect browser language
+  function detectLanguage() {
+    const browserLang = navigator.language || navigator.userLanguage;
+    const langCode = browserLang.split('-')[0].toLowerCase();
+    return translations[langCode] ? langCode : 'en';
+  }
+  
+  // Get translation
+  function t(key) {
+    const lang = widgetState.language || 'en';
+    return translations[lang]?.[key] || translations.en[key] || key;
+  }
+
   
   // Create widget button
   function createWidgetButton() {
@@ -102,7 +281,23 @@
       <div style="padding: 16px; border-bottom: 1px solid #e5e7eb; background: #0e7490; color: white;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h3 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600;">Chat with Bitsy</h3>
-          <button id="bitsy-close-btn" style="background: transparent; border: none; color: white; cursor: pointer; font-size: 24px; line-height: 1; padding: 0;">×</button>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <select 
+              id="bitsy-language-selector" 
+              style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500;"
+              data-testid="widget-language-selector"
+            >
+              <option value="en" ${widgetState.language === 'en' ? 'selected' : ''}>🇺🇸 EN</option>
+              <option value="es" ${widgetState.language === 'es' ? 'selected' : ''}>🇪🇸 ES</option>
+              <option value="fr" ${widgetState.language === 'fr' ? 'selected' : ''}>🇫🇷 FR</option>
+              <option value="de" ${widgetState.language === 'de' ? 'selected' : ''}>🇩🇪 DE</option>
+              <option value="ja" ${widgetState.language === 'ja' ? 'selected' : ''}>🇯🇵 JA</option>
+              <option value="zh" ${widgetState.language === 'zh' ? 'selected' : ''}>🇨🇳 ZH</option>
+              <option value="pt" ${widgetState.language === 'pt' ? 'selected' : ''}>🇵🇹 PT</option>
+              <option value="it" ${widgetState.language === 'it' ? 'selected' : ''}>🇮🇹 IT</option>
+            </select>
+            <button id="bitsy-close-btn" style="background: transparent; border: none; color: white; cursor: pointer; font-size: 24px; line-height: 1; padding: 0;">×</button>
+          </div>
         </div>
       </div>
       
@@ -113,10 +308,10 @@
           <input 
             id="bitsy-input" 
             data-testid="widget-message-composer"
-            placeholder="Type your message..." 
+            placeholder="${t('typeMessage')}" 
             style="flex: 1; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px;"
           />
-          <button id="bitsy-send-btn" style="padding: 8px 16px; background: #0e7490; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Send</button>
+          <button id="bitsy-send-btn" data-testid="widget-send-button" style="padding: 8px 16px; background: #0e7490; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">${t('send')}</button>
         </div>
         <div style="margin-top: 8px; font-size: 11px; color: #6b7280; text-align: center;">
           ⚠️ All crypto bookings are non-refundable
@@ -132,6 +327,41 @@
     document.getElementById('bitsy-input').onkeypress = (e) => {
       if (e.key === 'Enter') sendMessage();
     };
+    
+    // Language selector
+    document.getElementById('bitsy-language-selector').onchange = (e) => {
+      widgetState.language = e.target.value;
+      // Refresh widget with new language
+      const messagesContainer = document.getElementById('bitsy-messages');
+      messagesContainer.innerHTML = '';
+      widgetState.conversation = [];
+      addMessage('assistant', t('greeting'));
+      
+      // Re-add quick actions in new language
+      setTimeout(() => {
+        addQuickActions([
+          {
+            label: t('pickDates'),
+            onClick: () => {
+              addMessage('user', t('showCalendar'));
+              setTimeout(() => {
+                addMessage('assistant', t('calendarPrompt'));
+                showDatePicker('checkin');
+              }, 500);
+            }
+          },
+          {
+            label: t('typeDates'),
+            onClick: () => {
+              addMessage('user', t('typeDates'));
+              setTimeout(() => {
+                addMessage('assistant', t('typePrompt'));
+              }, 500);
+            }
+          }
+        ]);
+      }, 800);
+    };
   }
   
   // Toggle widget
@@ -145,27 +375,27 @@
         fetchHotelConfig();
       }
       if (widgetState.conversation.length === 0) {
-        addMessage('assistant', widgetState.hotelConfig?.widgetSettings?.greetingMessage || "Hi! I'm Bitsy. Looking to book a room?");
+        addMessage('assistant', widgetState.hotelConfig?.widgetSettings?.greetingMessage || t('greeting'));
         
         // Add quick action buttons after greeting
         setTimeout(() => {
           addQuickActions([
             {
-              label: '📅 Pick dates from calendar',
+              label: t('pickDates'),
               onClick: () => {
-                addMessage('user', 'Show me a calendar');
+                addMessage('user', t('showCalendar'));
                 setTimeout(() => {
-                  addMessage('assistant', 'Perfect! Let' + "'" + 's start with your check-in date.');
+                  addMessage('assistant', t('calendarPrompt'));
                   showDatePicker('checkin');
                 }, 500);
               }
             },
             {
-              label: '💬 Type my dates',
+              label: t('typeDates'),
               onClick: () => {
-                addMessage('user', 'I' + "'" + 'll type my dates');
+                addMessage('user', t('typeDates'));
                 setTimeout(() => {
-                  addMessage('assistant', 'Great! Just tell me your check-in and check-out dates, like "March 20-23" or "next weekend".');
+                  addMessage('assistant', t('typePrompt'));
                 }, 500);
               }
             }
@@ -218,7 +448,7 @@
       box-shadow: 0 4px 12px rgba(14, 116, 144, 0.15);
     `;
     
-    const title = mode === 'checkin' ? 'Select Check-in Date' : 'Select Check-out Date';
+    const title = mode === 'checkin' ? `${t('checkIn')} Date` : `${t('checkOut')} Date`;
     
     calendarCard.innerHTML = `
       <div style="margin-bottom: 12px; font-weight: 600; font-size: 14px; color: #0e7490; font-family: 'Space Grotesk', sans-serif;">
@@ -229,7 +459,7 @@
       </div>
       <div style="display: flex; gap: 8px; justify-content: flex-end;">
         <button id="calendar-cancel" style="padding: 6px 12px; background: #e5e7eb; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">
-          Cancel
+          ${t('cancel')}
         </button>
       </div>
     `;
@@ -259,7 +489,7 @@
     const currentYear = now.getFullYear();
     
     // Days of week header
-    const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    const daysOfWeek = t('days');
     daysOfWeek.forEach(day => {
       const dayHeader = document.createElement('div');
       dayHeader.textContent = day;
@@ -391,6 +621,7 @@
         body: JSON.stringify({
           message: messageText,
           sessionId: HOTEL_ID,
+          language: widgetState.language,
           conversationHistory: widgetState.conversation.slice(-10).map(m => ({
             role: m.role === 'assistant' ? 'assistant' : 'user',
             content: m.text
@@ -459,6 +690,7 @@
         body: JSON.stringify({
           message,
           sessionId: HOTEL_ID,
+          language: widgetState.language,
           conversationHistory: widgetState.conversation.slice(-10).map(m => ({
             role: m.role === 'assistant' ? 'assistant' : 'user',
             content: m.text
@@ -726,7 +958,7 @@
               <rect x="2" y="5" width="20" height="14" rx="2"/>
               <path d="M2 10h20"/>
             </svg>
-            <span>Pay with Crypto Wallet</span>
+            <span>${t('payWithCrypto')}</span>
           </button>
           <p style="margin: 6px 0 0 0; font-size: 11px; color: #6b7280; text-align: center;">MetaMask, Coinbase, WalletConnect</p>
         </div>

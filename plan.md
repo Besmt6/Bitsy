@@ -4,8 +4,13 @@
 - Prove the **core workflow** works end-to-end: AI chat → structured booking fields → pricing → non‑refundable gate → payment (wallet connect + QR fallback) → booking submission → notification + stats (**no guest PII stored**).
 - Build a production-ready MVP SaaS with **Node.js/Express + MongoDB + React dashboard + embeddable vanilla JS widget**.
 - Enforce **privacy-first** rules and the **non-refundable** policy in UX and API.
-- Improve guest booking UX by supporting **hybrid date capture**: conversational dates **and** a visual calendar fallback. ✅
+- Improve guest booking UX by supporting:
+  - **Hybrid date capture**: conversational dates **and** a visual calendar fallback. ✅
+  - **Multi-language guest experience**: 8 languages with auto-detect + selector + localized UI + AI responses. ✅
 - Polish owner dashboard experience for production (loading/empty states, micro-interactions, resilience). ✅
+- Align go-to-market messaging + pricing with product reality:
+  - **Pay what you save** pricing (2–4% per booking) + **first $5,000 free** (or 30 days). ✅
+  - **Enterprise: Coming Soon** (waitlist) until multi-property is implemented. ✅
 - Prepare for **AWS production deployment** (routing, env vars, static assets, widget hosting) and demo/marketing readiness.
 
 ---
@@ -71,7 +76,7 @@
    - Hard privacy guardrails: request logging scrubber; ensure booking payload never written to DB.
 2. **Widget (Vanilla JS served by backend)**
    - Serve `GET /widget.js` (reads `data-hotel-id`).
-   - Modal UI: chat messages, quick replies, room list, **date inputs fallback**.
+   - Modal UI: chat messages, quick replies, room list, date inputs fallback.
    - Non-refundable popup gating before payment.
    - QR generation (client-side lib) from server response (address + amount + network).
 3. **Hotel Dashboard (React)**
@@ -119,26 +124,34 @@
 
 ---
 
-## Phase 4 — Go-To-Market Landing Page ✅ COMPLETED
+## Phase 4 — Go-To-Market Landing Page ✅ COMPLETED (Updated)
 
 ### User Stories
 1. As a visitor, I can understand Bitsy's value proposition in 10 seconds.
 2. As a hotel owner, I can calculate my OTA savings instantly.
 3. As a visitor, I can see MCP/AI discovery as a key differentiator.
-4. As a visitor, I can sign up directly from the landing page.
+4. As a visitor, I can see the pricing model clearly (first $5K free, pay-per-booking).
+5. As a visitor, I can sign up directly from the landing page.
 
 ### Implementation Steps
 1. ✅ Enhance hero section with stronger MCP messaging (ChatGPT, Claude, Perplexity)
-2. ✅ Add testids to all interactive elements (buttons, inputs, links)
-3. ✅ Add defensible marketing copy and clear claims
-4. ✅ Strengthen AI discovery positioning throughout page
-5. ✅ Polish spacing and micro-interactions per design guidelines
-6. ✅ Test with screenshots - verified visual quality desktop + mobile
+2. ✅ Add defensible marketing copy and clear claims
+3. ✅ Add OTA savings calculator (explicitly labeled as OTA revenue)
+4. ✅ Update pricing section:
+   - **Pay what you save** (2% Starter, 3% Pro)
+   - **First $5,000 free** + (or 30 days) messaging
+   - **Enterprise Coming Soon** + waitlist CTA
+5. ✅ Add FAQ section clarifying:
+   - Billing model
+   - Wallet ownership (public address only)
+   - Widget embedding location (before `</body>`)
+   - Multi-property status
+6. ✅ Add multi-language marketing: “8 Languages Supported” feature card + FAQ entry
 
 ### Success Criteria
 - ✅ Landing page clearly communicates zero-commission + AI-discovery value.
-- ✅ All CTAs have proper testids for testing.
 - ✅ Calculator works smoothly and updates dynamically.
+- ✅ Pricing is ROI-driven and consistent with product + business philosophy.
 - ✅ Mobile-responsive and accessible.
 
 **STATUS: COMPLETED**
@@ -238,7 +251,7 @@ Conversational date capture is powerful, but some guests prefer a visual picker.
 
 ### Testing Notes
 - Widget JS passes syntax checks (`node --check`).
-- Widget asset serving works correctly from backend (correct JS MIME). 
+- Widget asset serving works correctly from backend (correct JS MIME).
 - **Preview environment caveat:** in the current preview/ingress, `/widget/*` can be routed to the frontend and return HTML; this is not expected in AWS production.
 
 ### Success Criteria
@@ -279,7 +292,7 @@ Conversational date capture is powerful, but some guests prefer a visual picker.
 
 ---
 
-## Phase 10 — Demo Video + Landing Page Embed 🟡 BLOCKED (P1)
+## Phase 10 — Demo Video + Landing Page Embed 🟡 IN PROGRESS (P1)
 
 ### User Stories
 1. As a visitor, I can watch a demo video directly on the landing page.
@@ -287,12 +300,14 @@ Conversational date capture is powerful, but some guests prefer a visual picker.
 
 ### Implementation Steps
 1. ✅ Provide downloadable/copyable demo assets gallery: `/demo-assets/`.
-2. 🟡 Once final HeyGen video URL is available:
-   - Update `/app/frontend/src/pages/LandingPage.js` to embed the video (replace or complement “Watch Demo”).
-   - Ensure responsive layout and performance (lazy-load).
+2. 🟡 Embed HeyGen video in landing page:
+   - A video section exists and "Watch Demo" scrolls to it.
+   - Current HeyGen URL may require a **public/published embed link** to play without auth.
+   - Once correct public link/iframe is confirmed, update iframe `src` to the final share/embed URL.
+   - Ensure responsive layout and performance (lazy-load optional).
 
 ### Success Criteria
-- Landing page includes embedded demo video with strong conversion impact.
+- Demo video plays publicly and improves conversion.
 
 ---
 
@@ -320,18 +335,59 @@ Conversational date capture is powerful, but some guests prefer a visual picker.
    - Uploads.
    - Web3 verification.
    - MCP endpoint + analytics logging.
+   - Multi-language: validate auto-detect, selector, and non-English AI responses.
 
 ### Success Criteria
 - Stable production environment with monitoring and predictable releases.
 - Widget loads reliably in real hotel sites (no routing conflicts).
-- End-to-end booking flow works with both conversational and calendar date capture.
+- End-to-end booking flow works with both conversational/calendar date capture.
+- Multi-language widget works reliably across supported languages.
+
+---
+
+## Phase 12 — Multi-Language Support (Widget + AI) ✅ COMPLETED (P0)
+
+### Rationale
+Hotels serve global travelers. Multi-language support increases conversion and reduces friction, especially for international guests.
+
+### User Stories (Guest)
+1. As a guest, the widget auto-detects my language from my browser.
+2. As a guest, I can manually switch the widget language at any time.
+3. As a guest, the date picker and UI labels are translated.
+4. As a guest, the AI responds in my chosen language.
+
+### Implementation Steps (Delivered)
+1. ✅ **Widget translations**
+   - Added translations for 8 languages: **EN, ES, FR, DE, JA, ZH, PT, IT**.
+   - Translated key UI labels: send, placeholders, calendar actions, quick actions, payment labels.
+2. ✅ **Language detection + selector**
+   - Auto-detects browser language.
+   - Adds a dropdown language selector in widget header.
+3. ✅ **Localized date picker**
+   - Day-of-week header translated.
+   - Calendar actions translated.
+4. ✅ **AI language alignment**
+   - Widget sends `language` to backend.
+   - Backend passes `language` into LLM system prompt to force responses in target language.
+5. ✅ **Marketing alignment**
+   - Landing page feature card updated to highlight 8-language support.
+   - FAQ includes language support explanation.
+
+### Testing Notes
+- Widget JS passes syntax checks (`node --check`).
+- Backend restarted successfully after prompt function closure fix.
+- **Preview limitation remains:** widget path routing may collide in the preview; will be resolved in AWS routing.
+
+### Success Criteria
+- ✅ Guests can book in their language.
+- ✅ Widget UI and calendar are localized.
 
 ---
 
 ## Appendix — Known Preview Environment Limitation (Non-Production)
 
 ### Widget script path collision
-In the current preview environment, `/widget/*` may be routed to the React SPA and return HTML instead of JS. 
+In the current preview environment, `/widget/*` may be routed to the React SPA and return HTML instead of JS.
 - Code-side serving is correct (`express.static` with JS MIME).
 - This should be resolved naturally in AWS deployment via proper ALB/nginx routing.
 

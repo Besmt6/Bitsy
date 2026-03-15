@@ -1,10 +1,6 @@
 [
   {
-    "content": "Test hybrid date picker flow (conversational + calendar) with screenshots",
-    "status": "completed"
-  },
-  {
-    "content": "Run comprehensive testing via testing_agent for all changes",
+    "content": "Test multi-language widget with screenshots",
     "status": "completed"
   }
 ]

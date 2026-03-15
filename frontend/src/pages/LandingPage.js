@@ -342,9 +342,9 @@ const LandingPage = () => {
                 <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
                   <Globe className="h-7 w-7 text-accent" />
                 </div>
-                <CardTitle className="text-xl">Global Reach</CardTitle>
+                <CardTitle className="text-xl">8 Languages Supported</CardTitle>
                 <CardDescription className="text-base leading-relaxed pt-2">
-                  Attract crypto-wealthy travelers worldwide. Direct bookings, no intermediaries.
+                  Widget speaks English, Spanish, French, German, Japanese, Chinese, Portuguese, Italian. AI responds in guest's language automatically.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -468,7 +468,7 @@ const LandingPage = () => {
                   <p className="text-xs text-muted-foreground mt-1">vs $40K in OTA fees</p>
                 </div>
                 <ul className="space-y-3">
-                  {['Everything in Starter', '🔥 MCP AI Discovery (ChatGPT, Claude, Perplexity)', 'All 6 blockchains (ETH, BTC, Polygon, Base, Arbitrum, Optimism)', 'Analytics dashboard (track AI searches)', 'Photo/video uploads', 'Telegram notifications', 'Priority support'].map(f => (
+                  {['Everything in Starter', '🔥 MCP AI Discovery (ChatGPT, Claude, Perplexity)', 'All 6 blockchains (ETH, BTC, Polygon, Base, Arbitrum, Optimism)', '🌍 8 languages (EN, ES, FR, DE, JA, ZH, PT, IT)', 'Analytics dashboard (track AI searches)', 'Photo/video uploads', 'Telegram notifications', 'Priority support'].map(f => (
                     <li key={f} className="flex items-start gap-3">
                       <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                       <span className="text-sm">{f}</span>
@@ -574,6 +574,15 @@ const LandingPage = () => {
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground leading-relaxed">
                   <p>Multi-property management is coming in our <strong>Enterprise tier (Q2 2026)</strong>. For now, each account can manage 1 hotel. If you operate multiple properties, <a href="mailto:hello@getbitsy.ai?subject=Enterprise Waitlist" className="text-primary hover:underline">join the waitlist</a> and we'll notify you when it launches!</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">What languages does Bitsy support?</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                  <p>Bitsy speaks <strong>8 languages</strong>: English, Spanish, French, German, Japanese, Chinese, Portuguese, and Italian. The widget auto-detects your guest's browser language and the AI responds naturally in their language. Guests can also switch languages anytime using the dropdown in the chat widget.</p>
                 </CardContent>
               </Card>
             </div>

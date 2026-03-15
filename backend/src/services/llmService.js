@@ -14,7 +14,23 @@ const openai = new OpenAI({
   apiKey: OPENAI_API_KEY
 });
 
-const BITSY_SYSTEM_PROMPT = (hotelName, rooms) => `You are Bitsy, a friendly AI booking assistant for ${hotelName}. 
+const BITSY_SYSTEM_PROMPT = (hotelName, rooms, language = 'en') => {
+  const languageNames = {
+    en: 'English',
+    es: 'Spanish (Español)',
+    fr: 'French (Français)',
+    de: 'German (Deutsch)',
+    ja: 'Japanese (日本語)',
+    zh: 'Chinese (中文)',
+    pt: 'Portuguese (Português)',
+    it: 'Italian (Italiano)'
+  };
+  
+  const languageInstruction = language !== 'en' 
+    ? `\n\nIMPORTANT: Respond in ${languageNames[language]}. All your responses must be in ${languageNames[language]}, not English.\n`
+    : '';
+  
+  return `You are Bitsy, a friendly AI booking assistant for ${hotelName}.${languageInstruction}
 
 Your job is to help guests book rooms using cryptocurrency payments. You must:
 
@@ -79,14 +95,15 @@ ${rooms.map(r => {
 Current date: ${new Date().toISOString().split('T')[0]}
 
 Be helpful, friendly, and ensure all information is collected accurately!`;
+};
 
-export const getChatResponse = async ({ message, sessionId, hotelName, rooms, conversationHistory }) => {
+export const getChatResponse = async ({ message, sessionId, hotelName, rooms, conversationHistory, language = 'en' }) => {
   try {
     // Build messages array
     const messages = [
       {
         role: 'system',
-        content: BITSY_SYSTEM_PROMPT(hotelName, rooms)
+        content: BITSY_SYSTEM_PROMPT(hotelName, rooms, language)
       },
       ...conversationHistory,
       {

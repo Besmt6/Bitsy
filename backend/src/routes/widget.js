@@ -59,7 +59,7 @@ router.get('/:hotelId/config', async (req, res) => {
 router.post('/:hotelId/chat', async (req, res) => {
   try {
     const { hotelId } = req.params;
-    const { message, sessionId, conversationHistory } = req.body;
+    const { message, sessionId, conversationHistory, language = 'en' } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
@@ -78,7 +78,8 @@ router.post('/:hotelId/chat', async (req, res) => {
       sessionId,
       hotelName: hotel.hotelName,
       rooms,
-      conversationHistory: conversationHistory || []
+      conversationHistory: conversationHistory || [],
+      language
     });
 
     res.json({
