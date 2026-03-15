@@ -1,10 +1,42 @@
 [
   {
-    "content": "Fix demo video loading issue on landing page",
-    "status": "completed"
+    "content": "Get viem integration playbook",
+    "status": "in_progress"
   },
   {
-    "content": "Test video playback",
-    "status": "completed"
+    "content": "Review current ethers.js implementation",
+    "status": "pending"
+  },
+  {
+    "content": "Migrate web3Service.js to viem",
+    "status": "pending"
+  },
+  {
+    "content": "Update wallet connection in frontend",
+    "status": "pending"
+  },
+  {
+    "content": "Replace ethers.js with viem in package.json",
+    "status": "pending"
+  },
+  {
+    "content": "Test wallet connection and transaction verification",
+    "status": "pending"
+  },
+  {
+    "content": "Add automated test suite (Jest + Playwright)",
+    "status": "pending"
+  },
+  {
+    "content": "Integrate Sentry error monitoring",
+    "status": "pending"
+  },
+  {
+    "content": "Setup CI/CD with GitHub Actions",
+    "status": "pending"
+  },
+  {
+    "content": "Create AWS deployment guide for staging + production",
+    "status": "pending"
   }
 ]
