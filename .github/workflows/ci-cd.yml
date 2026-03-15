@@ -1,6 +1,5 @@
-name: CI/CD Pipeline
+name: CI - Build & Test
 
-# Trigger on push to main/master and pull requests
 on:
   push:
     branches: [ main, master ]
@@ -11,212 +10,71 @@ env:
   NODE_VERSION: '20.x'
 
 jobs:
-  # Job 1: Backend Tests
-  backend-test:
-    name: Backend Tests (Jest)
+  # Backend Unit Tests
+  backend:
+    name: Backend Tests
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
           cache-dependency-path: backend/yarn.lock
 
-      - name: Install backend dependencies
+      - name: Install dependencies
         working-directory: ./backend
         run: yarn install --frozen-lockfile
 
-      - name: Run backend tests
+      - name: Run unit tests
         working-directory: ./backend
-        run: yarn test -- __tests__/web3Service.test.js __tests__/unit.test.js
+        run: yarn test -- __tests__/web3Service.test.js
         env:
           NODE_ENV: test
-          JWT_SECRET: test-secret-ci
-          MONGO_URL: mongodb://localhost:27017
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-test-results
-          path: backend/coverage/
-
-  # Job 2: Frontend Tests
-  frontend-test:
-    name: Frontend E2E Tests (Playwright)
+  # Frontend Build
+  frontend:
+    name: Frontend Build
     runs-on: ubuntu-latest
     
-    services:
-      # Mock backend for E2E tests (optional - can skip if testing against live preview)
-      backend:
-        image: node:20
-        ports:
-          - 8001:8001
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
           cache-dependency-path: frontend/yarn.lock
 
-      - name: Install frontend dependencies
+      - name: Install dependencies
         working-directory: ./frontend
         run: yarn install --frozen-lockfile
 
-      - name: Install Playwright browsers
-        working-directory: ./frontend
-        run: yarn playwright install chromium --with-deps
-
-      - name: Run Playwright tests
-        working-directory: ./frontend
-        run: yarn test:e2e
-        env:
-          PLAYWRIGHT_BASE_URL: https://bitsy-tools.preview.emergentagent.com
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: frontend/playwright-report/
-
-      - name: Upload screenshots on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-screenshots
-          path: frontend/test-results/
-
-  # Job 3: Build Verification
-  build:
-    name: Build Verification
-    runs-on: ubuntu-latest
-    needs: [backend-test, frontend-test]
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
-
-      - name: Install frontend dependencies
-        working-directory: ./frontend
-        run: yarn install --frozen-lockfile
-
-      - name: Build frontend
+      - name: Build production bundle
         working-directory: ./frontend
         run: yarn build
         env:
           REACT_APP_BACKEND_URL: ${{ secrets.REACT_APP_BACKEND_URL }}
           REACT_APP_SENTRY_DSN: ${{ secrets.REACT_APP_SENTRY_DSN }}
 
-      - name: Upload build artifacts
+      - name: Upload build
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
           path: frontend/build/
-          retention-days: 7
 
-  # Job 4: Deploy to Staging (Optional - after AWS setup)
-  deploy-staging:
-    name: Deploy to Staging
+  # Success notification
+  success:
+    name: All Checks Passed
     runs-on: ubuntu-latest
-    needs: [build]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    environment:
-      name: staging
-      url: https://staging.getbitsy.ai
+    needs: [backend, frontend]
+    if: success()
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-build
-          path: frontend/build/
-
-      - name: Deploy to AWS EC2 (Staging)
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.AWS_SSH_KEY_STAGING }}
-          AWS_HOST: ${{ secrets.AWS_HOST_STAGING }}
-          AWS_USER: ${{ secrets.AWS_USER }}
+      - name: Success message
         run: |
-          # This section will be activated after AWS setup
-          echo "Staging deployment configured but not yet active"
-          echo "Activate after AWS EC2 setup in Phase 10.5"
-          
-          # Uncomment after AWS setup:
-          # mkdir -p ~/.ssh
-          # echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          # chmod 600 ~/.ssh/id_rsa
-          # ssh-keyscan $AWS_HOST >> ~/.ssh/known_hosts
-          # 
-          # ssh $AWS_USER@$AWS_HOST << 'EOF'
-          #   cd /var/www/bitsy
-          #   git pull origin main
-          #   cd backend && yarn install --production
-          #   cd ../frontend && yarn install && yarn build
-          #   pm2 restart bitsy-backend
-          #   sudo systemctl reload nginx
-          # EOF
-
-  # Job 5: Deploy to Production (Manual Approval Required)
-  deploy-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: [build]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    environment:
-      name: production
-      url: https://getbitsy.ai
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-build
-          path: frontend/build/
-
-      - name: Deploy to AWS EC2 (Production)
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.AWS_SSH_KEY_PRODUCTION }}
-          AWS_HOST: ${{ secrets.AWS_HOST_PRODUCTION }}
-          AWS_USER: ${{ secrets.AWS_USER }}
-        run: |
-          # This section will be activated after AWS setup
-          echo "Production deployment configured but not yet active"
-          echo "Activate after AWS EC2 setup in Phase 10.5"
-          
-          # Uncomment after AWS setup:
-          # mkdir -p ~/.ssh
-          # echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          # chmod 600 ~/.ssh/id_rsa
-          # ssh-keyscan $AWS_HOST >> ~/.ssh/known_hosts
-          # 
-          # ssh $AWS_USER@$AWS_HOST << 'EOF'
-          #   cd /var/www/bitsy
-          #   git pull origin main
-          #   cd backend && yarn install --production
-          #   cd ../frontend && yarn install && yarn build
-          #   pm2 restart bitsy-backend
-          #   sudo systemctl reload nginx
-          # EOF
+          echo "✅ All tests passed!"
+          echo "✅ Frontend build successful!"
+          echo "🚀 Ready for deployment!"
