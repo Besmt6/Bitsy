@@ -62,6 +62,10 @@ const hotelSchema = new mongoose.Schema({
     optimism: { type: String, default: '' },
     bsc: { type: String, default: '' }
   },
+  paymentSettings: {
+    cryptoEnabled: { type: Boolean, default: true }, // Always true (core feature)
+    payAtPropertyEnabled: { type: Boolean, default: false } // Optional feature
+  },
   widgetSettings: {
     theme: { type: String, default: 'light' },
     primaryColor: { type: String, default: '#0e7490' },

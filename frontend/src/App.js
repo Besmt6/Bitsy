@@ -18,6 +18,11 @@ import Analytics from './pages/Analytics';
 import WidgetMockup from './pages/WidgetMockup';
 import MetaMaskMockup from './pages/MetaMaskMockup';
 import ChatGPTMockup from './pages/ChatGPTMockup';
+import GuestLogin from './pages/GuestLogin';
+import GuestBookings from './pages/GuestBookings';
+import GuestBookingDetails from './pages/GuestBookingDetails';
+import Marketplace from './pages/Marketplace';
+import HotelBookings from './pages/HotelBookings';
 
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -52,6 +57,14 @@ const AppRoutes = () => {
       <Route path="/mockup/metamask" element={<MetaMaskMockup />} />
       <Route path="/mockup/chatgpt" element={<ChatGPTMockup />} />
       
+      {/* Guest Routes (Public) */}
+      <Route path="/guest" element={<GuestLogin />} />
+      <Route path="/guest/bookings" element={<GuestBookings />} />
+      <Route path="/guest/bookings/:ref" element={<GuestBookingDetails />} />
+      
+      {/* Marketplace (Public) */}
+      <Route path="/marketplace" element={<Marketplace />} />
+      
       <Route path="/dashboard" element={
         <ProtectedRoute>
           <DashboardLayout />
@@ -64,6 +77,7 @@ const AppRoutes = () => {
         <Route path="rooms" element={<Rooms />} />
         <Route path="wallets" element={<Wallets />} />
         <Route path="widget" element={<Widget />} />
+        <Route path="bookings" element={<HotelBookings />} />
       </Route>
       
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -46,13 +46,53 @@ const bookingStatSchema = new mongoose.Schema({
   },
   cryptoType: {
     type: String,
-    required: true,
+    required: false, // Optional now - only for crypto payments
     enum: ['bitcoin', 'ethereum', 'polygon', 'solana', 'tron', 'base', 'arbitrum', 'optimism', 'bsc']
   },
   paymentMethod: {
     type: String,
-    enum: ['qr_code', 'web3'],
-    default: 'qr_code'
+    enum: ['crypto', 'pay_at_property'], // Simplified: crypto or pay at property
+    required: true,
+    default: 'crypto'
+  },
+  status: {
+    type: String,
+    enum: ['pending_confirmation', 'confirmed', 'cancelled', 'listed_for_transfer', 'completed'],
+    default: 'pending_confirmation',
+    index: true
+  },
+  confirmationDeadlineAt: {
+    type: Date,
+    index: true // For auto-cancel job queries
+  },
+  confirmedAt: {
+    type: Date
+  },
+  confirmedBy: {
+    type: String, // 'hotel', 'auto' (for crypto), 'guest'
+    enum: ['hotel', 'auto', 'guest']
+  },
+  cancelledAt: {
+    type: Date
+  },
+  cancelledBy: {
+    type: String, // 'guest', 'hotel', 'system'
+    enum: ['guest', 'hotel', 'system']
+  },
+  cancellationReason: {
+    type: String
+  },
+  listedForTransfer: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  originalGuestId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Guest' // Track original guest if booking is transferred
+  },
+  transferredAt: {
+    type: Date
   },
   web3Data: {
     txHash: String,
@@ -69,7 +109,9 @@ const bookingStatSchema = new mongoose.Schema({
   }
 });
 
-// Create index for efficient querying
+// Create indexes for efficient querying
 bookingStatSchema.index({ hotelId: 1, date: -1 });
+bookingStatSchema.index({ hotelId: 1, status: 1, confirmationDeadlineAt: 1 }); // For auto-cancel queries
+bookingStatSchema.index({ guestId: 1, status: 1 }); // For guest dashboard
 
 export default mongoose.model('BookingStat', bookingStatSchema);

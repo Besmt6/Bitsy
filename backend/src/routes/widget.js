@@ -44,6 +44,7 @@ router.get('/:hotelId/config', async (req, res) => {
           amenities: room.amenities || []
         })),
         wallets: hotel.wallets,
+        paymentSettings: hotel.paymentSettings || { cryptoEnabled: true, payAtPropertyEnabled: false },
         widgetSettings: hotel.widgetSettings
       }
     });
@@ -109,12 +110,23 @@ router.post('/:hotelId/book', async (req, res) => {
       return res.status(404).json({ error: 'Hotel not found' });
     }
 
-    // Validate required fields
-    const required = ['check_in', 'check_out', 'room_type', 'nights', 'total_usd', 'guest_name', 'guest_email', 'guest_phone', 'crypto_choice'];
-    for (const field of required) {
+    // Validate payment method
+    const paymentMethod = bookingDetails.payment_method || 'crypto';
+    
+    if (paymentMethod === 'pay_at_property' && !hotel.paymentSettings?.payAtPropertyEnabled) {
+      return res.status(400).json({ error: 'Pay at property option is not available for this hotel' });
+    }
+
+    // Validate required fields (crypto_choice only required for crypto payments)
+    const baseRequired = ['check_in', 'check_out', 'room_type', 'nights', 'total_usd', 'guest_name', 'guest_email', 'guest_phone'];
+    for (const field of baseRequired) {
       if (!bookingDetails[field]) {
         return res.status(400).json({ error: `Missing field: ${field}` });
       }
+    }
+
+    if (paymentMethod === 'crypto' && !bookingDetails.crypto_choice) {
+      return res.status(400).json({ error: 'Crypto type is required for crypto payments' });
     }
 
     // Generate booking reference
@@ -148,7 +160,17 @@ router.post('/:hotelId/book', async (req, res) => {
       await guest.save();
     }
 
-    // Create booking stat record with guest reference
+    // Calculate confirmation deadline (48 hours before check-in)
+    let confirmationDeadline = null;
+    let bookingStatus = 'confirmed'; // Default for crypto
+
+    if (paymentMethod === 'pay_at_property') {
+      const checkInDate = new Date(bookingDetails.check_in);
+      confirmationDeadline = new Date(checkInDate.getTime() - (48 * 60 * 60 * 1000));
+      bookingStatus = 'pending_confirmation';
+    }
+
+    // Create booking stat record
     const bookingStat = new BookingStat({
       hotelId,
       guestId: guest._id,
@@ -159,39 +181,57 @@ router.post('/:hotelId/book', async (req, res) => {
       roomType: bookingDetails.room_type,
       nights: bookingDetails.nights,
       totalUsd: bookingDetails.total_usd,
-      cryptoType: bookingDetails.crypto_choice
+      paymentMethod: paymentMethod,
+      cryptoType: bookingDetails.crypto_choice || null,
+      status: bookingStatus,
+      confirmationDeadlineAt: confirmationDeadline,
+      confirmedAt: paymentMethod === 'crypto' ? new Date() : null,
+      confirmedBy: paymentMethod === 'crypto' ? 'auto' : null
     });
 
     await bookingStat.save();
 
-    // Get wallet address for selected crypto
-    const walletAddress = hotel.wallets[bookingDetails.crypto_choice];
+    // Prepare response based on payment method
+    let response = {
+      success: true,
+      bookingRef,
+      isReturningGuest: guest.totalBookings > 1,
+      totalBookings: guest.totalBookings,
+      paymentMethod: paymentMethod
+    };
 
-    // Generate QR code
-    const qrCode = await generateQRCode({
-      address: walletAddress,
-      chain: bookingDetails.crypto_choice,
-      amount: bookingDetails.total_usd
-    });
+    if (paymentMethod === 'crypto') {
+      // Get wallet address for selected crypto
+      const walletAddress = hotel.wallets[bookingDetails.crypto_choice];
+
+      // Generate QR code
+      const qrCode = await generateQRCode({
+        address: walletAddress,
+        chain: bookingDetails.crypto_choice,
+        amount: bookingDetails.total_usd
+      });
+
+      response.qrCode = qrCode;
+      response.walletAddress = walletAddress;
+      response.cryptoType = bookingDetails.crypto_choice;
+      response.message = 'Booking confirmed! Complete payment to secure your reservation.';
+    } else {
+      // Pay at property
+      response.confirmationDeadline = confirmationDeadline.toISOString();
+      response.hotelPhone = hotel.contactPhone;
+      response.message = `Booking submitted! Please call ${hotel.contactPhone} to confirm. Booking will auto-cancel if not confirmed by ${confirmationDeadline.toLocaleString()}.`;
+    }
 
     // Send notification (console + Telegram if configured)
     await sendNotification({
       hotel,
       bookingRef,
-      bookingDetails,
-      walletAddress,
+      bookingDetails: { ...bookingDetails, payment_method: paymentMethod },
+      walletAddress: paymentMethod === 'crypto' ? hotel.wallets[bookingDetails.crypto_choice] : null,
       isReturningGuest: guest.totalBookings > 1
     });
 
-    res.json({
-      success: true,
-      bookingRef,
-      qrCode,
-      walletAddress,
-      isReturningGuest: guest.totalBookings > 1,
-      totalBookings: guest.totalBookings,
-      message: 'Booking submitted successfully. Hotel has been notified.'
-    });
+    res.json(response);
   } catch (error) {
     console.error('Booking error:', error);
     res.status(500).json({ error: 'Server error processing booking' });

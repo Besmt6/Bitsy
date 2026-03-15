@@ -1,6 +1,18 @@
 [
   {
-    "content": "Test multi-language widget with screenshots",
-    "status": "completed"
+    "content": "Phase 2: Update booking widget UI with payment method selection",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 2: Create guest API routes for authentication and booking management",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 2: Implement guest booking cancellation API",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 2: Test complete flow end-to-end with testing agent",
+    "status": "pending"
   }
 ]

@@ -1,394 +1,168 @@
-# Bitsy SaaS — Complete Development Plan (Updated)
+# plan.md — Bitsy: Payment Flexibility + Guest Dashboard + Crypto Marketplace
 
-## Objectives
-- Prove the **core workflow** works end-to-end: AI chat → structured booking fields → pricing → non‑refundable gate → payment (wallet connect + QR fallback) → booking submission → notification + stats (**no guest PII stored**).
-- Build a production-ready MVP SaaS with **Node.js/Express + MongoDB + React dashboard + embeddable vanilla JS widget**.
-- Enforce **privacy-first** rules and the **non-refundable** policy in UX and API.
-- Improve guest booking UX by supporting:
-  - **Hybrid date capture**: conversational dates **and** a visual calendar fallback. ✅
-  - **Multi-language guest experience**: 8 languages with auto-detect + selector + localized UI + AI responses. ✅
-- Polish owner dashboard experience for production (loading/empty states, micro-interactions, resilience). ✅
-- Align go-to-market messaging + pricing with product reality:
-  - **Pay what you save** pricing (2–4% per booking) + **first $5,000 free** (or 30 days). ✅
-  - **Enterprise: Coming Soon** (waitlist) until multi-property is implemented. ✅
-- Prepare for **AWS production deployment** (routing, env vars, static assets, widget hosting) and demo/marketing readiness.
+## 1) Objectives
+- Add **crypto-first** payments with optional **pay-at-property** (hotel-controlled).
+- Introduce a **booking status lifecycle** + hotel confirmation workflow (guest calls hotel).
+- Ship a **Guest Dashboard** (email + phone lookup) to view/cancel/manage bookings.
+- Ship a **secondary marketplace** (crypto bookings only) to list/transfer bookings with on-chain proof.
+- Add **auto-cancel** for unconfirmed pay-at-property bookings at **48h before check-in** + notifications.
 
 ---
 
-## Phase 1 — Core POC (Isolation): LLM Booking Flow + Extraction ✅ COMPLETED
+## 2) Implementation Steps
 
-### User Stories (POC)
-1. As a guest, I can chat naturally and Bitsy asks only for what’s needed to book.
-2. As a guest, I can provide dates/room preference and get a computed total.
-3. As a guest, I must acknowledge the non-refundable policy before seeing payment details.
-4. As a guest, I can select a crypto option and see a QR payload (address + amount).
-5. As a hotel owner, I receive a booking notification containing guest details without Bitsy storing them.
+### Phase 1 — Core POC (Isolation): Transfer + Verification + 48h Cancellation
+> Core risk = multi-step state machine + on-chain verification + scheduled auto-cancel.
 
-### Implementation Steps
-1. **Web search / best practice quick pass**: OpenAI structured outputs / function calling patterns for reliably extracting booking fields.
-2. Create a minimal **Node POC script** (or tiny Express endpoint) using Emergent LLM key:
-   - System prompt + tool schema for `extractBookingIntent` (check-in/out, room type, contact fields, crypto choice).
-   - Validate robust parsing with multiple sample conversations.
-3. Implement deterministic **pricing calculator**:
-   - Nights = date diff; room rate from fixture config; total USD.
-4. Implement non-refundable **state machine** (pure JS):
-   - states: `collecting` → `quoted` → `policy_ack_required` → `payment_ready` → `submitted`.
-5. Generate **booking reference** + create a **booking_stats** record (no PII).
-6. Implement **notification stub**:
-   - Console log formatted message.
-   - Telegram sender function behind feature flag (token/chatId required).
+**User stories (POC)**
+1. As a guest, I can list a *crypto-paid* booking for transfer and it becomes locked.
+2. As a buyer, I can submit a payment tx hash and Bitsy verifies it on-chain.
+3. As the system, I can transfer booking ownership to the buyer after verification.
+4. As a guest, I can see a clear “non-refundable crypto” warning and transfer alternative.
+5. As the system, I auto-cancel pay-at-property bookings exactly 48h before check-in if still unconfirmed.
 
-### Next Actions
-- Write and run the POC script with 5–10 varied conversation transcripts.
-- Iterate prompt/schema until extraction is stable.
+**Steps**
+- Web search: best practices for **Node cron reliability** (node-cron vs external scheduler) + **ethers.js tx verification** patterns.
+- Add minimal DB fields for POC:
+  - `BookingStat`: `status`, `paymentMethod`, `confirmationDeadlineAt`, `listedForTransfer`, `originalPaymentTxHash`, `transferTxHash`.
+  - New `MarketplaceListing`: `bookingRef`, `hotelId`, `sellerGuestId`, `priceUsd`, `receiveAddress`, `status`.
+- Build isolated API endpoints (no UI yet):
+  - `POST /api/marketplace/list` (locks booking + creates listing)
+  - `POST /api/marketplace/submit-proof` (verify tx → transfer)
+  - `POST /api/bookings/cron/auto-cancel` (callable endpoint to run job in preview)
+- Create a **Node script** (in `backend/scripts/`) to simulate:
+  - listing → proof submission → verification → transfer
+  - pay-at-property booking reaching deadline → auto-cancel
+- Stop and fix until the POC passes end-to-end in logs + DB.
 
-### Success Criteria
-- ✅ ≥90% correct extraction across test transcripts. **ACHIEVED: 100% pass rate**
-- ✅ Non-refundable gate cannot be bypassed. **VERIFIED**
-- ✅ Booking submission logs notification and stores only stats fields. **VERIFIED**
-
-**STATUS: PHASE 1 COMPLETED - 100% success rate on all POC tests**
+**Exit criteria (POC)**
+- Listing lock prevents cancellation/double-listing.
+- Proof verification rejects wrong recipient/amount/chain and accepts valid tx.
+- Ownership transfer updates guest fields + emits notifications (console/email stub).
+- Auto-cancel transitions status correctly at 48h cutoff.
 
 ---
 
-## Phase 2 — Full App Development ✅ COMPLETED
+### Phase 2 — V1 App Development (MVP): Booking Status + Hotel Booking Mgmt + Widget Payment Choice
 
-### User Stories (V1 core)
-1. As a guest, I can open a floating widget and complete the full booking flow in a modal.
-2. As a guest, I can see available room types and prices pulled from the hotel config.
-3. As a guest, I can choose a crypto rail and see a QR code for the hotel wallet.
-4. As a hotel owner, I can create a hotel profile (seeded/adminless for V1) and configure rooms/wallets.
-5. As a hotel owner, I can see booking stats update after each booking.
+**User stories**
+1. As a hotel, I can enable/disable **pay at property** while crypto remains default.
+2. As a guest, I can choose **crypto (recommended)** or pay-at-property (if enabled).
+3. As a hotel, I can see all bookings and confirm pay-at-property after guest calls.
+4. As a guest, I can clearly see the 48h confirmation deadline on pay-at-property bookings.
+5. As a hotel, I receive notifications for all new bookings.
 
-### Implementation Steps
-1. **Backend (Express)**
-   - Project structure: `src/app.ts`, `src/routes/*`, `src/controllers/*`, `src/services/*`, `src/models/*`, `src/middleware/*`.
-   - Public widget APIs:
-     - `GET /api/widget/:hotelId/config`
-     - `POST /api/widget/:hotelId/chat`
-     - `POST /api/widget/:hotelId/book`
-   - Mongo models: `Hotel`, `Room`, `BookingStat`.
-   - Services:
-     - `llmService` (POC-proven)
-     - `pricingService`
-     - `notificationService` (console + optional telegram)
-     - `qrService` (returns data; widget renders QR)
-   - Hard privacy guardrails: request logging scrubber; ensure booking payload never written to DB.
-2. **Widget (Vanilla JS served by backend)**
-   - Serve `GET /widget.js` (reads `data-hotel-id`).
-   - Modal UI: chat messages, quick replies, room list, date inputs fallback.
-   - Non-refundable popup gating before payment.
-   - QR generation (client-side lib) from server response (address + amount + network).
-3. **Hotel Dashboard (React)**
-   - Pages: Settings, Rooms, Wallets, Widget.
-   - For V1 (no auth): allow selecting a hotelId from seeded list or single default hotel.
-   - Widget page shows embed code + live preview.
-4. **Seed/dev tooling**
-   - Seed one demo hotel with rooms + wallets.
-   - Environment config for Emergent LLM key.
+**Backend**
+- Update `Hotel` model: `paymentSettings: { cryptoEnabled: true (implicit), payAtPropertyEnabled: boolean }`.
+- Update `BookingStat` model:
+  - `paymentMethod: 'crypto' | 'pay_at_property'`
+  - `status: 'pending' | 'pending_confirmation' | 'confirmed' | 'cancelled' | 'listed' | 'transferred' | 'completed'`
+  - `confirmationDeadlineAt`, `confirmedAt`, `cancelledAt`, `cancellationReason`
+- Update booking endpoint `POST /api/widget/:hotelId/book`:
+  - If `crypto`: keep existing QR/web3 flow.
+  - If `pay_at_property`: create booking with `pending_confirmation` and set `confirmationDeadlineAt = checkInAt - 48h`.
+- Add hotel actions:
+  - `POST /api/hotel/bookings/:bookingRef/confirm`
+  - `POST /api/hotel/bookings/:bookingRef/reject`
+  - `GET /api/hotel/bookings?filters…`
 
-### Next Actions
-- Implement backend + widget in one pass, then dashboard.
-- Run one full manual E2E: widget booking creates stats + logs notification.
+**Frontend (Hotel dashboard)**
+- Add `/dashboard/bookings` page (table + filters + confirm/reject actions).
 
-### Success Criteria
-- ✅ Widget can be embedded and completes flow.
-- ✅ Booking creates `booking_stats` only (verify DB).
-- ✅ Dashboard can configure rooms/wallets and immediately affects widget config.
+**Widget**
+- Add payment method RadioGroup step:
+  - Default selection: **Crypto (Recommended)**.
+  - Show pay-at-property only if hotel enabled it.
+  - Confirmation screen copy:
+    - Crypto: “Payment confirmed / proceed to pay via wallet/QR.”
+    - Pay-at-property: “Call hotel to confirm; auto-cancels at deadline.”
+
+**Phase-end testing**
+- Run testing agent: booking creation (both methods), hotel confirm/reject, UI states.
 
 ---
 
-## Phase 3 — Add Auth + Owner Experience (JWT) + Telegram Config ✅ COMPLETED
+### Phase 3 — Guest Dashboard (Email + Phone Lookup) + Booking Management
 
-### User Stories (Owner)
-1. As a hotel owner, I can register and log in securely.
-2. As a hotel owner, I can only access my own hotel data.
-3. As a hotel owner, I can upload a logo and see it in the widget.
-4. As a hotel owner, I can add Telegram bot token/chat id and receive booking alerts.
-5. As a hotel owner, I can view stats (count + revenue) without guest details stored.
+**User stories**
+1. As a guest, I can find all my bookings using **email + phone**.
+2. As a guest, I can view booking details (status, dates, hotel contact).
+3. As a guest, I can cancel pay-at-property bookings anytime.
+4. As a guest, I see crypto bookings are non-refundable but transferable.
+5. As a guest, I can start a marketplace listing for eligible crypto bookings.
 
-### Implementation Steps
-1. Implement auth endpoints: `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`.
-2. Add JWT middleware + multi-tenant enforcement by `hotel_id`.
-3. Wire dashboard to auth flow.
-4. Implement logo upload endpoint `POST /api/hotel/logo` (store URL or local file for MVP).
-5. Add Telegram config fields to settings; send message if configured.
+**Backend**
+- Add guest lookup endpoints:
+  - `POST /api/guest/lookup` → returns a short-lived token/session
+  - `GET /api/guest/bookings` (by token)
+  - `POST /api/guest/bookings/:bookingRef/cancel`
+- Ensure `Guest` model stores normalized `email`, `phone` and booking references.
 
-### Next Actions
-- Migrate V1 dashboard routes to authenticated versions.
-- Validate tenant isolation with 2 seeded accounts.
+**Frontend (Guest theme)**
+- Add routes:
+  - `/guest` (lookup)
+  - `/guest/bookings`
+  - `/guest/bookings/:ref`
+- Apply `[data-theme='guest']` wrapper + tokens in `index.css`.
 
-### Success Criteria
-- ✅ Unauthorized requests rejected; owner sees only their rooms/wallets/settings.
-- ✅ Telegram message sent on booking when configured.
-
----
-
-## Phase 4 — Go-To-Market Landing Page ✅ COMPLETED (Updated)
-
-### User Stories
-1. As a visitor, I can understand Bitsy's value proposition in 10 seconds.
-2. As a hotel owner, I can calculate my OTA savings instantly.
-3. As a visitor, I can see MCP/AI discovery as a key differentiator.
-4. As a visitor, I can see the pricing model clearly (first $5K free, pay-per-booking).
-5. As a visitor, I can sign up directly from the landing page.
-
-### Implementation Steps
-1. ✅ Enhance hero section with stronger MCP messaging (ChatGPT, Claude, Perplexity)
-2. ✅ Add defensible marketing copy and clear claims
-3. ✅ Add OTA savings calculator (explicitly labeled as OTA revenue)
-4. ✅ Update pricing section:
-   - **Pay what you save** (2% Starter, 3% Pro)
-   - **First $5,000 free** + (or 30 days) messaging
-   - **Enterprise Coming Soon** + waitlist CTA
-5. ✅ Add FAQ section clarifying:
-   - Billing model
-   - Wallet ownership (public address only)
-   - Widget embedding location (before `</body>`)
-   - Multi-property status
-6. ✅ Add multi-language marketing: “8 Languages Supported” feature card + FAQ entry
-
-### Success Criteria
-- ✅ Landing page clearly communicates zero-commission + AI-discovery value.
-- ✅ Calculator works smoothly and updates dynamically.
-- ✅ Pricing is ROI-driven and consistent with product + business philosophy.
-- ✅ Mobile-responsive and accessible.
-
-**STATUS: COMPLETED**
+**Phase-end testing**
+- Testing agent: guest lookup, booking list/details, cancel flows, deadline display.
 
 ---
 
-## Phase 5 — Photo Upload Integration ✅ COMPLETED
+### Phase 4 — Marketplace (Crypto-only): List + Browse + Transfer
 
-### User Stories
-1. As a hotel owner, I can upload logo and gallery images from Settings page.
-2. As a hotel owner, I can upload room photos from Rooms page.
-3. As a guest, I can see hotel/room photos in the widget chat.
-4. As ChatGPT/Claude, I can retrieve photo URLs via MCP for hotel recommendations.
+**User stories**
+1. As a guest, I can list a crypto booking with any price and understand it locks.
+2. As a buyer, I can browse listings with trust indicators and filters.
+3. As a buyer, I can submit tx proof and receive the booking.
+4. As a hotel, I am notified when booking guest details change.
+5. As a guest, I can unlist a booking if it hasn’t transferred.
 
-### Implementation Steps
-1. ✅ Integrate `PhotoUploader` component into `Settings.js` (logo + gallery)
-2. ✅ Integrate `PhotoUploader` component into `Rooms.js` (room photos)
-3. ✅ Test upload flow end-to-end (frontend → backend → MongoDB)
-4. ✅ Verify photos appear in UI
+**Backend**
+- Implement `MarketplaceListing` CRUD + statuses: `active | sold | cancelled`.
+- Enforce rules:
+  - Only `paymentMethod='crypto'` and `status in confirmed/pending` can be listed.
+  - While listed: booking cannot be cancelled; prevent double listing.
+- Transfer endpoint verifies tx with `web3Service` and updates booking guest.
 
-**STATUS: COMPLETED**
+**Frontend (Marketplace theme)**
+- Add `/marketplace` browse + `/marketplace/:listingId` detail.
+- Apply `[data-theme='marketplace']` wrapper.
 
----
-
-## Phase 6 — Web3 Wallet Integration ✅ COMPLETED
-
-### User Stories
-1. As a guest, I can connect my MetaMask/crypto wallet directly in the widget.
-2. As a guest, I can select which blockchain to pay on (6 chains supported).
-3. As a guest, I can sign and send payment transactions directly from widget.
-4. As a system, I verify payments on-chain automatically.
-
-### Implementation Steps
-1. ✅ Added Web3 wallet connection to widget (WalletConnect/Reown).
-2. ✅ Added chain selector (Ethereum, Polygon, Base, Arbitrum, Optimism).
-3. ✅ Implemented wallet signing flow with backend verification.
-4. ✅ Fixed OpenAI chat endpoint (uses user-provided OpenAI API key).
-5. ✅ Verified login/register redirects to dashboard.
-
-### Success Criteria
-- ✅ Widget shows both Web3 wallet option AND QR code fallback.
-- ✅ Users can connect wallet, select chain, and sign transactions.
-- ✅ Backend verifies transactions and processes payments.
-
-**STATUS: COMPLETED**
+**Phase-end testing**
+- Testing agent: listing creation, browse filters, proof submission, transfer + notifications.
 
 ---
 
-## Phase 7 — AI Discovery Analytics ✅ COMPLETED
+### Phase 5 — Auto-Cancel + Notifications + Polish
 
-### User Stories
-1. As a hotel owner, I can see how many times my hotel appeared in AI searches (ChatGPT, Claude, Perplexity).
-2. As a hotel owner, I can see which AI platforms are discovering my hotel.
-3. As a hotel owner, I can see top search queries that found my hotel.
-4. As a hotel owner, I can track appearance trends over time.
+**User stories**
+1. As a guest, I get notified before my pay-at-property booking expires.
+2. As a hotel, I see a countdown for pending confirmations.
+3. As a hotel, I receive cancellation/transfer notifications.
+4. As a guest, I can’t accidentally cancel a listed booking.
+5. As an admin/operator, I can run the cancellation job manually if needed.
 
-### Implementation
-1. ✅ Created `MCPSearchLog` model to track every MCP search.
-2. ✅ Added logging to `/api/mcp/tools/search_hotels` endpoint.
-3. ✅ Detects AI source from User-Agent.
-4. ✅ Created `/api/analytics/mcp-discovery` endpoint with summary + breakdown + trends.
-5. ✅ Built Analytics dashboard page with visualizations.
-6. ✅ Added "AI Discovery" navigation link.
-
-### Success Criteria
-- ✅ Every MCP search is logged automatically.
-- ✅ Analytics show source + location + trends.
-
-**STATUS: COMPLETED**
+**Steps**
+- Implement `node-cron` job (hourly) + safe idempotency.
+- Add email templates (basic) for: created, confirmed, cancelled, transferred, deadline reminder.
+- Add UI countdown badges in hotel bookings table + guest booking details.
+- Performance pass: pagination for bookings/listings.
+- Update docs: widget embed instructions + marketplace rules.
 
 ---
 
-## Phase 8 — Guest UX Enhancement: Hybrid Date Picker (Conversational + Visual Calendar) ✅ COMPLETED (P0)
-
-### Rationale
-Conversational date capture is powerful, but some guests prefer a visual picker. A hybrid approach improves clarity, reduces errors, and demos better.
-
-### User Stories (Guest)
-1. As a guest, I can provide dates conversationally ("Mar 20–23", "next weekend").
-2. As a guest, I can select check-in/check-out dates from a **calendar UI**.
-3. As a guest, I can trigger the calendar by clicking a button or typing "show calendar".
-4. As a guest, selected dates are echoed back into chat (clear confirmation).
-5. As a guest, invalid date ranges are blocked with a clear message.
-
-### Implementation Steps (Delivered)
-1. ✅ **Widget state + UI**
-   - Added widget state for date picker mode and selected dates.
-   - Added quick action buttons after greeting: **Pick dates from calendar** vs **Type my dates**.
-2. ✅ **Calendar rendering + selection**
-   - Inline calendar UI in widget (two-step selection: check-in → check-out).
-   - Prevent past dates and enforce check-out > check-in.
-3. ✅ **Conversation integration**
-   - Echoes user selections into chat.
-   - Auto-sends a consolidated message to AI after date range is selected.
-4. ✅ **Validation**
-   - Blocks invalid ranges with clear feedback.
-
-### Testing Notes
-- Widget JS passes syntax checks (`node --check`).
-- Widget asset serving works correctly from backend (correct JS MIME).
-- **Preview environment caveat:** in the current preview/ingress, `/widget/*` can be routed to the frontend and return HTML; this is not expected in AWS production.
-
-### Success Criteria
-- ✅ Calendar is optional; conversational flow remains primary.
-- ✅ Date selection populates booking details and continues booking flow.
+## 3) Next Actions (Immediate)
+1. Implement Phase 1 POC endpoints + scripts for transfer verification + 48h auto-cancel.
+2. Confirm POC passes, then proceed to Phase 2 (widget + hotel bookings page).
+3. After Phase 2 demo, proceed to guest dashboard and marketplace phases.
 
 ---
 
-## Phase 9 — Testing, Hardening, UX Polish (Owner Dashboard + Widget Resilience) ✅ COMPLETED (P0)
-
-### User Stories (Quality)
-1. As a hotel owner, I see professional loading states (skeletons) and clear empty states.
-2. As a hotel owner, tables/charts/forms feel responsive (micro-animations) and never “jump”.
-3. As an owner, I get graceful errors (error boundaries) instead of blank/white screens.
-
-### Implementation Steps (Delivered)
-1. ✅ **Reusable skeleton system**
-   - Added `LoadingSkeletons.js` with KPI, table, form, room card and page-level skeletons.
-2. ✅ **Error boundaries**
-   - Added `ErrorBoundary.js`.
-   - Wrapped dashboard route content in `DashboardLayout`.
-3. ✅ **Page polish**
-   - Stats: hover elevation/translate + icon hover scale; page fade-in.
-   - Rooms: card hover elevation + image zoom; button micro-interactions.
-   - Wallets: replaced spinner with skeleton, card hover polish, save button animations.
-   - Settings: added loading skeleton for initial user load; save button animations.
-   - Analytics: improved KPI card hovers, chart interactions, enhanced empty-state CTA.
-4. ✅ **Navigation polish**
-   - Sidebar hover translate and active state shadow.
-
-### Testing
-- Manual UI verification with screenshots across Stats/Analytics/Rooms/Wallets/Settings.
-- Testing agent report: backend 96.3% pass; remaining widget serving issue is preview routing, not code.
-
-### Success Criteria
-- ✅ Dashboard feels production-grade (loading/empty/error states everywhere).
-- ✅ ErrorBoundary prevents white screens and provides recovery.
-
----
-
-## Phase 10 — Demo Video + Landing Page Embed 🟡 IN PROGRESS (P1)
-
-### User Stories
-1. As a visitor, I can watch a demo video directly on the landing page.
-2. As a visitor, the demo clarifies the guest booking experience (including optional calendar date picking).
-
-### Implementation Steps
-1. ✅ Provide downloadable/copyable demo assets gallery: `/demo-assets/`.
-2. 🟡 Embed HeyGen video in landing page:
-   - A video section exists and "Watch Demo" scrolls to it.
-   - Current HeyGen URL may require a **public/published embed link** to play without auth.
-   - Once correct public link/iframe is confirmed, update iframe `src` to the final share/embed URL.
-   - Ensure responsive layout and performance (lazy-load optional).
-
-### Success Criteria
-- Demo video plays publicly and improves conversion.
-
----
-
-## Phase 11 — Production Deployment (AWS) 🟡 UPCOMING
-
-### Notes
-- Node.js/Web3 stack is **not compatible** with Emergent’s default deployment environment.
-- Target deployment is **AWS** (App Runner or ECS) + MongoDB Atlas.
-
-### Implementation Steps
-1. Follow `DEPLOYMENT_AWS.md`.
-2. Configure environment variables in AWS:
-   - `OPENAI_API_KEY`
-   - `WALLETCONNECT_PROJECT_ID`
-   - `MONGO_URL`
-   - `JWT_SECRET`
-   - Any optional notification settings
-3. Set up CI/CD via GitHub.
-4. Ensure production routing supports widget hosting:
-   - Serve widget JS from backend domain/path (e.g., `api.domain.com/widget/bitsy-widget.js`).
-   - Confirm correct `Content-Type: application/javascript` and no SPA catch-all overrides.
-5. Validate production end-to-end:
-   - Widget embed on a sample HTML page.
-   - Dashboard auth + CRUD.
-   - Uploads.
-   - Web3 verification.
-   - MCP endpoint + analytics logging.
-   - Multi-language: validate auto-detect, selector, and non-English AI responses.
-
-### Success Criteria
-- Stable production environment with monitoring and predictable releases.
-- Widget loads reliably in real hotel sites (no routing conflicts).
-- End-to-end booking flow works with both conversational/calendar date capture.
-- Multi-language widget works reliably across supported languages.
-
----
-
-## Phase 12 — Multi-Language Support (Widget + AI) ✅ COMPLETED (P0)
-
-### Rationale
-Hotels serve global travelers. Multi-language support increases conversion and reduces friction, especially for international guests.
-
-### User Stories (Guest)
-1. As a guest, the widget auto-detects my language from my browser.
-2. As a guest, I can manually switch the widget language at any time.
-3. As a guest, the date picker and UI labels are translated.
-4. As a guest, the AI responds in my chosen language.
-
-### Implementation Steps (Delivered)
-1. ✅ **Widget translations**
-   - Added translations for 8 languages: **EN, ES, FR, DE, JA, ZH, PT, IT**.
-   - Translated key UI labels: send, placeholders, calendar actions, quick actions, payment labels.
-2. ✅ **Language detection + selector**
-   - Auto-detects browser language.
-   - Adds a dropdown language selector in widget header.
-3. ✅ **Localized date picker**
-   - Day-of-week header translated.
-   - Calendar actions translated.
-4. ✅ **AI language alignment**
-   - Widget sends `language` to backend.
-   - Backend passes `language` into LLM system prompt to force responses in target language.
-5. ✅ **Marketing alignment**
-   - Landing page feature card updated to highlight 8-language support.
-   - FAQ includes language support explanation.
-
-### Testing Notes
-- Widget JS passes syntax checks (`node --check`).
-- Backend restarted successfully after prompt function closure fix.
-- **Preview limitation remains:** widget path routing may collide in the preview; will be resolved in AWS routing.
-
-### Success Criteria
-- ✅ Guests can book in their language.
-- ✅ Widget UI and calendar are localized.
-
----
-
-## Appendix — Known Preview Environment Limitation (Non-Production)
-
-### Widget script path collision
-In the current preview environment, `/widget/*` may be routed to the React SPA and return HTML instead of JS.
-- Code-side serving is correct (`express.static` with JS MIME).
-- This should be resolved naturally in AWS deployment via proper ALB/nginx routing.
-
-Reference: `/app/PREVIEW_ENVIRONMENT_NOTES.md`
+## 4) Success Criteria
+- Hotels can toggle pay-at-property; crypto remains default.
+- Pay-at-property bookings show exact 48h confirmation deadline; auto-cancel works.
+- Guests can lookup bookings via email+phone, cancel eligible bookings, and list crypto bookings.
+- Marketplace supports crypto-only listings with on-chain proof and reliable transfer.
+- No regressions in existing hotel dashboard, widget chat, or crypto booking flow.

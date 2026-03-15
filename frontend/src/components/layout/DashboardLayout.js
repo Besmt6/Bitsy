@@ -12,12 +12,14 @@ import {
   LogOut,
   Menu,
   X,
-  BarChart3
+  BarChart3,
+  Calendar
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard/stats', icon: LayoutDashboard },
+  { name: 'Bookings', href: '/dashboard/bookings', icon: Calendar },
   { name: 'AI Discovery', href: '/dashboard/analytics', icon: BarChart3 },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
   { name: 'Rooms', href: '/dashboard/rooms', icon: Hotel },

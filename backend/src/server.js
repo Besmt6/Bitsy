@@ -15,7 +15,10 @@ import statsRoutes from './routes/stats.js';
 import mcpRoutes from './routes/mcp.js';
 import uploadRoutes from './routes/upload.js';
 import analyticsRoutes from './routes/analytics.js';
+import marketplaceRoutes from './routes/marketplace.js';
+import bookingsRoutes from './routes/bookings.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { initializeCronJobs } from './services/cronService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -67,6 +70,9 @@ mongoose.connect(`${MONGO_URL}/${DB_NAME}`)
   .then(() => {
     console.log('✅ Connected to MongoDB');
     console.log(`   Database: ${DB_NAME}`);
+    
+    // Initialize cron jobs after DB connection
+    initializeCronJobs();
   })
   .catch((err) => {
     console.error('❌ MongoDB connection error:', err);
@@ -92,6 +98,8 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/mcp', mcpRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/marketplace', marketplaceRoutes);
+app.use('/api/bookings', bookingsRoutes);
 
 // Root route
 app.get('/api', (req, res) => {

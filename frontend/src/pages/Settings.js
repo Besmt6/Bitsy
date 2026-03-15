@@ -5,12 +5,13 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
+import { Switch } from '../components/ui/switch';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { PhotoUploader } from '../components/PhotoUploader';
 import { PageLoadingSkeleton } from '../components/LoadingSkeletons';
 import { hotelAPI } from '../lib/api';
 import { toast } from 'sonner';
-import { Save, AlertCircle, CheckCircle } from 'lucide-react';
+import { Save, AlertCircle, CheckCircle, CreditCard } from 'lucide-react';
 
 const Settings = () => {
   const { user } = useAuth();
@@ -25,7 +26,11 @@ const Settings = () => {
     contactEmail: '',
     notificationEmail: '',
     telegramBotToken: '',
-    telegramChatId: ''
+    telegramChatId: '',
+    paymentSettings: {
+      cryptoEnabled: true,
+      payAtPropertyEnabled: false
+    }
   });
 
   useEffect(() => {
@@ -39,7 +44,11 @@ const Settings = () => {
         contactEmail: user.contactEmail || '',
         notificationEmail: user.notificationEmail || '',
         telegramBotToken: user.telegramBotToken || '',
-        telegramChatId: user.telegramChatId || ''
+        telegramChatId: user.telegramChatId || '',
+        paymentSettings: user.paymentSettings || {
+          cryptoEnabled: true,
+          payAtPropertyEnabled: false
+        }
       });
       setLoading(false);
     }
@@ -206,6 +215,78 @@ const Settings = () => {
                     value={settings.telegramChatId}
                     onChange={(e) => setSettings({...settings, telegramChatId: e.target.value})}
                   />
+
+        {/* Payment Methods */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              Payment Methods
+            </CardTitle>
+            <CardDescription>Configure which payment options guests can use</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Crypto Payment */}
+            <div className="flex items-start justify-between gap-4 p-4 border rounded-lg bg-primary/5 border-primary/20">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <Label className="text-base font-semibold">Crypto Payments</Label>
+                  <Badge variant="secondary" className="text-xs">Recommended</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Accept payments in Bitcoin, Ethereum, Polygon, and 6 other cryptocurrencies. Instant confirmation, zero chargebacks.
+                </p>
+                <ul className="text-xs text-muted-foreground space-y-1 ml-4">
+                  <li>• ✅ Instant confirmation & settlement</li>
+                  <li>• 🔒 On-chain verification (fraud-proof)</li>
+                  <li>• 💸 No chargeback risk</li>
+                  <li>• 🌐 Eligible for marketplace transfers</li>
+                </ul>
+              </div>
+              <Switch
+                checked={settings.paymentSettings.cryptoEnabled}
+                disabled
+                data-testid="settings-crypto-enabled-switch"
+              />
+            </div>
+
+            {/* Pay at Property */}
+            <div className="flex items-start justify-between gap-4 p-4 border rounded-lg">
+              <div className="flex-1">
+                <Label className="text-base font-semibold">Pay at Property</Label>
+                <p className="text-sm text-muted-foreground mt-2 mb-2">
+                  Allow guests to pay with card or cash when they check in. Guests must call to confirm booking, or it auto-cancels 48h before arrival.
+                </p>
+                <ul className="text-xs text-muted-foreground space-y-1 ml-4">
+                  <li>• 📞 Guest calls to confirm (reduces spam bookings)</li>
+                  <li>• ⏰ Auto-cancels if unconfirmed at 48h deadline</li>
+                  <li>• 🚫 Not eligible for marketplace transfers</li>
+                </ul>
+              </div>
+              <Switch
+                checked={settings.paymentSettings.payAtPropertyEnabled}
+                onCheckedChange={(checked) => setSettings({
+                  ...settings,
+                  paymentSettings: {
+                    ...settings.paymentSettings,
+                    payAtPropertyEnabled: checked
+                  }
+                })}
+                data-testid="settings-pay-at-property-enabled-switch"
+              />
+            </div>
+
+            {settings.paymentSettings.payAtPropertyEnabled && (
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="text-sm">
+                  <strong>Important:</strong> Make sure your contact phone number is up-to-date above. Guests will call this number to confirm their bookings.
+                </AlertDescription>
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
+
                 </div>
               </div>
             </div>
