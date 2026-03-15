@@ -14,6 +14,7 @@ import widgetRoutes from './routes/widget.js';
 import statsRoutes from './routes/stats.js';
 import mcpRoutes from './routes/mcp.js';
 import uploadRoutes from './routes/upload.js';
+import analyticsRoutes from './routes/analytics.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -78,6 +79,7 @@ app.use('/api/widget', widgetRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/mcp', mcpRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Root route
 app.get('/api', (req, res) => {

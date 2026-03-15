@@ -1,6 +1,8 @@
 import express from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import Hotel from '../models/Hotel.js';
 import Room from '../models/Room.js';
+import MCPSearchLog from '../models/MCPSearchLog.js';
 import { getSupportedChains } from '../services/web3Service.js';
 
 const router = express.Router();
@@ -91,6 +93,24 @@ router.post('/tools/:toolName', async (req, res) => {
   try {
     if (toolName === 'search_hotels') {
       const results = await searchHotels(params);
+      
+      // Log the search for analytics
+      try {
+        const source = detectAISource(req.headers['user-agent'] || '');
+        await MCPSearchLog.create({
+          searchId: uuidv4(),
+          timestamp: new Date(),
+          searchParams: params,
+          resultsCount: results.length,
+          hotelIdsReturned: results.map(r => r.hotelId),
+          userAgent: req.headers['user-agent'] || 'unknown',
+          source
+        });
+      } catch (logError) {
+        console.error('Failed to log MCP search:', logError);
+        // Don't fail the search if logging fails
+      }
+      
       res.json({
         content: [
           {
@@ -383,6 +403,15 @@ function formatSupportedChains(chains) {
   text += `⛓️  All transactions are verified on-chain in real-time.`;
   
   return text;
+}
+
+// Detect AI source from user agent
+function detectAISource(userAgent) {
+  const ua = userAgent.toLowerCase();
+  if (ua.includes('chatgpt') || ua.includes('openai')) return 'chatgpt';
+  if (ua.includes('claude') || ua.includes('anthropic')) return 'claude';
+  if (ua.includes('perplexity')) return 'perplexity';
+  return 'unknown';
 }
 
 export default router;

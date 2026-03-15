@@ -1,10 +1,6 @@
 [
   {
-    "content": "Test Web3 wallet integration end-to-end",
-    "status": "completed"
-  },
-  {
-    "content": "Verify all fixes with screenshots",
+    "content": "Test analytics tracking end-to-end",
     "status": "completed"
   }
 ]

@@ -191,7 +191,41 @@
 
 ---
 
-## Phase 7 — Testing, Hardening, UX Polish (Priority: P1)
+## Phase 7 — AI Discovery Analytics ✅ COMPLETED
+
+### User Stories
+1. As a hotel owner, I can see how many times my hotel appeared in AI searches (ChatGPT, Claude, Perplexity)
+2. As a hotel owner, I can see which AI platforms are discovering my hotel
+3. As a hotel owner, I can see top search queries that found my hotel
+4. As a hotel owner, I can track appearance trends over time
+
+### Implementation
+1. ✅ Created `MCPSearchLog` model to track every MCP search
+2. ✅ Added logging to `/api/mcp/tools/search_hotels` endpoint
+3. ✅ Detects AI source from User-Agent (ChatGPT, Claude, Perplexity)
+4. ✅ Created `/api/analytics/mcp-discovery` endpoint with:
+   - Total appearances (last 7/30/90 days)
+   - This month count
+   - Daily average
+   - Breakdown by AI source
+   - Top search locations
+   - Daily timeline chart
+   - Recent searches list
+5. ✅ Built Analytics dashboard page with visualizations
+6. ✅ Added "AI Discovery" navigation link in sidebar
+
+### Success Criteria
+- ✅ Every MCP search is logged automatically
+- ✅ Hotels can see "Your hotel appeared in X AI searches this month"
+- ✅ Analytics show which AI (ChatGPT/Claude) found the hotel
+- ✅ Timeline chart shows trends over time
+- ✅ Recent searches show what travelers are looking for
+
+**STATUS: COMPLETED**
+
+---
+
+## Phase 8 — Testing, Hardening, UX Polish (Priority: P1)
 
 ### User Stories (Quality)
 1. As a guest, I get clear errors if dates are invalid or room unavailable.

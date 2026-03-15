@@ -14,6 +14,7 @@ import Rooms from './pages/Rooms';
 import Wallets from './pages/Wallets';
 import Widget from './pages/Widget';
 import Stats from './pages/Stats';
+import Analytics from './pages/Analytics';
 
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -50,6 +51,7 @@ const AppRoutes = () => {
       }>
         <Route index element={<Navigate to="/dashboard/stats" replace />} />
         <Route path="stats" element={<Stats />} />
+        <Route path="analytics" element={<Analytics />} />
         <Route path="settings" element={<Settings />} />
         <Route path="rooms" element={<Rooms />} />
         <Route path="wallets" element={<Wallets />} />

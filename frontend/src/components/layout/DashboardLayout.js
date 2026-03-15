@@ -10,16 +10,18 @@ import {
   Code, 
   LogOut,
   Menu,
-  X
+  X,
+  BarChart3
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 const navigation = [
-  { name: 'Dashboard', href: '/stats', icon: LayoutDashboard },
-  { name: 'Settings', href: '/settings', icon: Settings },
-  { name: 'Rooms', href: '/rooms', icon: Hotel },
-  { name: 'Wallets', href: '/wallets', icon: Wallet },
-  { name: 'Widget', href: '/widget', icon: Code },
+  { name: 'Dashboard', href: '/dashboard/stats', icon: LayoutDashboard },
+  { name: 'AI Discovery', href: '/dashboard/analytics', icon: BarChart3 },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  { name: 'Rooms', href: '/dashboard/rooms', icon: Hotel },
+  { name: 'Wallets', href: '/dashboard/wallets', icon: Wallet },
+  { name: 'Widget', href: '/dashboard/widget', icon: Code },
 ];
 
 const DashboardLayout = () => {

@@ -53,4 +53,17 @@ export const statsAPI = {
   getGuests: () => api.get('/api/stats/guests')
 };
 
+// Analytics API
+export const analyticsAPI = {
+  getMCPDiscovery: async (days = 30) => {
+    const response = await api.get(`/api/analytics/mcp-discovery?days=${days}`);
+    return response.data.analytics;
+  },
+  
+  getOverview: async () => {
+    const response = await api.get('/api/analytics/overview');
+    return response.data.overview;
+  }
+};
+
 export default api;
