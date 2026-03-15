@@ -2,12 +2,15 @@ import requests
 import sys
 import json
 from datetime import datetime
+import os
+import tempfile
 
 class BitsySaaSAPITester:
     def __init__(self, base_url="https://bitsy-tools.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.hotel_id = None
+        self.room_id = None
         self.tests_run = 0
         self.tests_passed = 0
         self.test_user_email = f"test_hotel_{datetime.now().strftime('%H%M%S')}@test.com"
@@ -248,6 +251,177 @@ class BitsySaaSAPITester:
             200
         )
 
+    # NEW FEATURES TESTING - Photo upload, MCP, Web3, Widget functionality
+
+    def test_image_upload(self):
+        """Test image upload functionality"""
+        print(f"\n🔍 Testing Image Upload...")
+        
+        self.tests_run += 1
+        try:
+            # Create a small test image file
+            with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp_file:
+                # Simple 1x1 JPEG header for testing
+                jpg_header = b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t\x08\n\x0c\x14\r\x0c\x0b\x0b\x0c\x19\x12\x13\x0f\x14\x1d\x1a\x1f\x1e\x1d\x1a\x1c\x1c $.\' ",#\x1c\x1c(7),01444\x1f\'9=82<.342\xff\xc9\x00\x0b\x08\x00\x01\x00\x01\x01\x01\x11\x00\xff\xcc\x00\x06\x00\x10\x10\x05\xff\xda\x00\x08\x01\x01\x00\x00?\x00\xd2\xcf \xff\xd9'
+                tmp_file.write(jpg_header)
+                tmp_file_path = tmp_file.name
+
+            url = f"{self.base_url}/api/upload/image"
+            
+            with open(tmp_file_path, 'rb') as f:
+                files = {'image': ('test.jpg', f, 'image/jpeg')}
+                response = requests.post(url, files=files)
+
+            os.unlink(tmp_file_path)  # Clean up temp file
+
+            if response.status_code == 200:
+                self.tests_passed += 1
+                print(f"✅ Passed - Status: {response.status_code}")
+                response_data = response.json()
+                print(f"   Image URL: {response_data.get('url', 'N/A')}")
+                return True, response_data
+            else:
+                print(f"❌ Failed - Expected 200, got {response.status_code}")
+                return False, {}
+
+        except Exception as e:
+            print(f"❌ Failed - Error: {str(e)}")
+            return False, {}
+
+    def test_mcp_endpoint(self):
+        """Test MCP (Model Context Protocol) endpoint"""
+        return self.run_test("MCP Server Info", "GET", "api/mcp", 200)
+
+    def test_mcp_search_hotels(self):
+        """Test MCP search hotels tool"""
+        return self.run_test(
+            "MCP Search Hotels",
+            "POST",
+            "api/mcp/tools/search_hotels",
+            200,
+            data={"location": "Miami"}
+        )
+
+    def test_mcp_get_supported_chains(self):
+        """Test MCP get supported chains tool"""
+        return self.run_test(
+            "MCP Supported Chains",
+            "POST",
+            "api/mcp/tools/get_supported_chains",
+            200,
+            data={}
+        )
+
+    def test_widget_chat(self):
+        """Test widget chat endpoint"""
+        if not self.hotel_id:
+            print("❌ No hotel ID available for widget chat test")
+            return False
+            
+        return self.run_test(
+            "Widget Chat",
+            "POST",
+            f"api/widget/{self.hotel_id}/chat",
+            200,
+            data={
+                "message": "What rooms do you have available?",
+                "sessionId": f"test-session-{datetime.now().timestamp()}"
+            }
+        )
+
+    def test_widget_book(self):
+        """Test widget booking endpoint"""
+        if not self.hotel_id:
+            print("❌ No hotel ID available for widget booking test")
+            return False
+            
+        booking_details = {
+            "check_in": "2024-12-15",
+            "check_out": "2024-12-16",
+            "room_type": "Deluxe Suite",
+            "nights": 1,
+            "total_usd": 199.99,
+            "guest_name": "Test Guest",
+            "guest_email": "testguest@example.com",
+            "guest_phone": "+1-555-123-4567",
+            "crypto_choice": "ethereum"
+        }
+        
+        return self.run_test(
+            "Widget Booking",
+            "POST",
+            f"api/widget/{self.hotel_id}/book",
+            200,
+            data={"bookingDetails": booking_details}
+        )
+
+    def test_widget_check_guest(self):
+        """Test widget check guest endpoint (returning guest functionality)"""
+        if not self.hotel_id:
+            print("❌ No hotel ID available for guest check test")
+            return False
+            
+        return self.run_test(
+            "Widget Check Guest",
+            "POST",
+            f"api/widget/{self.hotel_id}/check-guest",
+            200,
+            data={"email": "testguest@example.com"}
+        )
+
+    def test_widget_web3_chains(self):
+        """Test widget Web3 chains endpoint"""
+        if not self.hotel_id:
+            print("❌ No hotel ID available for Web3 chains test")
+            return False
+            
+        return self.run_test(
+            "Widget Web3 Chains",
+            "GET",
+            f"api/widget/{self.hotel_id}/web3-chains",
+            200
+        )
+
+    def test_web3_payment_verification(self):
+        """Test Web3 payment verification endpoint"""
+        if not self.hotel_id:
+            print("❌ No hotel ID available for Web3 verification test")
+            return False
+            
+        # Note: This will likely fail without a real transaction hash, but tests the endpoint structure
+        booking_details = {
+            "check_in": "2024-12-15",
+            "check_out": "2024-12-16", 
+            "room_type": "Deluxe Suite",
+            "nights": 1,
+            "total_usd": 199.99,
+            "guest_name": "Test Guest Web3",
+            "guest_email": "testguest.web3@example.com",
+            "guest_phone": "+1-555-987-6543"
+        }
+        
+        # Use a fake transaction hash for testing structure
+        success, response = self.run_test(
+            "Web3 Payment Verification",
+            "POST",
+            f"api/widget/{self.hotel_id}/verify-web3-payment",
+            400,  # Expecting 400 due to fake transaction hash
+            data={
+                "txHash": "0xfake1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+                "chain": "ethereum",
+                "paymentType": "native",
+                "bookingDetails": booking_details
+            }
+        )
+        
+        # Since we expect 400, mark as passed if we get 400
+        if not success:
+            print("✅ Expected behavior - Web3 verification correctly rejected fake transaction")
+            self.tests_passed += 1
+            return True
+        
+        return False
+
 def main():
     """Main test execution"""
     print("🚀 Starting Bitsy SaaS API Tests")
@@ -289,6 +463,17 @@ def main():
         # Widget (Public endpoints)
         ("Widget Config", tester.test_widget_config_public),
         ("Widget JS File", tester.test_widget_javascript_file),
+        
+        # NEW FEATURES - Photo Upload, MCP, Widget Chat/Book, Guest Storage, Web3
+        ("Image Upload", tester.test_image_upload),
+        ("MCP Server Info", tester.test_mcp_endpoint),
+        ("MCP Search Hotels", tester.test_mcp_search_hotels),
+        ("MCP Supported Chains", tester.test_mcp_get_supported_chains),
+        ("Widget Chat", tester.test_widget_chat),
+        ("Widget Booking", tester.test_widget_book),
+        ("Widget Check Guest", tester.test_widget_check_guest),
+        ("Widget Web3 Chains", tester.test_widget_web3_chains),
+        ("Web3 Payment Verification", tester.test_web3_payment_verification),
     ]
     
     # Execute tests

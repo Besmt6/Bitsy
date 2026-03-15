@@ -6,6 +6,7 @@ import { Label } from '../components/ui/label';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { Alert, AlertDescription } from '../components/ui/alert';
+import { PhotoUploader } from '../components/PhotoUploader';
 import { hotelAPI } from '../lib/api';
 import { toast } from 'sonner';
 import { Save, AlertCircle, CheckCircle } from 'lucide-react';
@@ -16,6 +17,7 @@ const Settings = () => {
   const [settings, setSettings] = useState({
     hotelName: '',
     logoUrl: '',
+    photos: [],
     videoUrl: '',
     contactPhone: '',
     contactEmail: '',
@@ -29,6 +31,7 @@ const Settings = () => {
       setSettings({
         hotelName: user.hotelName || '',
         logoUrl: user.logoUrl || '',
+        photos: user.photos || [],
         videoUrl: user.videoUrl || '',
         contactPhone: user.contactPhone || '',
         contactEmail: user.contactEmail || '',
@@ -81,15 +84,26 @@ const Settings = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="logoUrl">Logo URL</Label>
+              <Label htmlFor="logoUrl">Hotel Logo</Label>
               <Input
                 id="logoUrl"
                 type="url"
                 placeholder="https://example.com/logo.png"
                 value={settings.logoUrl}
                 onChange={(e) => setSettings({...settings, logoUrl: e.target.value})}
+                data-testid="settings-logo-url-input"
               />
-              <p className="text-xs text-muted-foreground">Direct URL to your hotel logo</p>
+              <p className="text-xs text-muted-foreground">Direct URL to your hotel logo (or upload below)</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Hotel Gallery</Label>
+              <PhotoUploader
+                photos={settings.photos}
+                onPhotosChange={(newPhotos) => setSettings({...settings, photos: newPhotos})}
+                maxPhotos={8}
+              />
+              <p className="text-xs text-muted-foreground">Upload up to 8 photos showcasing your hotel</p>
             </div>
 
             <div className="space-y-2">

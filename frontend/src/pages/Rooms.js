@@ -5,6 +5,7 @@ import { Label } from '../components/ui/label';
 import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/alert-dialog';
+import { PhotoUploader } from '../components/PhotoUploader';
 import { roomAPI } from '../lib/api';
 import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, Hotel } from 'lucide-react';
@@ -18,7 +19,8 @@ const Rooms = () => {
     roomType: '',
     description: '',
     rate: '',
-    availableCount: ''
+    availableCount: '',
+    photos: []
   });
 
   useEffect(() => {
@@ -75,7 +77,8 @@ const Rooms = () => {
       roomType: '',
       description: '',
       rate: '',
-      availableCount: ''
+      availableCount: '',
+      photos: []
     });
     setEditingRoom(null);
   };
@@ -86,7 +89,8 @@ const Rooms = () => {
       roomType: room.roomType,
       description: room.description,
       rate: room.rate.toString(),
-      availableCount: room.availableCount.toString()
+      availableCount: room.availableCount.toString(),
+      photos: room.photos || []
     });
     setDialogOpen(true);
   };
@@ -124,6 +128,7 @@ const Rooms = () => {
                   value={formData.roomType}
                   onChange={(e) => setFormData({...formData, roomType: e.target.value})}
                   required
+                  data-testid="room-form-type-input"
                 />
               </div>
 
@@ -134,6 +139,7 @@ const Rooms = () => {
                   placeholder="Queen bed, ocean view..."
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  data-testid="room-form-description-input"
                 />
               </div>
 
@@ -149,6 +155,7 @@ const Rooms = () => {
                     value={formData.rate}
                     onChange={(e) => setFormData({...formData, rate: e.target.value})}
                     required
+                    data-testid="room-form-rate-input"
                   />
                 </div>
 
@@ -162,15 +169,26 @@ const Rooms = () => {
                     value={formData.availableCount}
                     onChange={(e) => setFormData({...formData, availableCount: e.target.value})}
                     required
+                    data-testid="room-form-available-input"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Room Photos</Label>
+                <PhotoUploader
+                  photos={formData.photos}
+                  onPhotosChange={(newPhotos) => setFormData({...formData, photos: newPhotos})}
+                  maxPhotos={6}
+                />
+                <p className="text-xs text-muted-foreground">Upload up to 6 photos for this room type</p>
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit">
+                <Button type="submit" data-testid="room-form-submit-button">
                   {editingRoom ? 'Update' : 'Create'}
                 </Button>
               </div>
@@ -207,7 +225,16 @@ const Rooms = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {rooms.map((room) => (
-            <Card key={room._id}>
+            <Card key={room._id} data-testid={`room-card-${room._id}`}>
+              {room.photos && room.photos.length > 0 && (
+                <div className="relative h-48 overflow-hidden rounded-t-2xl">
+                  <img
+                    src={room.photos[0].url}
+                    alt={room.roomType}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
               <CardHeader>
                 <CardTitle className="flex items-start justify-between">
                   <span>{room.roomType}</span>
@@ -259,6 +286,12 @@ const Rooms = () => {
                     <span className="text-sm text-muted-foreground">Available</span>
                     <span className="text-sm font-medium">{room.availableCount} rooms</span>
                   </div>
+                  {room.photos && room.photos.length > 0 && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Photos</span>
+                      <span className="text-sm font-medium">{room.photos.length}</span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

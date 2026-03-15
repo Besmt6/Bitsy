@@ -1,10 +1,14 @@
 [
   {
-    "content": "Test landing page with screenshots",
+    "content": "Test photo upload flow end-to-end",
     "status": "completed"
   },
   {
-    "content": "Fix any frontend errors before deployment",
-    "status": "completed"
+    "content": "Run comprehensive testing agent on all features",
+    "status": "in_progress"
+  },
+  {
+    "content": "Fix all bugs reported by testing agent",
+    "status": "pending"
   }
 ]
