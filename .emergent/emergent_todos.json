@@ -1,14 +1,18 @@
 [
   {
-    "content": "Record 2: Widget AI chat booking flow",
-    "status": "pending"
-  },
-  {
-    "content": "Record 3: MetaMask wallet payment",
-    "status": "pending"
-  },
-  {
-    "content": "Record 5: Landing page hero + calculator",
+    "content": "Create Widget Chat mockup component",
     "status": "completed"
+  },
+  {
+    "content": "Create MetaMask payment mockup component",
+    "status": "completed"
+  },
+  {
+    "content": "Create ChatGPT MCP search mockup",
+    "status": "completed"
+  },
+  {
+    "content": "Screenshot all mockups at high quality",
+    "status": "in_progress"
   }
 ]

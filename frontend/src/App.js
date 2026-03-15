@@ -15,6 +15,9 @@ import Wallets from './pages/Wallets';
 import Widget from './pages/Widget';
 import Stats from './pages/Stats';
 import Analytics from './pages/Analytics';
+import WidgetMockup from './pages/WidgetMockup';
+import MetaMaskMockup from './pages/MetaMaskMockup';
+import ChatGPTMockup from './pages/ChatGPTMockup';
 
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -43,6 +46,11 @@ const AppRoutes = () => {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      
+      {/* Video Mockup Routes */}
+      <Route path="/mockup/widget" element={<WidgetMockup />} />
+      <Route path="/mockup/metamask" element={<MetaMaskMockup />} />
+      <Route path="/mockup/chatgpt" element={<ChatGPTMockup />} />
       
       <Route path="/dashboard" element={
         <ProtectedRoute>
