@@ -43,11 +43,14 @@ const LandingPage = () => {
             <a href="#features" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-features-link">Features</a>
             <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-pricing-link">Pricing</a>
             <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-how-it-works-link">How It Works</a>
+            <Link to="/guest" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors border-l pl-8 ml-2" data-testid="nav-guest-portal-link">
+              👤 Guest Portal
+            </Link>
           </nav>
 
           <div className="flex items-center space-x-4">
             <Link to="/login">
-              <Button variant="ghost" size="sm" data-testid="landing-signin-button">Sign In</Button>
+              <Button variant="ghost" size="sm" data-testid="landing-signin-button">Hotel Sign In</Button>
             </Link>
             <Link to="/register">
               <Button size="sm" data-testid="landing-get-started-button">Get Started Free</Button>
@@ -117,6 +120,35 @@ const LandingPage = () => {
                 <span>Cancel anytime</span>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Guest Access Banner */}
+      <section className="py-6 bg-muted/30 border-y" data-testid="guest-access-banner">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <Card className="border-primary/20">
+              <CardContent className="py-4">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Users className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="text-center md:text-left">
+                      <p className="font-semibold text-foreground">Already have a booking?</p>
+                      <p className="text-sm text-muted-foreground">View details, transfer to others, or list on marketplace</p>
+                    </div>
+                  </div>
+                  <Link to="/guest">
+                    <Button variant="default" size="lg" data-testid="guest-access-cta-button">
+                      Guest Portal
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
