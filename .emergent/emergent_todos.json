@@ -1,30 +1,58 @@
 [
   {
-    "content": "Fix backend startup issues (emailService.js Brevo SDK syntax)",
+    "content": "Create Admin model and authentication in backend",
     "status": "completed"
   },
   {
-    "content": "Obtain Brevo API key from user",
+    "content": "Create admin API routes (login, platform stats, hotels list, commission tracking)",
     "status": "completed"
   },
   {
-    "content": "Configure Brevo API key in backend/.env",
+    "content": "Add admin theme tokens to frontend index.css",
     "status": "completed"
   },
   {
-    "content": "Test email sending via /api/email/test endpoint",
+    "content": "Create AdminShell layout component with sidebar navigation",
     "status": "completed"
   },
   {
-    "content": "Verify all email triggers (booking, password reset, billing)",
+    "content": "Create reusable admin components (KpiCard, StatusPill)",
     "status": "completed"
   },
   {
-    "content": "Fix email validation error (400 vs 500 status)",
+    "content": "Build Admin Login page (/admin/login)",
     "status": "completed"
   },
   {
-    "content": "Fix demo video loading issue on landing page",
+    "content": "Build Admin Dashboard Home with platform metrics",
+    "status": "completed"
+  },
+  {
+    "content": "Build Hotel Management page with table",
+    "status": "completed"
+  },
+  {
+    "content": "Build Commission Tracking page",
+    "status": "completed"
+  },
+  {
+    "content": "Build Billing Alerts page",
+    "status": "completed"
+  },
+  {
+    "content": "Build Activity Feed page",
+    "status": "completed"
+  },
+  {
+    "content": "Build Hotel Details page",
+    "status": "completed"
+  },
+  {
+    "content": "Add admin routes to App.js",
+    "status": "completed"
+  },
+  {
+    "content": "Test admin dashboard functionality",
     "status": "completed"
   }
 ]

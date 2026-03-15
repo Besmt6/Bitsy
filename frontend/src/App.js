@@ -27,6 +27,15 @@ import ForgotPassword from './pages/ForgotPassword';
 import BrowseHotels from './pages/BrowseHotels';
 import PublicHotelPage from './pages/PublicHotelPage';
 
+// Admin Pages
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminHotels from './pages/admin/AdminHotels';
+import AdminHotelDetails from './pages/admin/AdminHotelDetails';
+import AdminCommissions from './pages/admin/AdminCommissions';
+import AdminBilling from './pages/admin/AdminBilling';
+import AdminActivity from './pages/admin/AdminActivity';
+
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
 
@@ -72,6 +81,15 @@ const AppRoutes = () => {
       {/* Public Hotel Pages */}
       <Route path="/browse" element={<BrowseHotels />} />
       <Route path="/book/:hotelSlug" element={<PublicHotelPage />} />
+      
+      {/* Admin Routes */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/admin/hotels" element={<AdminHotels />} />
+      <Route path="/admin/hotels/:hotelId" element={<AdminHotelDetails />} />
+      <Route path="/admin/commissions" element={<AdminCommissions />} />
+      <Route path="/admin/billing" element={<AdminBilling />} />
+      <Route path="/admin/activity" element={<AdminActivity />} />
       
       <Route path="/dashboard" element={
         <ProtectedRoute>

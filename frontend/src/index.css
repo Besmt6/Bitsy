@@ -89,6 +89,51 @@
     --shadow-md: 0 20px 60px rgba(2, 6, 23, 0.10);
     --noise-opacity: 0.06;
   }
+
+  /* Admin Dashboard Theme */
+  [data-theme='admin'] {
+    --background: 210 20% 98%;
+    --foreground: 222 22% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 22% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 22% 10%;
+    
+    --primary: 171 80% 40%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 215 25% 95%;
+    --secondary-foreground: 222 16% 22%;
+    
+    --muted: 215 25% 95%;
+    --muted-foreground: 222 10% 42%;
+    
+    --accent: 171 65% 32%;
+    --accent-foreground: 0 0% 100%;
+    
+    --border: 214 18% 86%;
+    --input: 214 18% 86%;
+    --ring: 171 80% 40%;
+    
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 7%;
+    
+    --success: 152 62% 36%;
+    --success-foreground: 0 0% 100%;
+    
+    --admin-sidebar: 222 47% 11%;
+    --admin-sidebar-foreground: 210 25% 96%;
+    --admin-sidebar-muted: 222 35% 16%;
+    --admin-sidebar-border: 222 25% 18%;
+    
+    --shadow-sm: 0 1px 2px rgba(2, 6, 23, 0.06);
+    --shadow-md: 0 18px 45px rgba(2, 6, 23, 0.10);
+    --shadow-ring: 0 0 0 4px rgba(20, 184, 166, 0.18);
+    --noise-opacity: 0.035;
+  }
   
   html, body {
     font-family: var(--font-body);

@@ -24,6 +24,7 @@ import passwordRoutes from './routes/password.js';
 import billingRoutes from './routes/billing.js';
 import publicRoutes from './routes/public.js';
 import emailRoutes from './routes/email.js';
+import adminRoutes from './routes/admin.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { generalLimiter, authLimiter, publicLimiter, bookingLimiter } from './middleware/rateLimiter.js';
 import { initializeCronJobs } from './services/cronService.js';
@@ -169,6 +170,7 @@ app.use('/api/password', passwordRoutes); // authLimiter disabled
 app.use('/api/billing', billingRoutes);
 app.use('/api/public', publicRoutes); // publicLimiter disabled
 app.use('/api/email', emailRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Root route
 app.get('/api', (req, res) => {
