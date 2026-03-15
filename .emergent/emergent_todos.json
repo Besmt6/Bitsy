@@ -1,34 +1,26 @@
 [
   {
-    "content": "Get Brevo API key and sender email from user",
+    "content": "Fix backend startup issues (emailService.js Brevo SDK syntax)",
+    "status": "completed"
+  },
+  {
+    "content": "Obtain Brevo API key from user",
     "status": "in_progress"
   },
   {
-    "content": "Install Brevo SDK and dependencies",
+    "content": "Configure Brevo API key in backend/.env",
     "status": "pending"
   },
   {
-    "content": "Create email service with core transactional emails",
+    "content": "Test email sending via /api/email/test endpoint",
     "status": "pending"
   },
   {
-    "content": "Implement booking confirmation emails (guest + hotel)",
+    "content": "Verify all email triggers (booking, password reset, billing)",
     "status": "pending"
   },
   {
-    "content": "Implement password reset emails",
-    "status": "pending"
-  },
-  {
-    "content": "Implement billing alert emails (grace period, blocked)",
-    "status": "pending"
-  },
-  {
-    "content": "Integrate email service into booking/auth/billing routes",
-    "status": "pending"
-  },
-  {
-    "content": "Test email delivery with real Brevo API",
+    "content": "Fix demo video loading issue on landing page",
     "status": "pending"
   }
 ]

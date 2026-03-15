@@ -2,6 +2,8 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import Hotel from '../models/Hotel.js';
 import OTP from '../models/OTP.js';
+import emailService from '../services/emailService.js';
+import logger from '../config/logger.js';
 
 const router = express.Router();
 
@@ -48,15 +50,17 @@ router.post('/request-reset', async (req, res) => {
 
     await otpRecord.save();
 
-    // TODO: Send email with OTP (for now, log it)
-    console.log(`🔐 Password reset OTP for ${email}: ${otp} (expires in 10 min)`);
-
-    // In production, send via email service:
-    // await sendEmail({
-    //   to: email,
-    //   subject: 'Bitsy Password Reset',
-    //   text: `Your password reset code is: ${otp}. Valid for 10 minutes.`
-    // });
+    // 📧 Send email with OTP
+    if (emailService.isConfigured()) {
+      emailService.sendPasswordReset(
+        hotel.email,
+        hotel.hotelName,
+        otp // Using OTP as resetToken
+      ).catch(err => logger.error('Failed to send password reset email', { error: err.message }));
+    } else {
+      // Development fallback
+      logger.warn('⚠️  Email not configured, OTP logged to console', { email, otp });
+    }
 
     res.json({ 
       success: true, 

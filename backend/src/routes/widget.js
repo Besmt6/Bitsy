@@ -8,6 +8,8 @@ import { generateQRCode } from '../services/qrService.js';
 import { sendNotification } from '../services/notificationService.js';
 import { getWeb3Service, getSupportedChains } from '../services/web3Service.js';
 import { updateBillingStatus } from '../services/billingService.js';
+import emailService from '../services/emailService.js';
+import logger from '../config/logger.js';
 
 const router = express.Router();
 
@@ -252,6 +254,56 @@ router.post('/:hotelId/book', async (req, res) => {
       walletAddress: paymentMethod === 'crypto' ? hotel.wallets[bookingDetails.crypto_choice] : null,
       isReturningGuest: guest.totalBookings > 1
     });
+
+    // 📧 Send email notifications (non-blocking)
+    if (emailService.isConfigured()) {
+      // Send booking confirmation to guest
+      emailService.sendBookingConfirmation(
+        {
+          bookingRef,
+          roomType: bookingDetails.room_type,
+          checkIn: bookingDetails.check_in,
+          checkOut: bookingDetails.check_out,
+          nights: bookingDetails.nights,
+          totalAmount: bookingDetails.total_usd,
+          paymentMethod: bookingDetails.crypto_choice || 'pay_at_property'
+        },
+        {
+          email: guest.email,
+          name: guest.name
+        },
+        {
+          hotelName: hotel.hotelName,
+          contactPhone: hotel.contactPhone,
+          contactEmail: hotel.contactEmail
+        }
+      ).catch(err => logger.error('Failed to send booking confirmation email', { error: err.message }));
+
+      // Send new booking alert to hotel
+      emailService.sendNewBookingAlert(
+        {
+          bookingRef,
+          roomType: bookingDetails.room_type,
+          checkIn: bookingDetails.check_in,
+          checkOut: bookingDetails.check_out,
+          nights: bookingDetails.nights,
+          totalAmount: bookingDetails.total_usd,
+          paymentMethod: bookingDetails.crypto_choice || 'pay_at_property',
+          hotelName: hotel.hotelName
+        },
+        {
+          email: guest.email,
+          name: guest.name,
+          phone: guest.phone
+        },
+        {
+          email: hotel.email,
+          hotelName: hotel.hotelName,
+          contactPhone: hotel.contactPhone,
+          contactEmail: hotel.contactEmail
+        }
+      ).catch(err => logger.error('Failed to send new booking alert email', { error: err.message }));
+    }
 
     // Add grace period warning if applicable
     if (hotel.billing.billingStatus === 'grace') {

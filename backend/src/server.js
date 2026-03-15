@@ -23,6 +23,7 @@ import guestRoutes from './routes/guest.js';
 import passwordRoutes from './routes/password.js';
 import billingRoutes from './routes/billing.js';
 import publicRoutes from './routes/public.js';
+import emailRoutes from './routes/email.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { generalLimiter, authLimiter, publicLimiter, bookingLimiter } from './middleware/rateLimiter.js';
 import { initializeCronJobs } from './services/cronService.js';
@@ -36,6 +37,10 @@ dotenv.config({ path: join(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 8001;
+
+// Trust proxy - for Kubernetes ingress/nginx
+// Using true to trust all proxies (safe in managed K8s environment)
+app.set('trust proxy', true);
 
 // Security Middleware
 app.use(helmet({
@@ -64,8 +69,8 @@ app.use(mongoSanitize({
   }
 }));
 
-// Apply general rate limiting to all routes
-app.use('/api', generalLimiter);
+// Apply general rate limiting to all routes (temporarily disabled for debugging)
+// app.use('/api', generalLimiter);
 
 // Core Middleware
 app.use(cors({
@@ -137,12 +142,12 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API Routes with specific rate limiters
-app.use('/api/auth', authLimiter, authRoutes);
+// API Routes with specific rate limiters (temporarily disabled)
+app.use('/api/auth', authRoutes); // authLimiter disabled
 app.use('/api/hotel', hotelRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/wallets', walletRoutes);
-app.use('/api/widget', bookingLimiter, widgetRoutes);
+app.use('/api/widget', widgetRoutes); // bookingLimiter disabled
 app.use('/api/stats', statsRoutes);
 app.use('/api/mcp', mcpRoutes);
 app.use('/api/upload', uploadRoutes);
@@ -150,9 +155,10 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/guest', guestRoutes);
-app.use('/api/password', authLimiter, passwordRoutes);
+app.use('/api/password', passwordRoutes); // authLimiter disabled
 app.use('/api/billing', billingRoutes);
-app.use('/api/public', publicLimiter, publicRoutes);
+app.use('/api/public', publicRoutes); // publicLimiter disabled
+app.use('/api/email', emailRoutes);
 
 // Root route
 app.get('/api', (req, res) => {

@@ -1,5 +1,7 @@
 import BookingStat from '../models/BookingStat.js';
 import Hotel from '../models/Hotel.js';
+import emailService from './emailService.js';
+import logger from '../config/logger.js';
 
 /**
  * Calculate total confirmed booking revenue for a hotel
@@ -26,7 +28,7 @@ export const calculateTrialRevenue = async (hotelId) => {
 
     return result.length > 0 ? result[0].totalRevenue : 0;
   } catch (error) {
-    console.error('Error calculating trial revenue:', error);
+    logger.error('Error calculating trial revenue', { error: error.message, hotelId });
     throw error;
   }
 };
@@ -51,6 +53,8 @@ export const updateBillingStatus = async (hotel) => {
     const GRACE_PERIOD_DAYS = 7;
 
     // State transitions
+    const previousStatus = hotel.billing.billingStatus;
+    
     if (trialRevenue < hotel.billing.trialLimitUsd) {
       // Still in trial
       hotel.billing.billingStatus = 'trial';
@@ -64,12 +68,48 @@ export const updateBillingStatus = async (hotel) => {
         hotel.billing.graceEndsAt = new Date(now.getTime() + (GRACE_PERIOD_DAYS * 24 * 60 * 60 * 1000));
         hotel.billing.billingStatus = 'grace';
         
-        console.log(`⚠️ Hotel ${hotel.hotelName} exceeded trial limit. Grace period until: ${hotel.billing.graceEndsAt}`);
+        const commissionOwed = Math.round(trialRevenue * 0.02 * 100) / 100;
+        const graceDaysRemaining = GRACE_PERIOD_DAYS;
+        
+        logger.warn(`⚠️ Hotel ${hotel.hotelName} exceeded trial limit. Grace period until: ${hotel.billing.graceEndsAt}`);
+        
+        // 📧 Send grace period alert email
+        if (emailService.isConfigured() && previousStatus !== 'grace') {
+          emailService.sendGracePeriodAlert(
+            {
+              email: hotel.email,
+              hotelName: hotel.hotelName
+            },
+            {
+              trialRevenue,
+              commissionOwed,
+              graceEndsAt: hotel.billing.graceEndsAt,
+              daysRemaining: graceDaysRemaining
+            }
+          ).catch(err => logger.error('Failed to send grace period alert email', { error: err.message }));
+        }
       } else if (hotel.billing.billingStatus !== 'active') {
         // Already exceeded - check if grace period expired
         if (now > hotel.billing.graceEndsAt) {
+          const wasBlocked = hotel.billing.billingStatus === 'blocked';
           hotel.billing.billingStatus = 'blocked';
-          console.log(`🚫 Hotel ${hotel.hotelName} grace period expired. Blocking new bookings.`);
+          
+          const commissionOwed = Math.round(trialRevenue * 0.02 * 100) / 100;
+          
+          logger.error(`🚫 Hotel ${hotel.hotelName} grace period expired. Blocking new bookings.`);
+          
+          // 📧 Send account blocked alert email (only once when first blocked)
+          if (emailService.isConfigured() && !wasBlocked) {
+            emailService.sendAccountBlockedAlert(
+              {
+                email: hotel.email,
+                hotelName: hotel.hotelName
+              },
+              {
+                commissionOwed
+              }
+            ).catch(err => logger.error('Failed to send account blocked alert email', { error: err.message }));
+          }
         } else {
           hotel.billing.billingStatus = 'grace';
         }
