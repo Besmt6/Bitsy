@@ -97,7 +97,7 @@ app.use('/uploads', express.static(join(__dirname, '../public/uploads')));
 app.use('/demo-assets', express.static(join(__dirname, '../public/demo-assets')));
 
 // Serve reports and documentation
-app.use('/reports', express.static(join(__dirname, '../public'), {
+app.use('/api/reports', express.static(join(__dirname, '../public'), {
   setHeaders: (res, path) => {
     if (path.endsWith('.md')) {
       res.setHeader('Content-Type', 'text/markdown; charset=UTF-8');
