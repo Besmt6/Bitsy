@@ -65,6 +65,37 @@ const LandingPage = () => {
         
         <div className="container mx-auto px-4 py-24 md:py-36 relative">
           <div className="max-w-5xl mx-auto text-center space-y-10">
+            {/* User Type Selector - Prominent at Top */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto mb-8">
+              <Link to="/register">
+                <Card className="border-2 border-primary hover:border-primary hover:shadow-xl transition-all duration-300 cursor-pointer group h-full">
+                  <CardContent className="pt-6 text-center">
+                    <Building2 className="h-10 w-10 mx-auto text-primary mb-3 group-hover:scale-110 transition-transform" />
+                    <h3 className="font-heading font-bold text-xl mb-1">I'm a Hotel Owner</h3>
+                    <p className="text-sm text-muted-foreground mb-4">Start accepting crypto payments</p>
+                    <Button size="lg" className="w-full" data-testid="hero-hotel-cta">
+                      Get Started Free
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link to="/guest">
+                <Card className="border-2 border-muted hover:border-primary/50 hover:shadow-xl transition-all duration-300 cursor-pointer group h-full">
+                  <CardContent className="pt-6 text-center">
+                    <Users className="h-10 w-10 mx-auto text-primary mb-3 group-hover:scale-110 transition-transform" />
+                    <h3 className="font-heading font-bold text-xl mb-1">I'm a Guest</h3>
+                    <p className="text-sm text-muted-foreground mb-4">View or manage my booking</p>
+                    <Button size="lg" variant="outline" className="w-full" data-testid="hero-guest-cta">
+                      Guest Portal
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
+
             <Badge className="bg-accent/10 text-accent border-accent/20 hover:bg-accent/20 transition-colors" data-testid="hero-badge">
               <Sparkles className="h-3 w-3 mr-1" />
               MCP-Enabled • Zero Commission • Multi-Chain Crypto
@@ -120,35 +151,6 @@ const LandingPage = () => {
                 <span>Cancel anytime</span>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Guest Access Banner */}
-      <section className="py-6 bg-muted/30 border-y" data-testid="guest-access-banner">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <Card className="border-primary/20">
-              <CardContent className="py-4">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Users className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="text-center md:text-left">
-                      <p className="font-semibold text-foreground">Already have a booking?</p>
-                      <p className="text-sm text-muted-foreground">View details, transfer to others, or list on marketplace</p>
-                    </div>
-                  </div>
-                  <Link to="/guest">
-                    <Button variant="default" size="lg" data-testid="guest-access-cta-button">
-                      Guest Portal
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>
