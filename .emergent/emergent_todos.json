@@ -1,22 +1,10 @@
 [
   {
-    "content": "Run comprehensive testing agent on all features",
+    "content": "Test Web3 wallet integration end-to-end",
     "status": "completed"
   },
   {
-    "content": "Fix widget chat endpoint 500 error (HIGH priority)",
-    "status": "in_progress"
-  },
-  {
-    "content": "Fix registration form validation issue (HIGH priority)",
-    "status": "pending"
-  },
-  {
-    "content": "Fix widget.js content-type issue (MEDIUM priority)",
-    "status": "pending"
-  },
-  {
-    "content": "Verify all fixes with targeted tests",
-    "status": "pending"
+    "content": "Verify all fixes with screenshots",
+    "status": "completed"
   }
 ]

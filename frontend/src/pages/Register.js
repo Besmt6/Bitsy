@@ -32,7 +32,7 @@ const Register = () => {
     const result = await register(email, password, hotelName);
     
     if (result.success) {
-      navigate('/stats');
+      navigate('/dashboard/stats');
     } else {
       setError(result.error);
     }

@@ -11,6 +11,7 @@
   }
   
   const API_URL = currentScript.src.replace('/widget/bitsy-widget.js', '');
+  const REOWN_PROJECT_ID = '8303063b1790537186dbfba7e31b625c';
   
   // Widget state
   let widgetState = {
@@ -18,7 +19,13 @@
     hotelConfig: null,
     conversation: [],
     bookingDetails: null,
-    returningGuest: null
+    returningGuest: null,
+    web3: {
+      connected: false,
+      address: null,
+      chainId: null,
+      provider: null
+    }
   };
   
   // Create widget button
@@ -375,15 +382,33 @@
     qrDiv.style.cssText = 'margin-bottom: 12px;';
     
     qrDiv.innerHTML = `
-      <div data-testid="widget-payment-qr" style="background: white; border: 1px solid #e5e7eb; padding: 16px; border-radius: 12px;">
-        <h4 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 600;">Payment QR Code</h4>
-        <img src="${data.qrCode.dataUrl}" alt="Payment QR Code" style="width: 100%; max-width: 250px; display: block; margin: 0 auto;" />
-        <div data-testid="widget-payment-amount" style="margin-top: 12px; text-align: center;">
-          <div style="font-size: 24px; font-weight: 700; color: #0e7490;">$${widgetState.bookingDetails.total_usd}</div>
-          <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">${widgetState.bookingDetails.crypto_choice.toUpperCase()}</div>
+      <div data-testid="widget-payment-options" style="background: white; border: 1px solid #e5e7eb; padding: 16px; border-radius: 12px;">
+        <h4 style="margin: 0 0 16px 0; font-size: 16px; font-weight: 600;">Choose Payment Method</h4>
+        
+        <!-- Web3 Wallet Option -->
+        <div style="margin-bottom: 16px;">
+          <button id="bitsy-web3-pay-btn" data-testid="widget-web3-pay-button" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.2s;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <path d="M2 10h20"/>
+            </svg>
+            <span>Pay with Crypto Wallet</span>
+          </button>
+          <p style="margin: 6px 0 0 0; font-size: 11px; color: #6b7280; text-align: center;">MetaMask, Coinbase, WalletConnect</p>
         </div>
-        <div style="margin-top: 12px; padding: 8px; background: #f3f4f6; border-radius: 6px; font-family: monospace; font-size: 11px; word-break: break-all;">${data.walletAddress}</div>
-        <button data-testid="widget-payment-address-copy" onclick="navigator.clipboard.writeText('${data.walletAddress}'); alert('Address copied!');" style="width: 100%; margin-top: 8px; padding: 8px; background: #e5e7eb; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500;">Copy Address</button>
+        
+        <!-- QR Code Option -->
+        <div style="border-top: 1px solid #e5e7eb; padding-top: 16px;">
+          <p style="margin: 0 0 12px 0; font-size: 13px; font-weight: 500; color: #6b7280; text-align: center;">Or scan QR code</p>
+          <img src="${data.qrCode.dataUrl}" alt="Payment QR Code" style="width: 100%; max-width: 200px; display: block; margin: 0 auto;" />
+          <div data-testid="widget-payment-amount" style="margin-top: 12px; text-align: center;">
+            <div style="font-size: 24px; font-weight: 700; color: #0e7490;">$${widgetState.bookingDetails.total_usd}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">${widgetState.bookingDetails.crypto_choice.toUpperCase()}</div>
+          </div>
+          <div style="margin-top: 12px; padding: 8px; background: #f3f4f6; border-radius: 6px; font-family: monospace; font-size: 11px; word-break: break-all;">${data.walletAddress}</div>
+          <button data-testid="widget-payment-address-copy" onclick="navigator.clipboard.writeText('${data.walletAddress}'); alert('Address copied!');" style="width: 100%; margin-top: 8px; padding: 8px; background: #e5e7eb; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500;">Copy Address</button>
+        </div>
+        
         <div style="margin-top: 16px; padding: 12px; background: #dcfce7; border-radius: 6px; font-size: 12px; line-height: 1.6;">
           <strong>Booking Reference:</strong> ${data.bookingRef}<br/>
           Check your email for confirmation details.
@@ -394,7 +419,183 @@
     messagesContainer.appendChild(qrDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
-    addMessage('assistant', 'Thank you! Your booking has been submitted. Please send the payment to the wallet address shown above. The hotel will confirm once payment is received.');
+    // Add Web3 wallet connection handler
+    const web3PayBtn = document.getElementById('bitsy-web3-pay-btn');
+    if (web3PayBtn) {
+      web3PayBtn.onclick = () => initiateWeb3Payment(data);
+    }
+    
+    addMessage('assistant', 'Thank you! Your booking has been submitted. Please choose your payment method above.');
+  }
+  
+  // Web3 Payment Flow
+  async function initiateWeb3Payment(bookingData) {
+    try {
+      // Check if MetaMask or any Web3 provider exists
+      if (typeof window.ethereum === 'undefined') {
+        alert('Please install MetaMask or another Web3 wallet to use this payment method.\n\nAlternatively, you can use the QR code to pay from your mobile wallet.');
+        return;
+      }
+      
+      addMessage('assistant', 'Connecting to your wallet...');
+      
+      // Request account access
+      const accounts = await window.ethereum.request({ 
+        method: 'eth_requestAccounts' 
+      });
+      
+      if (!accounts || accounts.length === 0) {
+        addMessage('assistant', 'Wallet connection cancelled. Please use the QR code option instead.');
+        return;
+      }
+      
+      widgetState.web3.address = accounts[0];
+      widgetState.web3.connected = true;
+      
+      // Get current chain
+      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+      widgetState.web3.chainId = parseInt(chainId, 16);
+      
+      addMessage('assistant', `✅ Wallet connected: ${widgetState.web3.address.substring(0, 8)}...${widgetState.web3.address.substring(38)}`);
+      
+      // Show chain selector and payment button
+      showWeb3PaymentUI(bookingData);
+      
+    } catch (error) {
+      console.error('Web3 connection error:', error);
+      addMessage('assistant', `Connection failed: ${error.message}. Please try the QR code option.`);
+    }
+  }
+  
+  function showWeb3PaymentUI(bookingData) {
+    const messagesContainer = document.getElementById('bitsy-messages');
+    const paymentUI = document.createElement('div');
+    paymentUI.style.cssText = 'margin-bottom: 12px;';
+    
+    const chains = [
+      { id: 1, name: 'Ethereum', symbol: 'ETH' },
+      { id: 137, name: 'Polygon', symbol: 'MATIC' },
+      { id: 8453, name: 'Base', symbol: 'ETH' },
+      { id: 42161, name: 'Arbitrum', symbol: 'ETH' },
+      { id: 10, name: 'Optimism', symbol: 'ETH' }
+    ];
+    
+    const chainOptions = chains.map(c => 
+      `<option value="${c.id}" ${c.id === widgetState.web3.chainId ? 'selected' : ''}>${c.name} (${c.symbol})</option>`
+    ).join('');
+    
+    paymentUI.innerHTML = `
+      <div style="background: #f9fafb; border: 2px solid #10b981; padding: 16px; border-radius: 12px;">
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151;">Select Chain:</label>
+          <select id="bitsy-chain-select" data-testid="widget-chain-selector" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; cursor: pointer;">
+            ${chainOptions}
+          </select>
+        </div>
+        
+        <div style="margin-bottom: 12px; padding: 12px; background: white; border-radius: 8px;">
+          <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Amount to Pay:</div>
+          <div style="font-size: 20px; font-weight: 700; color: #0e7490;">$${widgetState.bookingDetails.total_usd}</div>
+        </div>
+        
+        <button id="bitsy-send-payment-btn" data-testid="widget-send-payment-button" style="width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
+          Send Payment
+        </button>
+      </div>
+    `;
+    
+    messagesContainer.appendChild(paymentUI);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Add event listeners
+    document.getElementById('bitsy-chain-select').onchange = async (e) => {
+      await switchChain(parseInt(e.target.value));
+    };
+    
+    document.getElementById('bitsy-send-payment-btn').onclick = async () => {
+      await sendWeb3Payment(bookingData);
+    };
+  }
+  
+  async function switchChain(targetChainId) {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: `0x${targetChainId.toString(16)}` }]
+      });
+      
+      widgetState.web3.chainId = targetChainId;
+      addMessage('assistant', `✅ Switched to chain ${targetChainId}`);
+    } catch (error) {
+      if (error.code === 4902) {
+        addMessage('assistant', `Please add this network to your wallet first.`);
+      } else {
+        console.error('Chain switch error:', error);
+        addMessage('assistant', `Chain switch failed: ${error.message}`);
+      }
+    }
+  }
+  
+  async function sendWeb3Payment(bookingData) {
+    try {
+      const payBtn = document.getElementById('bitsy-send-payment-btn');
+      payBtn.disabled = true;
+      payBtn.textContent = 'Processing...';
+      
+      addMessage('assistant', 'Please sign the transaction in your wallet...');
+      
+      // Create payment message
+      const paymentMessage = JSON.stringify({
+        action: 'booking_payment',
+        hotelId: HOTEL_ID,
+        bookingRef: bookingData.bookingRef,
+        amount: widgetState.bookingDetails.total_usd,
+        wallet: widgetState.web3.address,
+        chainId: widgetState.web3.chainId,
+        timestamp: Math.floor(Date.now() / 1000)
+      });
+      
+      // Request signature
+      const signature = await window.ethereum.request({
+        method: 'personal_sign',
+        params: [paymentMessage, widgetState.web3.address]
+      });
+      
+      addMessage('assistant', 'Verifying payment on blockchain...');
+      
+      // Verify signature with backend
+      const verifyResponse = await fetch(`${API_URL}/api/${HOTEL_ID}/verify-web3-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          signature: signature,
+          message: paymentMessage,
+          walletAddress: widgetState.web3.address,
+          chainId: widgetState.web3.chainId,
+          bookingRef: bookingData.bookingRef
+        })
+      });
+      
+      const verifyData = await verifyResponse.json();
+      
+      if (verifyData.success) {
+        addMessage('assistant', `🎉 Payment verified successfully on ${verifyData.chainName}! Your booking is confirmed. Confirmation sent to ${widgetState.bookingDetails.guest_email}`);
+        payBtn.textContent = '✅ Payment Confirmed';
+        payBtn.style.background = '#10b981';
+      } else {
+        throw new Error(verifyData.error || 'Verification failed');
+      }
+      
+    } catch (error) {
+      console.error('Web3 payment error:', error);
+      addMessage('assistant', `Payment failed: ${error.message}. Please try the QR code option instead.`);
+      
+      const payBtn = document.getElementById('bitsy-send-payment-btn');
+      if (payBtn) {
+        payBtn.disabled = false;
+        payBtn.textContent = 'Retry Payment';
+      }
+    }
   }
   
   // Initialize
