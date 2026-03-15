@@ -1,66 +1,26 @@
 [
   {
-    "content": "Get Sentry integration playbook from integration_playbook_expert",
+    "content": "Add Sentry DSN keys to backend and frontend .env files",
     "status": "completed"
   },
   {
-    "content": "Request Sentry DSN credentials from user",
+    "content": "Restart services to activate Sentry",
     "status": "completed"
   },
   {
-    "content": "Install Jest and testing dependencies for backend",
+    "content": "Verify Sentry initialization in logs",
     "status": "completed"
   },
   {
-    "content": "Create Jest configuration and test suite for backend",
+    "content": "Test error capture on backend",
     "status": "completed"
   },
   {
-    "content": "Create Playwright configuration and E2E test suite for frontend",
+    "content": "Test error capture on frontend",
     "status": "completed"
   },
   {
-    "content": "Add test scripts to package.json for both frontend and backend",
-    "status": "completed"
-  },
-  {
-    "content": "Run backend Jest tests (12/12 passed)",
-    "status": "completed"
-  },
-  {
-    "content": "Run frontend Playwright tests (7/7 passed)",
-    "status": "completed"
-  },
-  {
-    "content": "Install Sentry packages for backend and frontend",
-    "status": "completed"
-  },
-  {
-    "content": "Create Sentry configuration files (awaiting DSN from user)",
-    "status": "completed"
-  },
-  {
-    "content": "Integrate Sentry into backend server.js",
-    "status": "completed"
-  },
-  {
-    "content": "Integrate Sentry into frontend index.js with error boundary",
-    "status": "completed"
-  },
-  {
-    "content": "Add SENTRY_DSN environment variables to .env files (template)",
-    "status": "completed"
-  },
-  {
-    "content": "Verify services restart successfully with Sentry integration",
-    "status": "completed"
-  },
-  {
-    "content": "Create comprehensive README for Sentry setup",
-    "status": "completed"
-  },
-  {
-    "content": "Update plan.md to mark Phase 10.2 and 10.3 as completed",
+    "content": "Final verification and update plan.md",
     "status": "completed"
   }
 ]

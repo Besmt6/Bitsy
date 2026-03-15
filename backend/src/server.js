@@ -164,6 +164,11 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Test endpoint for Sentry error capture (development only)
+app.get('/api/test-sentry', (req, res) => {
+  throw new Error('🧪 Test error for Sentry verification - this is intentional!');
+});
+
 // API Routes with specific rate limiters (temporarily disabled)
 app.use('/api/auth', authRoutes); // authLimiter disabled
 app.use('/api/hotel', hotelRoutes);

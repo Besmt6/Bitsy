@@ -483,7 +483,11 @@ cd /app/frontend && yarn test:e2e:ui
 
 - ✅ **Documentation**: Complete setup guide at `/app/SENTRY_SETUP.md`
 
-**Status**: Infrastructure ready, awaiting user DSN keys to activate
+**Status**: ✅ Fully active and monitoring errors in development
+
+**DSN Configuration**
+- Backend: `bitsy-backend` project (Node.js platform) - Active ✅
+- Frontend: `bitsy-frontend` project (React platform) - Active ✅
 
 **Next Steps (Phase 10.4 - 10.5)**
 - ⚠️ **Phase 10.4**: Set up GitHub Actions CI/CD pipeline
@@ -503,7 +507,7 @@ cd /app/frontend && yarn test:e2e:ui
 6. ⚠️ Optimize or CDN-host demo video to ensure reliable playback.
 7. ✅ **Phase 10.1 COMPLETED**: Web3 library migration from ethers.js to viem
 8. ✅ **Phase 10.2 COMPLETED**: Automated test suite (Jest + Playwright) - 19/19 tests passing
-9. ✅ **Phase 10.3 COMPLETED**: Sentry integration ready (awaiting DSN activation)
+9. ✅ **Phase 10.3 COMPLETED**: Sentry integration fully active (monitoring errors in real-time)
 10. ⚠️ **Phase 10.4 IN PROGRESS**: CI/CD pipeline with GitHub Actions
 11. ⚠️ **Phase 10.5 PENDING**: AWS deployment guide (staging + production)
 12. ⚠️ Production ops: add monitoring/alerting (Sentry + CloudWatch) and backups.

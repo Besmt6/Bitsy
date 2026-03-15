@@ -11,48 +11,38 @@ export function initializeSentry(app) {
     return;
   }
 
-  Sentry.init({
-    dsn,
-    environment,
-    integrations: [
-      // Automatic instrumentation
-      Sentry.httpIntegration({ tracing: true }),
-      Sentry.expressIntegration({ app }),
-      Sentry.mongooseIntegration(),
-      nodeProfilingIntegration(),
-    ],
-    
-    // Performance Monitoring
-    tracesSampleRate: environment === 'production' ? 0.1 : 1.0,
-    
-    // Profiling
-    profilesSampleRate: environment === 'production' ? 0.1 : 1.0,
-    
-    // Filter sensitive data
-    beforeSend(event, hint) {
-      // Remove sensitive headers
-      if (event.request?.headers) {
-        delete event.request.headers.authorization;
-        delete event.request.headers.cookie;
-      }
-      
-      // Redact passwords from request bodies
-      if (event.request?.data) {
-        try {
-          const data = JSON.parse(event.request.data);
-          if (data.password) data.password = '[REDACTED]';
-          if (data.passwordHash) data.passwordHash = '[REDACTED]';
-          event.request.data = JSON.stringify(data);
-        } catch (e) {
-          // Not JSON, leave as is
+  try {
+    Sentry.init({
+      dsn,
+      environment,
+      integrations: [],
+      tracesSampleRate: environment === 'production' ? 0.1 : 1.0,
+      profilesSampleRate: environment === 'production' ? 0.1 : 1.0,
+      beforeSend(event, hint) {
+        if (event.request?.headers) {
+          delete event.request.headers.authorization;
+          delete event.request.headers.cookie;
         }
-      }
-      
-      return event;
-    },
-  });
+        
+        if (event.request?.data) {
+          try {
+            const data = JSON.parse(event.request.data);
+            if (data.password) data.password = '[REDACTED]';
+            if (data.passwordHash) data.passwordHash = '[REDACTED]';
+            event.request.data = JSON.stringify(data);
+          } catch (e) {
+            // Not JSON, leave as is
+          }
+        }
+        
+        return event;
+      },
+    });
 
-  console.log(`✅ Sentry initialized for ${environment}`);
+    console.log(`✅ Sentry initialized for ${environment}`);
+  } catch (error) {
+    console.error('❌ Sentry initialization error:', error.message);
+  }
 }
 
 export function sentryErrorHandler() {
@@ -60,21 +50,26 @@ export function sentryErrorHandler() {
   const environment = process.env.NODE_ENV || 'development';
   
   // Return no-op middleware if Sentry not initialized
-  if (!dsn || environment === 'test') {
+  if (!dsn || environment === 'test' || !Sentry.Handlers) {
     return (err, req, res, next) => next(err);
   }
   
-  return Sentry.Handlers.errorHandler({
-    shouldHandleError(error) {
-      // Capture all 5xx errors
-      if (error.status >= 500) return true;
-      
-      // Capture specific 4xx errors
-      if (error.status === 401 || error.status === 403) return false;
-      
-      return true;
-    },
-  });
+  try {
+    return Sentry.Handlers.errorHandler({
+      shouldHandleError(error) {
+        // Capture all 5xx errors
+        if (error.status >= 500) return true;
+        
+        // Capture specific 4xx errors
+        if (error.status === 401 || error.status === 403) return false;
+        
+        return true;
+      },
+    });
+  } catch (e) {
+    console.warn('⚠️  Sentry errorHandler not available:', e.message);
+    return (err, req, res, next) => next(err);
+  }
 }
 
 export function sentryRequestHandler() {
@@ -82,11 +77,16 @@ export function sentryRequestHandler() {
   const environment = process.env.NODE_ENV || 'development';
   
   // Return no-op middleware if Sentry not initialized
-  if (!dsn || environment === 'test') {
+  if (!dsn || environment === 'test' || !Sentry.Handlers) {
     return (req, res, next) => next();
   }
   
-  return Sentry.Handlers.requestHandler();
+  try {
+    return Sentry.Handlers.requestHandler();
+  } catch (e) {
+    console.warn('⚠️  Sentry requestHandler not available:', e.message);
+    return (req, res, next) => next();
+  }
 }
 
 export function sentryTracingHandler() {
@@ -94,9 +94,14 @@ export function sentryTracingHandler() {
   const environment = process.env.NODE_ENV || 'development';
   
   // Return no-op middleware if Sentry not initialized
-  if (!dsn || environment === 'test') {
+  if (!dsn || environment === 'test' || !Sentry.Handlers) {
     return (req, res, next) => next();
   }
   
-  return Sentry.Handlers.tracingHandler();
+  try {
+    return Sentry.Handlers.tracingHandler();
+  } catch (e) {
+    console.warn('⚠️  Sentry tracingHandler not available:', e.message);
+    return (req, res, next) => next();
+  }
 }
