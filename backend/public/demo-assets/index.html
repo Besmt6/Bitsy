@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitsy Demo Video Assets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0e7490 0%, #06b6d4 100%);
+            color: #fff;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+        
+        .download-all {
+            display: block;
+            width: fit-content;
+            margin: 0 auto 3rem;
+            padding: 12px 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .download-all:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+        }
+        
+        .asset-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .asset-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .asset-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .scene-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .download-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #0e7490;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .download-btn:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+        
+        .asset-image {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+        
+        .asset-image:hover {
+            opacity: 0.9;
+        }
+        
+        .scene-desc {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            opacity: 0.85;
+            line-height: 1.5;
+        }
+        
+        .copy-link {
+            margin-top: 10px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .copy-link:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .instructions h2 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Bitsy Demo Video Assets</h1>
+        <p class="subtitle">All screen recordings & mockups for your HeyGen video</p>
+        
+        <div class="instructions">
+            <h2>📋 How to Use These in HeyGen</h2>
+            <ol>
+                <li><strong>Right-click</strong> any image below and select "Save image as..." to download</li>
+                <li>Or <strong>copy the link</strong> below each image and paste into HeyGen's media uploader</li>
+                <li>Upload them to HeyGen in the order shown (Scene 1 → Scene 5)</li>
+                <li>Match each image to its corresponding voiceover from the script</li>
+            </ol>
+        </div>
+        
+        <div class="gallery">
+            <div class="asset-card">
+                <div class="asset-header">
+                    <h3 class="scene-title">Scene 1 & 2: Landing Hero</h3>
+                    <a href="01-landing-hero.jpg" download class="download-btn">Download</a>
+                </div>
+                <img src="01-landing-hero.jpg" alt="Landing Page Hero" class="asset-image" onclick="window.open(this.src, '_blank')">
+                <p class="scene-desc"><strong>Use for:</strong> Opening scene + "Meet Bitsy" intro (0:00-0:25)</p>
+                <div class="copy-link" onclick="navigator.clipboard.writeText(this.textContent)" title="Click to copy">
+                    https://bitsy-tools.preview.emergentagent.com/demo-assets/01-landing-hero.jpg
+                </div>
+            </div>
+            
+            <div class="asset-card">
+                <div class="asset-header">
+                    <h3 class="scene-title">Scene 4: Analytics Dashboard</h3>
+                    <a href="02-analytics-dashboard.jpg" download class="download-btn">Download</a>
+                </div>
+                <img src="02-analytics-dashboard.jpg" alt="Analytics Dashboard" class="asset-image" onclick="window.open(this.src, '_blank')">
+                <p class="scene-desc"><strong>Use for:</strong> "Track AI discoveries" - show "47 AI searches" (0:45-0:52)</p>
+                <div class="copy-link" onclick="navigator.clipboard.writeText(this.textContent)" title="Click to copy">
+                    https://bitsy-tools.preview.emergentagent.com/demo-assets/02-analytics-dashboard.jpg
+                </div>
+            </div>
+            
+            <div class="asset-card">
+                <div class="asset-header">
+                    <h3 class="scene-title">Scene 3 (Part 1): ChatGPT MCP</h3>
+                    <a href="03-chatgpt-mcp.jpg" download class="download-btn">Download</a>
+                </div>
+                <img src="03-chatgpt-mcp.jpg" alt="ChatGPT Finding Hotels" class="asset-image" onclick="window.open(this.src, '_blank')">
+                <p class="scene-desc"><strong>Use for:</strong> "Get discovered when travelers ask ChatGPT..." (0:25-0:30)</p>
+                <div class="copy-link" onclick="navigator.clipboard.writeText(this.textContent)" title="Click to copy">
+                    https://bitsy-tools.preview.emergentagent.com/demo-assets/03-chatgpt-mcp.jpg
+                </div>
+            </div>
+            
+            <div class="asset-card">
+                <div class="asset-header">
+                    <h3 class="scene-title">Scene 3 (Part 2): AI Chat Widget</h3>
+                    <a href="04-chat-widget.jpg" download class="download-btn">Download</a>
+                </div>
+                <img src="04-chat-widget.jpg" alt="Bitsy Chat Widget" class="asset-image" onclick="window.open(this.src, '_blank')">
+                <p class="scene-desc"><strong>Use for:</strong> "Your AI assistant books rooms 24/7" (0:30-0:35)</p>
+                <div class="copy-link" onclick="navigator.clipboard.writeText(this.textContent)" title="Click to copy">
+                    https://bitsy-tools.preview.emergentagent.com/demo-assets/04-chat-widget.jpg
+                </div>
+            </div>
+            
+            <div class="asset-card">
+                <div class="asset-header">
+                    <h3 class="scene-title">Scene 3 (Part 3): Crypto Payment</h3>
+                    <a href="05-metamask-payment.jpg" download class="download-btn">Download</a>
+                </div>
+                <img src="05-metamask-payment.jpg" alt="MetaMask Wallet Payment" class="asset-image" onclick="window.open(this.src, '_blank')">
+                <p class="scene-desc"><strong>Use for:</strong> "Accept crypto across 6 blockchains..." (0:35-0:40)</p>
+                <div class="copy-link" onclick="navigator.clipboard.writeText(this.textContent)" title="Click to copy">
+                    https://bitsy-tools.preview.emergentagent.com/demo-assets/05-metamask-payment.jpg
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 50px; text-align: center; opacity: 0.7;">
+            <p>💡 <strong>Tip:</strong> Click any image to open it full-size, or click the blue "Download" button to save</p>
+            <p style="margin-top: 10px;">Each link is also copy-able by clicking the gray box below each image</p>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-copy functionality for link boxes
+        document.querySelectorAll('.copy-link').forEach(box => {
+            box.addEventListener('click', function() {
+                const text = this.textContent.trim();
+                navigator.clipboard.writeText(text).then(() => {
+                    const original = this.textContent;
+                    this.textContent = '✅ Copied!';
+                    this.style.background = 'rgba(34, 197, 94, 0.3)';
+                    setTimeout(() => {
+                        this.textContent = original;
+                        this.style.background = 'rgba(255, 255, 255, 0.15)';
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
