@@ -1,38 +1,42 @@
 [
   {
-    "content": "Fix admin component import paths (../../components/ui → @/components/ui) across all 7 admin pages",
+    "content": "Get Sentry integration playbook from integration_playbook_expert",
     "status": "completed"
   },
   {
-    "content": "Install viem library in backend",
-    "status": "completed"
+    "content": "Request Sentry DSN credentials from user",
+    "status": "in_progress"
   },
   {
-    "content": "Migrate web3Service.js: Replace ethers imports and provider initialization with viem",
-    "status": "completed"
+    "content": "Create Jest test suite for backend (web3Service, API endpoints, models)",
+    "status": "pending"
   },
   {
-    "content": "Migrate verifyNativeTransaction to use viem's getTransaction and waitForTransactionReceipt",
-    "status": "completed"
+    "content": "Create Playwright E2E test suite for frontend (booking flow, admin, chat)",
+    "status": "pending"
   },
   {
-    "content": "Migrate verifyTokenTransaction to use viem's getLogs and decodeEventLog",
-    "status": "completed"
+    "content": "Install and configure Sentry in backend with error tracking",
+    "status": "pending"
   },
   {
-    "content": "Migrate getGasPrice to use viem's getGasPrice",
-    "status": "completed"
+    "content": "Install and configure Sentry in frontend with error boundaries",
+    "status": "pending"
   },
   {
-    "content": "Remove ethers.js from package.json dependencies",
-    "status": "completed"
+    "content": "Add test scripts to package.json for both frontend and backend",
+    "status": "pending"
   },
   {
-    "content": "Test wallet connection and transaction verification with viem implementation",
-    "status": "completed"
+    "content": "Test Sentry error capture with intentional errors",
+    "status": "pending"
   },
   {
-    "content": "Run comprehensive testing via testing_agent for both frontend and backend",
-    "status": "completed"
+    "content": "Run full test suite and verify all tests pass",
+    "status": "pending"
+  },
+  {
+    "content": "Update plan.md to mark Phase 10.2 and 10.3 as completed",
+    "status": "pending"
   }
 ]
