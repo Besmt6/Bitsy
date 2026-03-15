@@ -10,71 +10,41 @@ env:
   NODE_VERSION: '20.x'
 
 jobs:
-  # Backend Unit Tests
   backend:
     name: Backend Tests
     runs-on: ubuntu-latest
-    
     steps:
       - uses: actions/checkout@v4
-      
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
           cache-dependency-path: backend/yarn.lock
-
       - name: Install dependencies
         working-directory: ./backend
         run: yarn install --frozen-lockfile
-
       - name: Run unit tests
         working-directory: ./backend
         run: yarn test -- __tests__/web3Service.test.js
         env:
           NODE_ENV: test
 
-  # Frontend Build
   frontend:
     name: Frontend Build
     runs-on: ubuntu-latest
-    
     steps:
       - uses: actions/checkout@v4
-      
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
           cache-dependency-path: frontend/yarn.lock
-
       - name: Install dependencies
         working-directory: ./frontend
         run: yarn install --frozen-lockfile
-
-      - name: Build production bundle
+      - name: Build
         working-directory: ./frontend
         run: yarn build
         env:
           REACT_APP_BACKEND_URL: ${{ secrets.REACT_APP_BACKEND_URL }}
           REACT_APP_SENTRY_DSN: ${{ secrets.REACT_APP_SENTRY_DSN }}
-
-      - name: Upload build
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: frontend/build/
-
-  # Success notification
-  success:
-    name: All Checks Passed
-    runs-on: ubuntu-latest
-    needs: [backend, frontend]
-    if: success()
-    
-    steps:
-      - name: Success message
-        run: |
-          echo "✅ All tests passed!"
-          echo "✅ Frontend build successful!"
-          echo "🚀 Ready for deployment!"
