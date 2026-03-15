@@ -96,6 +96,16 @@ app.use('/uploads', express.static(join(__dirname, '../public/uploads')));
 // Static files for demo assets
 app.use('/demo-assets', express.static(join(__dirname, '../public/demo-assets')));
 
+// Serve reports and documentation
+app.use('/reports', express.static(join(__dirname, '../public'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.md')) {
+      res.setHeader('Content-Type', 'text/markdown; charset=UTF-8');
+      res.setHeader('Content-Disposition', 'inline');
+    }
+  }
+}));
+
 // Static files for videos
 // Serve static files with proper headers for video streaming
 app.use('/api/videos', (req, res, next) => {
