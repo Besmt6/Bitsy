@@ -21,6 +21,15 @@ router.post('/test', protect, async (req, res) => {
 
     const recipient = testRecipient || req.hotel.email;
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(recipient)) {
+      return res.status(400).json({
+        error: 'Invalid email format',
+        message: 'Please provide a valid email address'
+      });
+    }
+
     // Test data
     const testData = {
       booking: {

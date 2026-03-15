@@ -197,7 +197,7 @@ const LandingPage = () => {
                   data-testid="demo-video-player"
                   preload="metadata"
                 >
-                  <source src={`${process.env.REACT_APP_BACKEND_URL}/api/videos/bitsy-demo.mp4`} type="video/mp4" />
+                  <source src="https://customer-assets.emergentagent.com/job_bitsy-tools/artifacts/1aftjt2m_Bitsy_-_AI_Conversational_Booking_Demo_with_captions.mp4" type="video/mp4" />
                   Your browser doesn't support video playback.
                 </video>
               </div>

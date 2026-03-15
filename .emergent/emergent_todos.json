@@ -17,10 +17,14 @@
   },
   {
     "content": "Verify all email triggers (booking, password reset, billing)",
-    "status": "in_progress"
+    "status": "completed"
+  },
+  {
+    "content": "Fix email validation error (400 vs 500 status)",
+    "status": "completed"
   },
   {
     "content": "Fix demo video loading issue on landing page",
-    "status": "pending"
+    "status": "completed"
   }
 ]
