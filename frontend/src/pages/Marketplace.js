@@ -6,7 +6,7 @@ import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { ShieldCheck, TrendingDown, Zap, Calendar, MapPin, ArrowRight, Search } from 'lucide-react';
+import { ShieldCheck, TrendingDown, Zap, Calendar, MapPin, ArrowRight, Search, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;

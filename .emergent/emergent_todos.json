@@ -1,14 +1,10 @@
 [
   {
-    "content": "Task 5: Restart services and check for errors",
+    "content": "Task 9: Take final screenshots of all new pages",
     "status": "completed"
   },
   {
-    "content": "Task 6: Update Marketplace page to use real API",
+    "content": "Task 10: Update plan.md to mark all phases complete",
     "status": "completed"
-  },
-  {
-    "content": "Task 7: Comprehensive testing via testing agent",
-    "status": "in_progress"
   }
 ]
