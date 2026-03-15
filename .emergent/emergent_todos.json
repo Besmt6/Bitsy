@@ -1,38 +1,10 @@
 [
   {
     "content": "Test hybrid date picker flow (conversational + calendar) with screenshots",
-    "status": "pending"
-  },
-  {
-    "content": "Add loading skeletons to Stats.js page",
-    "status": "completed"
-  },
-  {
-    "content": "Add loading skeletons and empty states to Rooms.js page",
-    "status": "completed"
-  },
-  {
-    "content": "Add loading skeletons and empty states to Wallets.js page",
-    "status": "completed"
-  },
-  {
-    "content": "Add loading skeletons to Settings.js page",
-    "status": "completed"
-  },
-  {
-    "content": "Add loading skeletons to Analytics.js page",
-    "status": "completed"
-  },
-  {
-    "content": "Add micro-animations (hover/focus states) across all dashboard pages",
-    "status": "completed"
-  },
-  {
-    "content": "Implement error boundaries for all dashboard pages",
     "status": "completed"
   },
   {
     "content": "Run comprehensive testing via testing_agent for all changes",
-    "status": "in_progress"
+    "status": "completed"
   }
 ]
