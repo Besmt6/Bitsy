@@ -22,6 +22,15 @@ const hotelSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  photos: [{
+    url: String,
+    caption: String,
+    isPrimary: { type: Boolean, default: false }
+  }],
+  videoUrl: {
+    type: String,
+    default: ''
+  },
   contactPhone: {
     type: String,
     default: ''

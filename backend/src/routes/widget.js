@@ -30,6 +30,8 @@ router.get('/:hotelId/config', async (req, res) => {
         hotelId: hotel._id,
         hotelName: hotel.hotelName,
         logoUrl: hotel.logoUrl,
+        photos: hotel.photos || [],
+        videoUrl: hotel.videoUrl,
         contactPhone: hotel.contactPhone,
         contactEmail: hotel.contactEmail,
         rooms: rooms.map(room => ({
@@ -37,7 +39,9 @@ router.get('/:hotelId/config', async (req, res) => {
           type: room.roomType,
           description: room.description,
           rate: room.rate,
-          available: room.availableCount
+          available: room.availableCount,
+          photos: room.photos || [],
+          amenities: room.amenities || []
         })),
         wallets: hotel.wallets,
         widgetSettings: hotel.widgetSettings

@@ -16,6 +16,7 @@ const Settings = () => {
   const [settings, setSettings] = useState({
     hotelName: '',
     logoUrl: '',
+    videoUrl: '',
     contactPhone: '',
     contactEmail: '',
     notificationEmail: '',
@@ -28,6 +29,7 @@ const Settings = () => {
       setSettings({
         hotelName: user.hotelName || '',
         logoUrl: user.logoUrl || '',
+        videoUrl: user.videoUrl || '',
         contactPhone: user.contactPhone || '',
         contactEmail: user.contactEmail || '',
         notificationEmail: user.notificationEmail || '',
@@ -87,7 +89,19 @@ const Settings = () => {
                 value={settings.logoUrl}
                 onChange={(e) => setSettings({...settings, logoUrl: e.target.value})}
               />
-              <p className="text-xs text-muted-foreground">Direct URL to your hotel logo (optional)</p>
+              <p className="text-xs text-muted-foreground">Direct URL to your hotel logo</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="videoUrl">Video Tour URL (YouTube, Vimeo)</Label>
+              <Input
+                id="videoUrl"
+                type="url"
+                placeholder="https://youtube.com/watch?v=..."
+                value={settings.videoUrl || ''}
+                onChange={(e) => setSettings({...settings, videoUrl: e.target.value})}
+              />
+              <p className="text-xs text-muted-foreground">Link to hotel tour video (optional)</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

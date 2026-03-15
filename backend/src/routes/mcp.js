@@ -203,6 +203,8 @@ async function searchHotels({ location, checkIn, checkOut, blockchain, maxPrice,
       hotelId: hotel._id.toString(),
       name: hotel.hotelName,
       logoUrl: hotel.logoUrl,
+      photos: hotel.photos || [],
+      videoUrl: hotel.videoUrl,
       contactPhone: hotel.contactPhone,
       contactEmail: hotel.contactEmail,
       lowestRate,
@@ -238,6 +240,8 @@ async function getHotelDetails(hotelId) {
     id: hotel._id.toString(),
     name: hotel.hotelName,
     logoUrl: hotel.logoUrl,
+    photos: hotel.photos || [],
+    videoUrl: hotel.videoUrl,
     contact: {
       phone: hotel.contactPhone,
       email: hotel.contactEmail
@@ -248,7 +252,9 @@ async function getHotelDetails(hotelId) {
       description: r.description,
       rate: r.rate,
       available: r.availableCount,
-      currency: 'USD'
+      currency: 'USD',
+      photos: r.photos || [],
+      amenities: r.amenities || []
     })),
     web3: {
       enabled: true,
@@ -282,6 +288,15 @@ function formatSearchResults(results, params) {
     text += `   💰 From $${hotel.lowestRate}/night\n`;
     text += `   🏨 ${hotel.availableRooms} room types available\n`;
     text += `   ⛓️  Blockchains: ${hotel.supportedChains.join(', ')}\n`;
+    
+    if (hotel.photos && hotel.photos.length > 0) {
+      text += `   📸 Photos: ${hotel.photos.map(p => p.url).join(', ')}\n`;
+    }
+    
+    if (hotel.videoUrl) {
+      text += `   🎥 Video tour: ${hotel.videoUrl}\n`;
+    }
+    
     text += `   🔗 Book: ${hotel.bookingUrl}\n`;
     text += `   ✅ Web3 payment verification enabled\n\n`;
   });
@@ -297,7 +312,19 @@ function formatHotelDetails(hotel) {
   let text = `# ${hotel.name}\n\n`;
   
   if (hotel.logoUrl) {
-    text += `Logo: ${hotel.logoUrl}\n\n`;
+    text += `Logo: ${hotel.logoUrl}\n`;
+  }
+  
+  if (hotel.photos && hotel.photos.length > 0) {
+    text += `\n## Hotel Photos\n`;
+    hotel.photos.forEach((photo, i) => {
+      text += `${i + 1}. ${photo.url}${photo.caption ? ` - ${photo.caption}` : ''}\n`;
+    });
+    text += '\n';
+  }
+  
+  if (hotel.videoUrl) {
+    text += `Video Tour: ${hotel.videoUrl}\n\n`;
   }
   
   text += `## Contact Information\n`;
@@ -309,6 +336,14 @@ function formatHotelDetails(hotel) {
     text += `\n### ${room.type} - $${room.rate}/night\n`;
     text += `${room.description}\n`;
     text += `Available: ${room.available} rooms\n`;
+    
+    if (room.photos && room.photos.length > 0) {
+      text += `Photos: ${room.photos.map(p => p.url).join(', ')}\n`;
+    }
+    
+    if (room.amenities && room.amenities.length > 0) {
+      text += `Amenities: ${room.amenities.join(', ')}\n`;
+    }
   });
   
   text += `\n## Web3 Payment Options\n`;

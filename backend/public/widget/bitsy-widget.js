@@ -208,7 +208,7 @@
   }
   
   // Add message to chat
-  function addMessage(role, text) {
+  function addMessage(role, text, images = []) {
     const messagesContainer = document.getElementById('bitsy-messages');
     const messageDiv = document.createElement('div');
     
@@ -235,10 +235,39 @@
     bubble.textContent = text;
     
     messageDiv.appendChild(bubble);
+    
+    // Add images if provided
+    if (images && images.length > 0 && !isUser) {
+      const imagesContainer = document.createElement('div');
+      imagesContainer.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 8px;
+        margin-top: 8px;
+        max-width: 80%;
+      `;
+      
+      images.forEach(imageUrl => {
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.style.cssText = `
+          width: 100%;
+          height: 120px;
+          object-fit: cover;
+          border-radius: 8px;
+          cursor: pointer;
+        `;
+        img.onclick = () => window.open(imageUrl, '_blank');
+        imagesContainer.appendChild(img);
+      });
+      
+      messageDiv.appendChild(imagesContainer);
+    }
+    
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
-    widgetState.conversation.push({ role, text });
+    widgetState.conversation.push({ role, text, images });
   }
   
   // Typing indicator
