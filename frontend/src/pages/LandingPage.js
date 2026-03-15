@@ -196,8 +196,9 @@ const LandingPage = () => {
                   className="w-full h-full object-contain bg-black"
                   data-testid="demo-video-player"
                   preload="metadata"
+                  playsInline
                 >
-                  <source src="https://customer-assets.emergentagent.com/job_bitsy-tools/artifacts/1aftjt2m_Bitsy_-_AI_Conversational_Booking_Demo_with_captions.mp4" type="video/mp4" />
+                  <source src="https://customer-assets.emergentagent.com/job_bitsy-tools/artifacts/a2ygqk6o_Bitsy - Ai Conversational Booking Demo 1080P Caption.mp4" type="video/mp4" />
                   Your browser doesn't support video playback.
                 </video>
               </div>

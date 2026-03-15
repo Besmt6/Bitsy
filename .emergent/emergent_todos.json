@@ -1,26 +1,10 @@
 [
   {
-    "content": "Create full-page ChatPage component at /chat route",
+    "content": "Fix demo video loading issue on landing page",
     "status": "completed"
   },
   {
-    "content": "Create backend /api/chat endpoint with OpenAI integration",
+    "content": "Test video playback",
     "status": "completed"
-  },
-  {
-    "content": "Update navigation - redirect 'Browse Hotels' to /chat",
-    "status": "completed"
-  },
-  {
-    "content": "Update landing page guest CTA to point to /chat",
-    "status": "completed"
-  },
-  {
-    "content": "Test AI chat conversation flow",
-    "status": "completed"
-  },
-  {
-    "content": "Enhance chat UI with hotel display and side panel",
-    "status": "in_progress"
   }
 ]
