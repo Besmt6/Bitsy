@@ -1,26 +1,18 @@
 [
   {
-    "content": "Add Sentry DSN keys to backend and frontend .env files",
+    "content": "Add change password API endpoint for admin",
     "status": "completed"
   },
   {
-    "content": "Restart services to activate Sentry",
+    "content": "Create admin settings page with password change form",
     "status": "completed"
   },
   {
-    "content": "Verify Sentry initialization in logs",
+    "content": "Add settings route to admin navigation",
     "status": "completed"
   },
   {
-    "content": "Test error capture on backend",
-    "status": "completed"
-  },
-  {
-    "content": "Test error capture on frontend",
-    "status": "completed"
-  },
-  {
-    "content": "Final verification and update plan.md",
+    "content": "Test admin password change functionality",
     "status": "completed"
   }
 ]

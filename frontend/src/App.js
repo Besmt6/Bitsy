@@ -35,6 +35,7 @@ import AdminHotelDetails from './pages/admin/AdminHotelDetails';
 import AdminCommissions from './pages/admin/AdminCommissions';
 import AdminBilling from './pages/admin/AdminBilling';
 import AdminActivity from './pages/admin/AdminActivity';
+import AdminSettings from './pages/admin/AdminSettings';
 
 // Guest Chat
 import ChatPage from './pages/ChatPage';
@@ -99,6 +100,7 @@ const AppRoutes = () => {
       <Route path="/admin/commissions" element={<AdminCommissions />} />
       <Route path="/admin/billing" element={<AdminBilling />} />
       <Route path="/admin/activity" element={<AdminActivity />} />
+      <Route path="/admin/settings" element={<AdminSettings />} />
       
       {/* Test Routes (Development) */}
       <Route path="/test-sentry" element={<TestSentry />} />

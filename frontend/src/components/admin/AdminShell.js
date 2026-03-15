@@ -11,7 +11,8 @@ import {
   AlertTriangle,
   Activity,
   Menu,
-  LogOut
+  LogOut,
+  Settings
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -20,7 +21,8 @@ const navigation = [
   { name: 'Hotels', href: '/admin/hotels', icon: Building2, testId: 'admin-nav-hotels' },
   { name: 'Commissions', href: '/admin/commissions', icon: DollarSign, testId: 'admin-nav-commissions' },
   { name: 'Billing Alerts', href: '/admin/billing', icon: AlertTriangle, testId: 'admin-nav-billing' },
-  { name: 'Activity', href: '/admin/activity', icon: Activity, testId: 'admin-nav-activity' }
+  { name: 'Activity', href: '/admin/activity', icon: Activity, testId: 'admin-nav-activity' },
+  { name: 'Settings', href: '/admin/settings', icon: Settings, testId: 'admin-nav-settings' }
 ];
 
 export const AdminShell = ({ children }) => {

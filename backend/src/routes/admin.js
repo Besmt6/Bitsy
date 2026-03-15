@@ -86,6 +86,52 @@ router.post('/auth/login', async (req, res) => {
   }
 });
 
+// @route   POST /api/admin/auth/change-password
+// @desc    Change admin password
+// @access  Private (Admin)
+router.post('/auth/change-password', adminProtect, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Please provide current and new password' });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'New password must be at least 8 characters' });
+    }
+
+    // Get admin with password
+    const admin = await Admin.findById(req.admin._id);
+
+    if (!admin) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+
+    // Verify current password
+    const isMatch = await admin.matchPassword(currentPassword);
+
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    // Update password (will be hashed by pre-save hook)
+    admin.password = newPassword;
+    await admin.save();
+
+    logger.info('Admin password changed', { adminId: admin._id, email: admin.email });
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully'
+    });
+  } catch (error) {
+    logger.error('Admin password change error', { error: error.message });
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
 // @route   GET /api/admin/platform/stats
 // @desc    Get platform-wide statistics
 // @access  Private (Admin)
