@@ -642,7 +642,7 @@
             if (jsonMatch) {
               const bookingData = JSON.parse(jsonMatch[0]);
               widgetState.bookingDetails = bookingData.booking_details;
-              showNonRefundableWarning();
+              showPaymentMethodSelection();
             }
           } catch (e) {
             // Not JSON, continue
@@ -711,7 +711,7 @@
             if (jsonMatch) {
               const bookingData = JSON.parse(jsonMatch[0]);
               widgetState.bookingDetails = bookingData.booking_details;
-              showNonRefundableWarning();
+              showPaymentMethodSelection();
             }
           } catch (e) {
             // Not JSON, continue
@@ -863,6 +863,164 @@
     if (typing) typing.remove();
   }
   
+
+  // Show payment method selection (if hotel offers multiple options)
+  function showPaymentMethodSelection() {
+    const paymentSettings = widgetState.hotelConfig?.paymentSettings || { cryptoEnabled: true, payAtPropertyEnabled: false };
+    
+    // If only crypto is enabled, skip to non-refundable warning
+    if (!paymentSettings.payAtPropertyEnabled) {
+      widgetState.bookingDetails.payment_method = 'crypto';
+      showNonRefundableWarning();
+      return;
+    }
+    
+    // Show payment method selection overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    `;
+    
+    const hotelPhone = widgetState.hotelConfig?.contactPhone || 'the hotel';
+    
+    overlay.innerHTML = `
+      <div data-testid="widget-payment-method-dialog" style="background: white; border-radius: 16px; padding: 24px; max-width: 480px; width: 100%;">
+        <h3 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: #1f2937;">Choose Payment Method</h3>
+        <p style="margin: 0 0 20px 0; font-size: 14px; color: #6b7280;">How would you like to pay for your booking?</p>
+        
+        <!-- Crypto Option (Recommended) -->
+        <div id="crypto-option" data-testid="widget-payment-crypto-option" style="border: 2px solid #0e7490; background: linear-gradient(135deg, #0e7490 0%, #0891b2 100%); color: white; padding: 20px; border-radius: 12px; cursor: pointer; margin-bottom: 12px; position: relative; transition: transform 0.2s;">
+          <div style="position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600;">RECOMMENDED</div>
+          <div style="display: flex; align-items-start; gap: 12px;">
+            <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <div style="flex: 1;">
+              <h4 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">Pay with Crypto</h4>
+              <p style="margin: 0; font-size: 13px; opacity: 0.9; line-height: 1.5;">Instant confirmation • 9 cryptocurrencies • Can transfer on marketplace</p>
+              <div style="margin-top: 8px; display: flex; flex-wrap: gap: 4px;">
+                <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 500;">ETH</span>
+                <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 500;">MATIC</span>
+                <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 500;">BTC</span>
+                <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 500;">+6 more</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pay at Property Option -->
+        <div id="property-option" data-testid="widget-payment-property-option" style="border: 2px solid #e5e7eb; background: #f9fafb; padding: 20px; border-radius: 12px; cursor: pointer; transition: transform 0.2s;">
+          <div style="display: flex; align-items-start; gap: 12px;">
+            <div style="width: 40px; height: 40px; background: #e5e7eb; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            </div>
+            <div style="flex: 1;">
+              <h4 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600; color: #1f2937;">Pay at Property</h4>
+              <p style="margin: 0; font-size: 13px; color: #6b7280; line-height: 1.5;">Pay with card or cash at check-in • Must call ${hotelPhone} to confirm</p>
+              <div style="margin-top: 8px; padding: 8px; background: #fef3c7; border-radius: 6px; font-size: 11px; color: #92400e;">
+                ⚠️ You must call to confirm within 48h or booking auto-cancels
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <button id="payment-cancel" style="width: 100%; margin-top: 16px; padding: 10px; background: #e5e7eb; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; color: #1f2937;">Cancel</button>
+      </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // Event handlers
+    document.getElementById('payment-cancel').onclick = () => overlay.remove();
+    
+    document.getElementById('crypto-option').onclick = () => {
+      widgetState.bookingDetails.payment_method = 'crypto';
+      overlay.remove();
+      showNonRefundableWarning();
+    };
+    
+    document.getElementById('property-option').onclick = () => {
+      widgetState.bookingDetails.payment_method = 'pay_at_property';
+      overlay.remove();
+      showPayAtPropertyWarning();
+    };
+  }
+  
+  // Show pay-at-property warning and confirmation
+  function showPayAtPropertyWarning() {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    `;
+    
+    const hotelPhone = widgetState.hotelConfig?.contactPhone || 'the hotel';
+    const confirmDeadline = new Date(new Date(widgetState.bookingDetails.check_in).getTime() - (48 * 60 * 60 * 1000));
+    
+    overlay.innerHTML = `
+      <div data-testid="widget-property-payment-dialog" style="background: white; border-radius: 16px; padding: 24px; max-width: 400px; width: 100%;">
+        <div style="background: #fef3c7; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+          <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #92400e;">📞 Confirmation Required</h3>
+        </div>
+        
+        <div style="margin: 16px 0; padding: 16px; background: #f3f4f6; border-radius: 8px;">
+          <p style="margin: 0 0 12px 0; font-size: 14px; font-weight: 600; color: #1f2937;">After booking, you must:</p>
+          <ol style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.8; color: #6b7280;">
+            <li>Call ${hotelPhone}</li>
+            <li>Confirm your booking with the hotel</li>
+            <li>Complete this by ${confirmDeadline.toLocaleString()}</li>
+          </ol>
+        </div>
+        
+        <div style="background: #fee2e2; padding: 12px; border-radius: 8px; margin: 16px 0;">
+          <p style="margin: 0; font-size: 13px; color: #991b1b;"><strong>⚠️ Auto-Cancel:</strong> If you don't call to confirm, this booking will automatically cancel 48 hours before check-in.</p>
+        </div>
+        
+        <label style="display: flex; align-items: center; gap: 8px; margin: 16px 0; cursor: pointer;">
+          <input type="checkbox" id="property-policy-checkbox" data-testid="widget-property-payment-checkbox" style="width: 18px; height: 18px;" />
+          <span style="font-size: 14px; color: #1f2937;">I understand I must call to confirm</span>
+        </label>
+        
+        <div style="display: flex; gap: 8px; margin-top: 20px;">
+          <button id="property-cancel" style="flex: 1; padding: 10px; background: #e5e7eb; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; color: #1f2937;">Cancel</button>
+          <button id="property-continue" data-testid="widget-property-payment-continue-button" style="flex: 1; padding: 10px; background: #0e7490; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Confirm Booking</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    document.getElementById('property-cancel').onclick = () => overlay.remove();
+    document.getElementById('property-continue').onclick = () => {
+      const checkbox = document.getElementById('property-policy-checkbox');
+      if (!checkbox.checked) {
+        alert('Please confirm you understand the confirmation requirement');
+        return;
+      }
+      overlay.remove();
+      submitBooking();
+    };
+  }
+
   // Show non-refundable warning
   function showNonRefundableWarning() {
     const overlay = document.createElement('div');
@@ -941,9 +1099,52 @@
     }
   }
   
-  // Show payment QR
+  // Show payment QR (for crypto payments) or confirmation message (for pay at property)
   function showPaymentQR(data) {
     const messagesContainer = document.getElementById('bitsy-messages');
+    
+    // If pay at property, show confirmation message instead of QR
+    if (data.paymentMethod === 'pay_at_property') {
+      const confirmDiv = document.createElement('div');
+      confirmDiv.style.cssText = 'margin-bottom: 12px;';
+      
+      confirmDiv.innerHTML = `
+        <div data-testid="widget-property-confirmation" style="background: white; border: 1px solid #e5e7eb; padding: 20px; border-radius: 12px;">
+          <div style="text-align: center; margin-bottom: 16px;">
+            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <h4 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: #1f2937;">Booking Submitted!</h4>
+            <p style="margin: 0; font-size: 14px; color: #6b7280;">Reference: <strong>${data.bookingRef}</strong></p>
+          </div>
+          
+          <div style="background: #fef3c7; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+            <p style="margin: 0 0 12px 0; font-size: 14px; font-weight: 600; color: #92400e;">⚠️ Action Required</p>
+            <p style="margin: 0; font-size: 13px; color: #92400e; line-height: 1.6;">
+              Please call <strong>${data.hotelPhone}</strong> to confirm your booking.
+            </p>
+            <div style="margin-top: 12px; padding: 12px; background: white; border-radius: 6px;">
+              <p style="margin: 0; font-size: 12px; color: #6b7280;">Confirmation deadline:</p>
+              <p style="margin: 4px 0 0 0; font-size: 14px; font-weight: 600; color: #1f2937;">${new Date(data.confirmationDeadline).toLocaleString()}</p>
+            </div>
+          </div>
+          
+          <div style="background: #f3f4f6; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.6; color: #6b7280;">
+            If you don't call to confirm, your booking will automatically cancel 48 hours before check-in.
+          </div>
+        </div>
+      `;
+      
+      messagesContainer.appendChild(confirmDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      
+      addMessage('assistant', `Great! Your booking is submitted. Please call ${data.hotelPhone} to confirm. Check your email for details.`);
+      return;
+    }
+    
+    // Original crypto QR code flow
     const qrDiv = document.createElement('div');
     qrDiv.style.cssText = 'margin-bottom: 12px;';
     

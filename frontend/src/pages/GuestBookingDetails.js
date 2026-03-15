@@ -30,35 +30,25 @@ const GuestBookingDetails = () => {
 
   const fetchBookingDetails = async () => {
     try {
-      // TODO: Implement actual API call
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const guestAuth = JSON.parse(sessionStorage.getItem('guestAuth'));
       
-      // Mock booking
-      setBooking({
-        _id: '1',
-        bookingRef: ref,
-        hotelId: { 
-          hotelName: 'Ocean View Resort',
-          contactPhone: '+1 555 123 4567',
-          contactEmail: 'info@oceanview.com'
-        },
-        guestId: { name: 'John Doe', email: 'john@example.com', phone: '+1 555 987 6543' },
-        roomType: 'Deluxe Suite',
-        checkIn: '2026-04-15',
-        checkOut: '2026-04-18',
-        nights: 3,
-        totalUsd: 450,
-        paymentMethod: 'crypto',
-        cryptoType: 'ethereum',
-        status: 'confirmed',
-        confirmedAt: new Date(),
-        web3Data: {
-          txHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-          chain: 'ethereum',
-          explorerUrl: 'https://etherscan.io/tx/0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
-        },
-        date: new Date()
+      const response = await fetch(`${API_URL}/api/guest/bookings/${ref}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: guestAuth.email,
+          phone: guestAuth.phone
+        })
       });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setBooking(data.booking);
+      } else {
+        toast.error(data.error || 'Failed to load booking');
+        navigate('/guest/bookings');
+      }
     } catch (error) {
       toast.error('Failed to load booking details');
       console.error('Fetch booking error:', error);
@@ -69,11 +59,29 @@ const GuestBookingDetails = () => {
 
   const handleCancelBooking = async () => {
     try {
-      // TODO: Implement cancel API call
-      toast.success('Booking cancelled successfully');
-      navigate('/guest/bookings');
+      const guestAuth = JSON.parse(sessionStorage.getItem('guestAuth'));
+      
+      const response = await fetch(`${API_URL}/api/guest/bookings/${ref}/cancel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: guestAuth.email,
+          phone: guestAuth.phone,
+          reason: 'Cancelled by guest'
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success('Booking cancelled successfully');
+        navigate('/guest/bookings');
+      } else {
+        toast.error(data.error || 'Failed to cancel booking');
+      }
     } catch (error) {
       toast.error('Failed to cancel booking');
+      console.error('Cancel booking error:', error);
     }
   };
 

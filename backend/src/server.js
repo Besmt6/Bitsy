@@ -17,6 +17,7 @@ import uploadRoutes from './routes/upload.js';
 import analyticsRoutes from './routes/analytics.js';
 import marketplaceRoutes from './routes/marketplace.js';
 import bookingsRoutes from './routes/bookings.js';
+import guestRoutes from './routes/guest.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { initializeCronJobs } from './services/cronService.js';
 
@@ -100,6 +101,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/bookings', bookingsRoutes);
+app.use('/api/guest', guestRoutes);
 
 // Root route
 app.get('/api', (req, res) => {

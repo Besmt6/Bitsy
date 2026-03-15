@@ -32,7 +32,8 @@ router.put('/settings', protect, async (req, res) => {
       contactEmail,
       notificationEmail,
       telegramBotToken,
-      telegramChatId
+      telegramChatId,
+      paymentSettings
     } = req.body;
 
     const updateFields = {};
@@ -43,6 +44,7 @@ router.put('/settings', protect, async (req, res) => {
     if (notificationEmail !== undefined) updateFields.notificationEmail = notificationEmail;
     if (telegramBotToken !== undefined) updateFields.telegramBotToken = telegramBotToken;
     if (telegramChatId !== undefined) updateFields.telegramChatId = telegramChatId;
+    if (paymentSettings !== undefined) updateFields.paymentSettings = paymentSettings;
 
     const hotel = await Hotel.findByIdAndUpdate(
       req.hotel._id,

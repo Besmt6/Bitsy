@@ -24,40 +24,14 @@ const Marketplace = () => {
 
   const fetchListings = async () => {
     try {
-      // TODO: Implement actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch(`${API_URL}/api/marketplace/listings?status=active&sortBy=${sortBy}`);
+      const data = await response.json();
       
-      // Mock listings
-      setListings([
-        {
-          _id: '1',
-          bookingRef: 'BIT-1710512345-1234',
-          hotelName: 'Ocean View Resort',
-          roomType: 'Deluxe Suite',
-          checkIn: '2026-04-15',
-          checkOut: '2026-04-18',
-          nights: 3,
-          originalPriceUsd: 550,
-          listingPriceUsd: 420,
-          savingsPercent: 24,
-          originalPaymentChain: 'ethereum',
-          status: 'active'
-        },
-        {
-          _id: '2',
-          bookingRef: 'BIT-1710512345-5678',
-          hotelName: 'Mountain Lodge',
-          roomType: 'Premium Room',
-          checkIn: '2026-05-10',
-          checkOut: '2026-05-14',
-          nights: 4,
-          originalPriceUsd: 800,
-          listingPriceUsd: 640,
-          savingsPercent: 20,
-          originalPaymentChain: 'polygon',
-          status: 'active'
-        }
-      ]);
+      if (data.success) {
+        setListings(data.listings);
+      } else {
+        toast.error('Failed to load marketplace listings');
+      }
     } catch (error) {
       toast.error('Failed to load marketplace listings');
       console.error('Fetch listings error:', error);

@@ -53,42 +53,22 @@ const GuestBookings = () => {
     try {
       const guestAuth = JSON.parse(sessionStorage.getItem('guestAuth'));
       
-      // TODO: Implement actual API call
-      // For now, using mock data
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch(`${API_URL}/api/guest/bookings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: guestAuth.email,
+          phone: guestAuth.phone
+        })
+      });
+
+      const data = await response.json();
       
-      // Mock bookings
-      setBookings([
-        {
-          _id: '1',
-          bookingRef: 'BIT-1710512345-1234',
-          hotelId: { hotelName: 'Ocean View Resort', logoUrl: '' },
-          roomType: 'Deluxe Suite',
-          checkIn: '2026-04-15',
-          checkOut: '2026-04-18',
-          nights: 3,
-          totalUsd: 450,
-          paymentMethod: 'crypto',
-          cryptoType: 'ethereum',
-          status: 'confirmed',
-          confirmedAt: new Date(),
-          date: new Date()
-        },
-        {
-          _id: '2',
-          bookingRef: 'BIT-1710512345-5678',
-          hotelId: { hotelName: 'Mountain Lodge', logoUrl: '' },
-          roomType: 'Standard Room',
-          checkIn: '2026-05-20',
-          checkOut: '2026-05-22',
-          nights: 2,
-          totalUsd: 280,
-          paymentMethod: 'pay_at_property',
-          status: 'pending_confirmation',
-          confirmationDeadlineAt: new Date('2026-05-18T14:00:00Z'),
-          date: new Date()
-        }
-      ]);
+      if (data.success) {
+        setBookings(data.bookings);
+      } else {
+        toast.error(data.error || 'Failed to load bookings');
+      }
     } catch (error) {
       toast.error('Failed to load bookings');
       console.error('Fetch bookings error:', error);

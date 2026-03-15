@@ -1,18 +1,14 @@
 [
   {
-    "content": "Phase 2: Update booking widget UI with payment method selection",
-    "status": "pending"
+    "content": "Task 5: Restart services and check for errors",
+    "status": "completed"
   },
   {
-    "content": "Phase 2: Create guest API routes for authentication and booking management",
-    "status": "pending"
+    "content": "Task 6: Update Marketplace page to use real API",
+    "status": "completed"
   },
   {
-    "content": "Phase 2: Implement guest booking cancellation API",
-    "status": "pending"
-  },
-  {
-    "content": "Phase 2: Test complete flow end-to-end with testing agent",
-    "status": "pending"
+    "content": "Task 7: Comprehensive testing via testing agent",
+    "status": "in_progress"
   }
 ]

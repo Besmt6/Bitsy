@@ -1,503 +1,470 @@
-import requests
-import sys
-import json
-from datetime import datetime
-import os
-import tempfile
+#!/usr/bin/env python3
+"""
+Comprehensive Backend API Test Suite for Bitsy Hotel Booking System
+Tests all API endpoints and functionality as specified in the review request.
+"""
 
-class BitsySaaSAPITester:
-    def __init__(self, base_url="https://bitsy-tools.preview.emergentagent.com"):
-        self.base_url = base_url
-        self.token = None
-        self.hotel_id = None
-        self.room_id = None
+import requests
+import json
+import sys
+from datetime import datetime, timedelta
+
+# Configuration
+API_URL = "https://bitsy-tools.preview.emergentagent.com"
+
+class BitsyAPITester:
+    def __init__(self):
+        self.api_url = API_URL
+        self.session = requests.Session()
+        self.hotel_token = None
+        self.test_hotel_id = None
+        self.test_booking_ref = None
         self.tests_run = 0
         self.tests_passed = 0
-        self.test_user_email = f"test_hotel_{datetime.now().strftime('%H%M%S')}@test.com"
-        self.test_password = "TestPass123!"
-        self.test_hotel_name = f"Test Hotel {datetime.now().strftime('%H%M%S')}"
-
-    def run_test(self, name, method, endpoint, expected_status, data=None, params=None):
-        """Run a single API test"""
-        url = f"{self.base_url}/{endpoint}"
-        headers = {'Content-Type': 'application/json'}
-        if self.token:
-            headers['Authorization'] = f'Bearer {self.token}'
-
-        self.tests_run += 1
-        print(f"\n🔍 Testing {name}...")
-        print(f"   URL: {url}")
         
+    def log(self, message, level="INFO"):
+        print(f"[{level}] {message}")
+        
+    def run_test(self, test_name, test_func):
+        """Run individual test with error handling"""
+        self.tests_run += 1
         try:
-            if method == 'GET':
-                response = requests.get(url, headers=headers, params=params)
-            elif method == 'POST':
-                response = requests.post(url, json=data, headers=headers)
-            elif method == 'PUT':
-                response = requests.put(url, json=data, headers=headers)
-            elif method == 'DELETE':
-                response = requests.delete(url, headers=headers)
-
-            success = response.status_code == expected_status
-            if success:
+            self.log(f"\n{'='*50}")
+            self.log(f"🧪 TESTING: {test_name}")
+            self.log(f"{'='*50}")
+            
+            result = test_func()
+            if result:
                 self.tests_passed += 1
-                print(f"✅ Passed - Status: {response.status_code}")
-                try:
-                    response_data = response.json()
-                    print(f"   Response: {json.dumps(response_data, indent=2)[:200]}...")
-                    return True, response_data
-                except:
-                    return True, {}
+                self.log(f"✅ PASSED: {test_name}", "SUCCESS")
             else:
-                print(f"❌ Failed - Expected {expected_status}, got {response.status_code}")
-                try:
-                    error_data = response.json()
-                    print(f"   Error: {json.dumps(error_data, indent=2)}")
-                except:
-                    print(f"   Error: {response.text}")
-                return False, {}
-
+                self.log(f"❌ FAILED: {test_name}", "ERROR")
+                
         except Exception as e:
-            print(f"❌ Failed - Error: {str(e)}")
-            return False, {}
-
-    def test_health_check(self):
-        """Test health endpoint"""
-        return self.run_test("Health Check", "GET", "health", 200)
-
-    def test_api_root(self):
-        """Test API root endpoint"""
-        return self.run_test("API Root", "GET", "api", 200)
-
-    def test_register(self):
-        """Test hotel registration"""
-        success, response = self.run_test(
-            "Hotel Registration",
-            "POST",
-            "api/auth/register",
-            201,
-            data={
-                "email": self.test_user_email,
-                "password": self.test_password,
-                "hotelName": self.test_hotel_name
-            }
-        )
-        if success and 'token' in response:
-            self.token = response['token']
-            self.hotel_id = response['hotel']['_id']
-            print(f"   Hotel ID: {self.hotel_id}")
-            return True
-        return False
-
-    def test_login(self):
-        """Test hotel login"""
-        success, response = self.run_test(
-            "Hotel Login",
-            "POST",
-            "api/auth/login",
-            200,
-            data={
-                "email": self.test_user_email,
-                "password": self.test_password
-            }
-        )
-        if success and 'token' in response:
-            self.token = response['token']
-            return True
-        return False
-
-    def test_get_me(self):
-        """Test get current hotel info"""
-        return self.run_test("Get Current Hotel", "GET", "api/auth/me", 200)
-
-    def test_get_hotel_settings(self):
-        """Test get hotel settings"""
-        return self.run_test("Get Hotel Settings", "GET", "api/hotel/settings", 200)
-
-    def test_update_hotel_settings(self):
-        """Test update hotel settings"""
-        return self.run_test(
-            "Update Hotel Settings",
-            "PUT",
-            "api/hotel/settings",
-            200,
-            data={
-                "hotelName": f"Updated {self.test_hotel_name}",
-                "contactPhone": "+1-555-123-4567",
-                "contactEmail": "contact@testhotel.com",
-                "notificationEmail": self.test_user_email,
-                "logoUrl": "https://example.com/logo.png"
-            }
-        )
-
-    def test_get_widget_code(self):
-        """Test get widget embed code"""
-        return self.run_test("Get Widget Code", "GET", "api/hotel/widget-code", 200)
-
-    def test_get_rooms(self):
-        """Test get rooms"""
-        return self.run_test("Get Rooms", "GET", "api/rooms", 200)
-
-    def test_create_room(self):
-        """Test create room"""
-        success, response = self.run_test(
-            "Create Room",
-            "POST",
-            "api/rooms",
-            201,
-            data={
-                "roomType": "Deluxe Suite",
-                "description": "Ocean view suite with balcony",
-                "rate": 199.99,
-                "availableCount": 5
-            }
-        )
-        if success and 'room' in response:
-            self.room_id = response['room']['_id']
-            return True
-        return False
-
-    def test_update_room(self):
-        """Test update room"""
-        if not hasattr(self, 'room_id'):
-            print("❌ No room ID available for update test")
+            self.log(f"❌ ERROR in {test_name}: {str(e)}", "ERROR")
             return False
+            
+        return result
+    
+    def make_request(self, method, endpoint, headers=None, data=None, json_data=None):
+        """Make HTTP request with error handling"""
+        url = f"{self.api_url}/{endpoint.lstrip('/')}"
         
-        return self.run_test(
-            "Update Room",
-            "PUT",
-            f"api/rooms/{self.room_id}",
-            200,
-            data={
-                "roomType": "Premium Deluxe Suite",
-                "rate": 249.99,
-                "availableCount": 3
-            }
-        )
-
-    def test_get_wallets(self):
-        """Test get wallet addresses"""
-        return self.run_test("Get Wallets", "GET", "api/wallets", 200)
-
-    def test_update_wallets(self):
-        """Test update wallet addresses"""
-        return self.run_test(
-            "Update Wallets",
-            "PUT",
-            "api/wallets",
-            200,
-            data={
-                "bitcoin": "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
-                "ethereum": "0x742f35Cc4F2e64A5c1e8A7e3E0c5Dfc62a9De4D1",
-                "polygon": "0x742f35Cc4F2e64A5c1e8A7e3E0c5Dfc62a9De4D1",
-                "solana": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
-                "tron": "TLPid9R7M5YtTJJQNs3D8L3aHU1K3VNJwL"
-            }
-        )
-
-    def test_get_stats(self):
-        """Test get booking statistics"""
-        return self.run_test("Get Stats (7d)", "GET", "api/stats", 200, params={"period": "7d"})
-
-    def test_get_stats_30d(self):
-        """Test get booking statistics for 30 days"""
-        return self.run_test("Get Stats (30d)", "GET", "api/stats", 200, params={"period": "30d"})
-
-    def test_widget_config_public(self):
-        """Test widget config endpoint (public)"""
-        if not self.hotel_id:
-            print("❌ No hotel ID available for widget config test")
-            return False
-        
-        return self.run_test(
-            "Widget Config (Public)",
-            "GET",
-            f"api/widget/{self.hotel_id}/config",
-            200
-        )
-
-    def test_widget_javascript_file(self):
-        """Test widget JavaScript file serving"""
-        url = f"{self.base_url}/widget/bitsy-widget.js"
-        print(f"\n🔍 Testing Widget JavaScript File...")
-        print(f"   URL: {url}")
-        
-        self.tests_run += 1
         try:
-            response = requests.get(url)
-            if response.status_code == 200 and 'javascript' in response.headers.get('content-type', '').lower() or response.text.startswith('(function()'):
-                self.tests_passed += 1
-                print(f"✅ Passed - Status: {response.status_code}")
-                print(f"   Content-Type: {response.headers.get('content-type', 'N/A')}")
-                print(f"   File size: {len(response.text)} chars")
+            if method == "GET":
+                response = self.session.get(url, headers=headers)
+            elif method == "POST":
+                response = self.session.post(url, headers=headers, data=data, json=json_data)
+            elif method == "PUT":
+                response = self.session.put(url, headers=headers, data=data, json=json_data)
+            elif method == "DELETE":
+                response = self.session.delete(url, headers=headers)
+            else:
+                raise ValueError(f"Unsupported HTTP method: {method}")
+                
+            self.log(f"Request: {method} {url} -> Status: {response.status_code}")
+            
+            return response
+            
+        except requests.RequestException as e:
+            self.log(f"Request failed: {str(e)}", "ERROR")
+            raise
+    
+    def test_hotel_registration_and_auth(self):
+        """Test hotel registration and authentication"""
+        
+        # Test registration
+        test_email = f"test_hotel_{datetime.now().strftime('%H%M%S')}@bitsy.test"
+        register_data = {
+            "email": test_email,
+            "password": "TestPassword123!",
+            "hotelName": "Test Hotel API"
+        }
+        
+        response = self.make_request("POST", "/api/auth/register", json_data=register_data)
+        
+        if response.status_code != 201:
+            self.log(f"Registration failed: {response.text}")
+            return False
+            
+        register_result = response.json()
+        
+        if not register_result.get("success"):
+            self.log(f"Registration response error: {register_result}")
+            return False
+            
+        self.log("✅ Hotel registration successful")
+        
+        # Test login
+        login_data = {
+            "email": test_email,
+            "password": "TestPassword123!"
+        }
+        
+        response = self.make_request("POST", "/api/auth/login", json_data=login_data)
+        
+        if response.status_code != 200:
+            self.log(f"Login failed: {response.text}")
+            return False
+            
+        login_result = response.json()
+        
+        if not login_result.get("success") or not login_result.get("token"):
+            self.log(f"Login response error: {login_result}")
+            return False
+            
+        # Store token and hotel ID for subsequent tests
+        self.hotel_token = login_result["token"]
+        self.test_hotel_id = login_result["hotel"]["_id"]
+        
+        self.log("✅ Hotel login successful")
+        self.log(f"Hotel ID: {self.test_hotel_id}")
+        
+        return True
+    
+    def test_hotel_settings_update(self):
+        """Test updating hotel settings including payment settings"""
+        
+        if not self.hotel_token:
+            self.log("No hotel token available")
+            return False
+            
+        headers = {"Authorization": f"Bearer {self.hotel_token}", "Content-Type": "application/json"}
+        
+        # Test updating payment settings
+        settings_data = {
+            "hotelName": "Updated Test Hotel",
+            "contactPhone": "+1-555-123-4567",
+            "contactEmail": "contact@testhotel.com",
+            "paymentSettings": {
+                "cryptoEnabled": True,
+                "payAtPropertyEnabled": True
+            }
+        }
+        
+        response = self.make_request("PUT", "/api/hotel/settings", headers=headers, json_data=settings_data)
+        
+        if response.status_code != 200:
+            self.log(f"Settings update failed: {response.text}")
+            return False
+            
+        result = response.json()
+        
+        if not result.get("success"):
+            self.log(f"Settings update response error: {result}")
+            return False
+            
+        # Verify payment settings were saved
+        updated_settings = result.get("settings", {})
+        payment_settings = updated_settings.get("paymentSettings", {})
+        
+        if not (payment_settings.get("cryptoEnabled") and payment_settings.get("payAtPropertyEnabled")):
+            self.log(f"Payment settings not saved correctly: {payment_settings}")
+            return False
+            
+        self.log("✅ Payment settings updated successfully")
+        self.log(f"Crypto enabled: {payment_settings['cryptoEnabled']}")
+        self.log(f"Pay at property enabled: {payment_settings['payAtPropertyEnabled']}")
+        
+        return True
+    
+    def test_widget_booking_flow(self):
+        """Test widget booking with both payment methods"""
+        
+        if not self.test_hotel_id:
+            self.log("No hotel ID available")
+            return False
+            
+        # Test crypto booking
+        crypto_booking_data = {
+            "bookingDetails": {
+                "check_in": (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d'),
+                "check_out": (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%d'),
+                "room_type": "Standard Room",
+                "nights": 3,
+                "total_usd": 299,
+                "guest_name": "Test Guest Crypto",
+                "guest_email": "testguest@crypto.com",
+                "guest_phone": "+1-555-987-6543",
+                "payment_method": "crypto",
+                "crypto_choice": "ethereum"
+            }
+        }
+        
+        response = self.make_request("POST", f"/api/widget/{self.test_hotel_id}/book", json_data=crypto_booking_data)
+        
+        if response.status_code != 200:
+            self.log(f"Crypto booking failed: {response.text}")
+            return False
+            
+        crypto_result = response.json()
+        
+        if not crypto_result.get("success"):
+            self.log(f"Crypto booking response error: {crypto_result}")
+            return False
+            
+        self.log("✅ Crypto booking created successfully")
+        self.log(f"Booking ref: {crypto_result['bookingRef']}")
+        
+        # Test pay-at-property booking
+        property_booking_data = {
+            "bookingDetails": {
+                "check_in": (datetime.now() + timedelta(days=14)).strftime('%Y-%m-%d'),
+                "check_out": (datetime.now() + timedelta(days=17)).strftime('%Y-%m-%d'),
+                "room_type": "Standard Room",
+                "nights": 3,
+                "total_usd": 299,
+                "guest_name": "Test Guest Property",
+                "guest_email": "testguest@property.com",
+                "guest_phone": "+1-555-876-5432",
+                "payment_method": "pay_at_property"
+            }
+        }
+        
+        response = self.make_request("POST", f"/api/widget/{self.test_hotel_id}/book", json_data=property_booking_data)
+        
+        if response.status_code != 200:
+            self.log(f"Pay-at-property booking failed: {response.text}")
+            return False
+            
+        property_result = response.json()
+        
+        if not property_result.get("success"):
+            self.log(f"Pay-at-property booking response error: {property_result}")
+            return False
+            
+        self.test_booking_ref = property_result["bookingRef"]
+        self.log("✅ Pay-at-property booking created successfully")
+        self.log(f"Booking ref: {property_result['bookingRef']}")
+        
+        return True
+    
+    def test_hotel_bookings_api(self):
+        """Test hotel bookings management APIs"""
+        
+        if not self.hotel_token:
+            self.log("No hotel token available")
+            return False
+            
+        headers = {"Authorization": f"Bearer {self.hotel_token}"}
+        
+        # Test get all bookings
+        response = self.make_request("GET", "/api/bookings", headers=headers)
+        
+        if response.status_code != 200:
+            self.log(f"Get bookings failed: {response.text}")
+            return False
+            
+        bookings_result = response.json()
+        
+        if not bookings_result.get("success"):
+            self.log(f"Get bookings response error: {bookings_result}")
+            return False
+            
+        bookings = bookings_result.get("bookings", [])
+        self.log(f"✅ Retrieved {len(bookings)} bookings")
+        
+        # Find a pending confirmation booking for testing
+        pending_booking = None
+        for booking in bookings:
+            if booking.get("status") == "pending_confirmation":
+                pending_booking = booking
+                break
+        
+        if pending_booking:
+            booking_ref = pending_booking["bookingRef"]
+            
+            # Test confirm booking
+            response = self.make_request("POST", f"/api/bookings/{booking_ref}/confirm", headers=headers)
+            
+            if response.status_code == 200:
+                confirm_result = response.json()
+                if confirm_result.get("success"):
+                    self.log(f"✅ Booking {booking_ref} confirmed successfully")
+                else:
+                    self.log(f"Confirm booking response error: {confirm_result}")
+                    return False
+            else:
+                self.log(f"Confirm booking failed: {response.text}")
+                return False
+        else:
+            self.log("No pending bookings found for testing confirmation")
+            
+        return True
+    
+    def test_guest_dashboard_apis(self):
+        """Test guest dashboard APIs"""
+        
+        # Test guest lookup with invalid credentials
+        invalid_guest_data = {
+            "email": "nonexistent@guest.com",
+            "phone": "+1-555-000-0000"
+        }
+        
+        response = self.make_request("POST", "/api/guest/verify", json_data=invalid_guest_data)
+        
+        if response.status_code != 404:
+            self.log("Expected 404 for invalid guest, got: {response.status_code}")
+            return False
+            
+        self.log("✅ Invalid guest lookup returns 404 correctly")
+        
+        # Test guest lookup with valid test guest
+        valid_guest_data = {
+            "email": "testguest@property.com",
+            "phone": "+1-555-876-5432"
+        }
+        
+        response = self.make_request("POST", "/api/guest/verify", json_data=valid_guest_data)
+        
+        if response.status_code != 200:
+            self.log(f"Valid guest lookup failed: {response.text}")
+            return False
+            
+        verify_result = response.json()
+        
+        if not verify_result.get("success"):
+            self.log(f"Guest verify response error: {verify_result}")
+            return False
+            
+        self.log("✅ Guest verification successful")
+        
+        # Test get guest bookings
+        response = self.make_request("POST", "/api/guest/bookings", json_data=valid_guest_data)
+        
+        if response.status_code != 200:
+            self.log(f"Get guest bookings failed: {response.text}")
+            return False
+            
+        bookings_result = response.json()
+        
+        if not bookings_result.get("success"):
+            self.log(f"Guest bookings response error: {bookings_result}")
+            return False
+            
+        guest_bookings = bookings_result.get("bookings", [])
+        self.log(f"✅ Retrieved {len(guest_bookings)} guest bookings")
+        
+        return True
+    
+    def test_marketplace_apis(self):
+        """Test marketplace APIs"""
+        
+        # Test get marketplace listings
+        response = self.make_request("GET", "/api/marketplace/listings")
+        
+        if response.status_code != 200:
+            self.log(f"Get marketplace listings failed: {response.text}")
+            return False
+            
+        listings_result = response.json()
+        
+        if not listings_result.get("success"):
+            self.log(f"Marketplace listings response error: {listings_result}")
+            return False
+            
+        listings = listings_result.get("listings", [])
+        self.log(f"✅ Retrieved {len(listings)} marketplace listings")
+        
+        # Test marketplace with filters
+        response = self.make_request("GET", "/api/marketplace/listings?sortBy=price_low&status=active")
+        
+        if response.status_code != 200:
+            self.log(f"Get filtered marketplace listings failed: {response.text}")
+            return False
+            
+        filtered_result = response.json()
+        
+        if not filtered_result.get("success"):
+            self.log(f"Filtered marketplace response error: {filtered_result}")
+            return False
+            
+        self.log("✅ Marketplace filtering working correctly")
+        
+        return True
+    
+    def test_auto_cancel_script(self):
+        """Test auto-cancel booking script execution"""
+        
+        try:
+            # Try to run the auto-cancel script
+            import subprocess
+            result = subprocess.run(
+                ['node', '/app/backend/scripts/auto-cancel-bookings.js'], 
+                capture_output=True, 
+                text=True,
+                timeout=30
+            )
+            
+            if result.returncode == 0:
+                self.log("✅ Auto-cancel script executed successfully")
+                self.log(f"Script output: {result.stdout}")
                 return True
             else:
-                print(f"❌ Failed - Status: {response.status_code}, Content-Type: {response.headers.get('content-type', 'N/A')}")
+                self.log(f"Auto-cancel script failed with return code {result.returncode}")
+                self.log(f"Error output: {result.stderr}")
                 return False
+                
+        except subprocess.TimeoutExpired:
+            self.log("Auto-cancel script timed out")
+            return False
         except Exception as e:
-            print(f"❌ Failed - Error: {str(e)}")
+            self.log(f"Error running auto-cancel script: {str(e)}")
             return False
-
-    def test_delete_room(self):
-        """Test delete room (soft delete)"""
-        if not hasattr(self, 'room_id'):
-            print("❌ No room ID available for delete test")
-            return False
+    
+    def run_all_tests(self):
+        """Run all backend API tests"""
         
-        return self.run_test(
-            "Delete Room",
-            "DELETE",
-            f"api/rooms/{self.room_id}",
-            200
-        )
-
-    # NEW FEATURES TESTING - Photo upload, MCP, Web3, Widget functionality
-
-    def test_image_upload(self):
-        """Test image upload functionality"""
-        print(f"\n🔍 Testing Image Upload...")
+        self.log(f"\n{'='*60}")
+        self.log(f"🚀 BITSY BACKEND API TEST SUITE")
+        self.log(f"API Base URL: {self.api_url}")
+        self.log(f"{'='*60}")
         
-        self.tests_run += 1
-        try:
-            # Create a small test image file
-            with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp_file:
-                # Simple 1x1 JPEG header for testing
-                jpg_header = b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t\x08\n\x0c\x14\r\x0c\x0b\x0b\x0c\x19\x12\x13\x0f\x14\x1d\x1a\x1f\x1e\x1d\x1a\x1c\x1c $.\' ",#\x1c\x1c(7),01444\x1f\'9=82<.342\xff\xc9\x00\x0b\x08\x00\x01\x00\x01\x01\x01\x11\x00\xff\xcc\x00\x06\x00\x10\x10\x05\xff\xda\x00\x08\x01\x01\x00\x00?\x00\xd2\xcf \xff\xd9'
-                tmp_file.write(jpg_header)
-                tmp_file_path = tmp_file.name
-
-            url = f"{self.base_url}/api/upload/image"
-            
-            with open(tmp_file_path, 'rb') as f:
-                files = {'image': ('test.jpg', f, 'image/jpeg')}
-                response = requests.post(url, files=files)
-
-            os.unlink(tmp_file_path)  # Clean up temp file
-
-            if response.status_code == 200:
-                self.tests_passed += 1
-                print(f"✅ Passed - Status: {response.status_code}")
-                response_data = response.json()
-                print(f"   Image URL: {response_data.get('url', 'N/A')}")
-                return True, response_data
-            else:
-                print(f"❌ Failed - Expected 200, got {response.status_code}")
-                return False, {}
-
-        except Exception as e:
-            print(f"❌ Failed - Error: {str(e)}")
-            return False, {}
-
-    def test_mcp_endpoint(self):
-        """Test MCP (Model Context Protocol) endpoint"""
-        return self.run_test("MCP Server Info", "GET", "api/mcp", 200)
-
-    def test_mcp_search_hotels(self):
-        """Test MCP search hotels tool"""
-        return self.run_test(
-            "MCP Search Hotels",
-            "POST",
-            "api/mcp/tools/search_hotels",
-            200,
-            data={"location": "Miami"}
-        )
-
-    def test_mcp_get_supported_chains(self):
-        """Test MCP get supported chains tool"""
-        return self.run_test(
-            "MCP Supported Chains",
-            "POST",
-            "api/mcp/tools/get_supported_chains",
-            200,
-            data={}
-        )
-
-    def test_widget_chat(self):
-        """Test widget chat endpoint"""
-        if not self.hotel_id:
-            print("❌ No hotel ID available for widget chat test")
-            return False
-            
-        return self.run_test(
-            "Widget Chat",
-            "POST",
-            f"api/widget/{self.hotel_id}/chat",
-            200,
-            data={
-                "message": "What rooms do you have available?",
-                "sessionId": f"test-session-{datetime.now().timestamp()}"
-            }
-        )
-
-    def test_widget_book(self):
-        """Test widget booking endpoint"""
-        if not self.hotel_id:
-            print("❌ No hotel ID available for widget booking test")
-            return False
-            
-        booking_details = {
-            "check_in": "2024-12-15",
-            "check_out": "2024-12-16",
-            "room_type": "Deluxe Suite",
-            "nights": 1,
-            "total_usd": 199.99,
-            "guest_name": "Test Guest",
-            "guest_email": "testguest@example.com",
-            "guest_phone": "+1-555-123-4567",
-            "crypto_choice": "ethereum"
-        }
+        # Test suite
+        tests = [
+            ("Hotel Registration & Authentication", self.test_hotel_registration_and_auth),
+            ("Hotel Settings & Payment Configuration", self.test_hotel_settings_update),
+            ("Widget Booking Flow", self.test_widget_booking_flow),
+            ("Hotel Bookings Management", self.test_hotel_bookings_api),
+            ("Guest Dashboard APIs", self.test_guest_dashboard_apis),
+            ("Marketplace APIs", self.test_marketplace_apis),
+            ("Auto-cancel Script", self.test_auto_cancel_script),
+        ]
         
-        return self.run_test(
-            "Widget Booking",
-            "POST",
-            f"api/widget/{self.hotel_id}/book",
-            200,
-            data={"bookingDetails": booking_details}
-        )
-
-    def test_widget_check_guest(self):
-        """Test widget check guest endpoint (returning guest functionality)"""
-        if not self.hotel_id:
-            print("❌ No hotel ID available for guest check test")
-            return False
-            
-        return self.run_test(
-            "Widget Check Guest",
-            "POST",
-            f"api/widget/{self.hotel_id}/check-guest",
-            200,
-            data={"email": "testguest@example.com"}
-        )
-
-    def test_widget_web3_chains(self):
-        """Test widget Web3 chains endpoint"""
-        if not self.hotel_id:
-            print("❌ No hotel ID available for Web3 chains test")
-            return False
-            
-        return self.run_test(
-            "Widget Web3 Chains",
-            "GET",
-            f"api/widget/{self.hotel_id}/web3-chains",
-            200
-        )
-
-    def test_web3_payment_verification(self):
-        """Test Web3 payment verification endpoint"""
-        if not self.hotel_id:
-            print("❌ No hotel ID available for Web3 verification test")
-            return False
-            
-        # Note: This will likely fail without a real transaction hash, but tests the endpoint structure
-        booking_details = {
-            "check_in": "2024-12-15",
-            "check_out": "2024-12-16", 
-            "room_type": "Deluxe Suite",
-            "nights": 1,
-            "total_usd": 199.99,
-            "guest_name": "Test Guest Web3",
-            "guest_email": "testguest.web3@example.com",
-            "guest_phone": "+1-555-987-6543"
-        }
+        for test_name, test_func in tests:
+            self.run_test(test_name, test_func)
         
-        # Use a fake transaction hash for testing structure
-        success, response = self.run_test(
-            "Web3 Payment Verification",
-            "POST",
-            f"api/widget/{self.hotel_id}/verify-web3-payment",
-            400,  # Expecting 400 due to fake transaction hash
-            data={
-                "txHash": "0xfake1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-                "chain": "ethereum",
-                "paymentType": "native",
-                "bookingDetails": booking_details
-            }
-        )
+        # Final results
+        self.log(f"\n{'='*60}")
+        self.log(f"📊 TEST RESULTS SUMMARY")
+        self.log(f"{'='*60}")
+        self.log(f"Tests Run: {self.tests_run}")
+        self.log(f"Tests Passed: {self.tests_passed}")
+        self.log(f"Tests Failed: {self.tests_run - self.tests_passed}")
+        self.log(f"Success Rate: {(self.tests_passed / self.tests_run * 100):.1f}%" if self.tests_run > 0 else "0%")
         
-        # Since we expect 400, mark as passed if we get 400
-        if not success:
-            print("✅ Expected behavior - Web3 verification correctly rejected fake transaction")
-            self.tests_passed += 1
+        if self.tests_passed == self.tests_run:
+            self.log("🎉 ALL TESTS PASSED!", "SUCCESS")
             return True
-        
-        return False
+        else:
+            self.log(f"❌ {self.tests_run - self.tests_passed} TESTS FAILED", "ERROR")
+            return False
 
 def main():
-    """Main test execution"""
-    print("🚀 Starting Bitsy SaaS API Tests")
-    print(f"📡 Testing endpoint: https://bitsy-tools.preview.emergentagent.com")
-    print("=" * 60)
+    """Main test execution function"""
+    tester = BitsyAPITester()
     
-    tester = BitsySaaSAPITester()
-    
-    # Test sequence
-    tests = [
-        # Basic endpoints
-        ("Health Check", tester.test_health_check),
-        ("API Root", tester.test_api_root),
+    try:
+        success = tester.run_all_tests()
+        return 0 if success else 1
         
-        # Authentication
-        ("Registration", tester.test_register),
-        ("Login", tester.test_login),
-        ("Get Current User", tester.test_get_me),
-        
-        # Hotel Settings
-        ("Get Hotel Settings", tester.test_get_hotel_settings),
-        ("Update Hotel Settings", tester.test_update_hotel_settings),
-        ("Get Widget Code", tester.test_get_widget_code),
-        
-        # Rooms Management
-        ("Get Rooms", tester.test_get_rooms),
-        ("Create Room", tester.test_create_room),
-        ("Update Room", tester.test_update_room),
-        ("Delete Room", tester.test_delete_room),
-        
-        # Wallets
-        ("Get Wallets", tester.test_get_wallets),
-        ("Update Wallets", tester.test_update_wallets),
-        
-        # Statistics
-        ("Get Stats 7d", tester.test_get_stats),
-        ("Get Stats 30d", tester.test_get_stats_30d),
-        
-        # Widget (Public endpoints)
-        ("Widget Config", tester.test_widget_config_public),
-        ("Widget JS File", tester.test_widget_javascript_file),
-        
-        # NEW FEATURES - Photo Upload, MCP, Widget Chat/Book, Guest Storage, Web3
-        ("Image Upload", tester.test_image_upload),
-        ("MCP Server Info", tester.test_mcp_endpoint),
-        ("MCP Search Hotels", tester.test_mcp_search_hotels),
-        ("MCP Supported Chains", tester.test_mcp_get_supported_chains),
-        ("Widget Chat", tester.test_widget_chat),
-        ("Widget Booking", tester.test_widget_book),
-        ("Widget Check Guest", tester.test_widget_check_guest),
-        ("Widget Web3 Chains", tester.test_widget_web3_chains),
-        ("Web3 Payment Verification", tester.test_web3_payment_verification),
-    ]
-    
-    # Execute tests
-    for test_name, test_func in tests:
-        try:
-            test_func()
-        except Exception as e:
-            print(f"❌ {test_name} - Unexpected error: {str(e)}")
-    
-    # Print summary
-    print("\n" + "=" * 60)
-    print("📊 Test Summary")
-    print("=" * 60)
-    print(f"Total tests run: {tester.tests_run}")
-    print(f"Tests passed: {tester.tests_passed}")
-    print(f"Tests failed: {tester.tests_run - tester.tests_passed}")
-    print(f"Success rate: {(tester.tests_passed / tester.tests_run * 100):.1f}%")
-    
-    if tester.tests_passed == tester.tests_run:
-        print("🎉 All tests passed!")
-        return 0
-    else:
-        print(f"⚠️  {tester.tests_run - tester.tests_passed} test(s) failed")
+    except KeyboardInterrupt:
+        tester.log("\n❌ Tests interrupted by user", "ERROR")
+        return 1
+    except Exception as e:
+        tester.log(f"\n❌ Unexpected error: {str(e)}", "ERROR")
         return 1
 
 if __name__ == "__main__":
-    sys.exit(main())
+    exit_code = main()
+    sys.exit(exit_code)
