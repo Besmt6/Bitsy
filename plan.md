@@ -1,4 +1,4 @@
-# plan.md — Bitsy: Payment Flexibility + Guest Dashboard + Crypto Marketplace + Billing Enforcement (UPDATED)
+# plan.md — Bitsy: Payment Flexibility + Guest Dashboard + Crypto Marketplace + Billing Enforcement + Multi-Wallet UX (UPDATED)
 
 ## 1) Objectives
 - ✅ Ship a **crypto-first** booking system where **crypto is the default** payment method.
@@ -8,9 +8,11 @@
 - ✅ Ship a **secondary marketplace** (**crypto bookings only**, **zero commission**) to list/transfer bookings with on-chain-verifiable payment proof.
 - ✅ Implement **auto-cancel** for unconfirmed pay-at-property bookings at **exactly 48 hours before check-in**, plus marketplace listing expiry cleanup.
 - ✅ Self-host the **demo video** (remove HeyGen dependency / monthly fee).
-- ✅ Security/UX hardening: **remove external wallet download links** (avoid phishing/spam links); direct users to official app stores and in-app wallet connection.
+- ✅ Security/UX hardening: **remove external wallet download links** (avoid phishing/spam links); direct users to official app stores and avoid spam URLs.
 - ✅ **Monetization**: Implement **“Pay What You Save” billing enforcement** (free $5,000, then commission) with trial tracking, grace period, and booking blocking after grace.
 - ✅ **Spam prevention**: Add **hotel location verification** (address submission + status tracking) to reduce fake/spam hotel listings.
+- ✅ **Wallet UX clarification**: Ensure hotels/guests understand modern wallets (MetaMask 2026) support multiple networks; document address-format differences and reduce setup mistakes.
+- ⚠️ (In progress) **Multi-wallet guest UX**: Improve the widget so guests can seamlessly use **MetaMask + Phantom** (and other injected providers) where possible while keeping the QR flow as the universal fallback.
 
 ---
 
@@ -244,15 +246,65 @@
 
 ---
 
+### Phase 7 — Wallet UX: Multi-Chain Address Guidance + Multi-Wallet Guest Discovery ✅ PARTIALLY COMPLETED
+
+#### 7.1 Key product clarification (confirmed)
+- **Modern MetaMask (2026) supports multiple networks**, including:
+  - EVM chains (Ethereum/L2s)
+  - Bitcoin
+  - Solana
+  - Tron
+- **Address formats differ by chain type**:
+  - ✅ EVM chains share **same `0x...` address**
+  - ✅ Solana uses **Solana address format** (e.g., `9Wz...`)
+  - ✅ Bitcoin uses **Bitcoin address format** (e.g., `bc1...`)
+  - ✅ Tron uses **Tron address format** (e.g., `T...`)
+- **Guest wallets are compatible across providers**:
+  - A guest can pay from **Phantom** to a **MetaMask-derived Solana address** (same Solana chain), as long as the chain and address format match.
+
+#### 7.2 Delivered ✅
+- ✅ Verified booking endpoint always selects `hotel.wallets[crypto_choice]` to generate QR codes.
+- ✅ Verified QR codes show the **correct chain-specific address** for each crypto choice.
+- ✅ Updated **Wallets page UI** to explicitly explain:
+  - One MetaMask can cover all chains
+  - EVM address reuse vs Solana/Bitcoin differences
+  - Guests can use Phantom/Coinbase/Trust as long as they pay to the correct chain
+- ✅ Added hotel-facing documentation:
+  - `app/WALLET_SETUP_GUIDE.md` — MetaMask multi-chain wallet setup guide
+
+#### 7.3 In progress / next improvements ⚠️
+- ⚠️ **Guest widget multi-wallet connect**:
+  - Align widget “Pay with Crypto Wallet” with actual supported behaviors (avoid implying it sends on-chain transfers unless implemented).
+  - Add clear wallet detection and routing for:
+    - MetaMask (`window.ethereum`) for EVM (and potentially other networks if supported)
+    - Phantom (`window.phantom.solana`) for Solana
+  - Keep QR as the universal fallback for all chains.
+- ⚠️ Decide whether to integrate **Reown AppKit** (WalletConnect) for:
+  - Wallet discovery across desktop/mobile
+  - Standardized wallet modal + deep links
+  - Solana/Bitcoin support via appropriate adapters
+
+**Exit criteria (Phase 7)**
+- Guests can connect via MetaMask or Phantom when available, OR easily fall back to QR.
+- Widget copy no longer claims “on-chain verification” unless it actually verifies tx hashes.
+- Hotels have clear guidance to avoid pasting wrong-chain addresses.
+
+---
+
 ## 3) Next Actions (Immediate)
-1. ✅ Billing enforcement + location verification are now live (Phase 6 complete).
-2. ⚠️ Add production-grade email delivery (SES/Resend) for booking + marketplace notifications.
-3. ⚠️ Replace placeholder Bitsy receiving addresses with real production wallets and decide payment verification workflow.
-4. ✅ Deploy to AWS using `/app/DEPLOYMENT_AWS.md` (Emergent native deployment is incompatible with Node + Web3).
+1. ✅ Billing enforcement + location verification are live (Phase 6 complete).
+2. ✅ Wallet setup clarity shipped (Wallets page + `WALLET_SETUP_GUIDE.md`).
+3. ⚠️ Finalize widget wallet-connect UX (Phase 7.3):
+   - Decide between (A) Reown AppKit integration or (B) lightweight injected-provider detection.
+   - Ensure the widget does not mislead users about automatic payment sending.
+4. ⚠️ Replace placeholder Bitsy receiving addresses with real production wallets and decide commission payment verification workflow.
+5. ⚠️ Add production-grade email delivery (SES/Resend) for booking + marketplace notifications.
+6. ✅ Deploy to AWS using `/app/DEPLOYMENT_AWS.md` (Emergent native deployment is incompatible with Node + Web3).
 
 ---
 
 ## 4) Success Criteria
+
 **Achieved**
 - ✅ Hotels can toggle pay-at-property; crypto remains default.
 - ✅ Pay-at-property bookings show exact 48h confirmation deadline; auto-cancel works.
@@ -264,8 +316,10 @@
 - ✅ Bookings blocked only after grace period ends (not immediately).
 - ✅ Dashboard shows clear trial/grace/blocked/active state + progress indicator.
 - ✅ Location verification UI and status tracking implemented to reduce spam hotel listings.
+- ✅ Wallet UX clarified: Hotels understand EVM vs Solana/Bitcoin address formats; Wallets page guidance updated; setup doc created.
 
 **Remaining / Future**
-- ⚠️ Automated commission reconciliation (on-chain verification of payment tx hash; admin review workflow).
-- ⚠️ Policy decisions: whether to restrict widget activation or marketplace visibility until location is verified.
+- ⚠️ Automated commission reconciliation (on-chain verification of billing payment tx hash; admin review workflow).
+- ⚠️ Policy decisions: whether to restrict widget activation or marketplace visibility until hotel location is verified.
+- ⚠️ Finalize multi-wallet guest connect UX in widget (MetaMask + Phantom + QR fallback).
 - ⚠️ Full AWS production deployment + environment hardening.

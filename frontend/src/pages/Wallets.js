@@ -73,15 +73,29 @@ const Wallets = () => {
       </div>
 
       <Alert>
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          <strong>Privacy-First:</strong> Payments go directly to your wallets. We never store guest information or handle transactions.
-          <br />
-          <strong>Non-Refundable:</strong> All crypto bookings are final. Verify your wallet addresses carefully.
-          <br />
-          <strong className="mt-2 block">Don't have a wallet?</strong> 
-          <span className="block">Download wallet apps directly from your device's official app store (iOS App Store or Google Play). Popular options: MetaMask (for Ethereum, Polygon, Base, etc.) or BlueWallet (for Bitcoin).</span>
-          <span className="block mt-1 text-xs">💡 You only need to enter <strong>public addresses</strong> (receive addresses). Never share private keys or click suspicious links.</span>
+        <Wallet className="h-4 w-4" />
+        <AlertDescription className="text-sm leading-relaxed">
+          <strong className="text-base">🦊 One MetaMask for All Chains (2026)</strong>
+          <p className="mt-2">MetaMask now supports <strong>all chains</strong> in one wallet! Switch networks in MetaMask to get addresses for each chain:</p>
+          
+          <div className="mt-3 space-y-2 text-xs">
+            <div className="flex items-start gap-2">
+              <span className="font-mono bg-primary/10 px-2 py-0.5 rounded">0x...</span>
+              <span><strong>EVM chains</strong> (Ethereum, Polygon, Base, Arbitrum, Optimism, BSC) → Use the <strong>SAME</strong> address for all</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="font-mono bg-purple-500/10 px-2 py-0.5 rounded">9Wz...</span>
+              <span><strong>Solana</strong> → Switch MetaMask to Solana network → Copy the <strong>Solana address</strong> (different format)</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="font-mono bg-orange-500/10 px-2 py-0.5 rounded">bc1...</span>
+              <span><strong>Bitcoin</strong> → Switch MetaMask to Bitcoin network → Copy the <strong>Bitcoin address</strong> (different format)</span>
+            </div>
+          </div>
+          
+          <p className="mt-3 text-xs"><strong>✅ Guest Compatibility:</strong> Guests can pay using <strong>any wallet</strong> (Phantom, Coinbase, Trust Wallet, etc.) as long as they send to the correct chain. Bitsy's QR codes automatically show the right address per chain.</p>
+          
+          <p className="mt-2 text-xs text-muted-foreground">💡 You only need to enter <strong>public addresses</strong> (receive addresses). Never share private keys or recovery phrases.</p>
         </AlertDescription>
       </Alert>
 

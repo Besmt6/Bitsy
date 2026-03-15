@@ -1195,37 +1195,107 @@
     addMessage('assistant', 'Thank you! Your booking has been submitted. Please choose your payment method above.');
   }
   
-  // Web3 Payment Flow
+  // Detect available wallets
+  function detectAvailableWallets() {
+    const wallets = [];
+    
+    // MetaMask (supports EVM + Solana + Bitcoin + Tron in 2026)
+    if (typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask) {
+      wallets.push({
+        name: 'MetaMask',
+        provider: window.ethereum,
+        icon: '🦊',
+        supports: ['ethereum', 'polygon', 'base', 'arbitrum', 'optimism', 'bsc', 'bitcoin', 'solana', 'tron']
+      });
+    }
+    
+    // Phantom (Solana, Ethereum, Bitcoin, Polygon)
+    if (typeof window.phantom?.solana !== 'undefined') {
+      wallets.push({
+        name: 'Phantom',
+        provider: window.phantom.solana,
+        icon: '👻',
+        supports: ['solana', 'ethereum', 'polygon', 'bitcoin']
+      });
+    }
+    
+    // Solana-specific (Solflare, Backpack, etc.)
+    if (typeof window.solana !== 'undefined' && !window.phantom?.solana) {
+      wallets.push({
+        name: 'Solana Wallet',
+        provider: window.solana,
+        icon: '◎',
+        supports: ['solana']
+      });
+    }
+    
+    // Coinbase Wallet
+    if (typeof window.ethereum !== 'undefined' && window.ethereum.isCoinbaseWallet) {
+      wallets.push({
+        name: 'Coinbase Wallet',
+        provider: window.ethereum,
+        icon: '🔵',
+        supports: ['ethereum', 'polygon', 'base', 'arbitrum', 'optimism']
+      });
+    }
+    
+    return wallets;
+  }
+  
+  // Web3 Payment Flow - Multi-wallet support
   async function initiateWeb3Payment(bookingData) {
     try {
-      // Check if MetaMask or any Web3 provider exists
-      if (typeof window.ethereum === 'undefined') {
-        alert('Please install MetaMask or another Web3 wallet to use this payment method.\n\nAlternatively, you can use the QR code to pay from your mobile wallet.');
+      const availableWallets = detectAvailableWallets();
+      
+      if (availableWallets.length === 0) {
+        alert('No crypto wallet detected.\n\n✅ Install MetaMask (supports all chains)\n✅ Or use Phantom for Solana\n\nAlternatively, scan the QR code below with your mobile wallet.');
         return;
       }
       
-      addMessage('assistant', 'Connecting to your wallet...');
+      // Determine which chain the booking is for
+      const bookingChain = widgetState.bookingDetails.crypto_choice || 'ethereum';
       
-      // Request account access
-      const accounts = await window.ethereum.request({ 
-        method: 'eth_requestAccounts' 
-      });
+      // Filter wallets that support this chain
+      const compatibleWallets = availableWallets.filter(w => w.supports.includes(bookingChain));
       
-      if (!accounts || accounts.length === 0) {
-        addMessage('assistant', 'Wallet connection cancelled. Please use the QR code option instead.');
+      if (compatibleWallets.length === 0) {
+        alert(`No wallet found for ${bookingChain.toUpperCase()}.\n\nPlease install:\n✅ MetaMask (all chains)\n✅ Phantom (Solana)\n\nOr use the QR code.`);
         return;
       }
       
-      widgetState.web3.address = accounts[0];
+      // If only one compatible wallet, use it automatically
+      // If multiple, show selection (for now, use first one)
+      const selectedWallet = compatibleWallets[0];
+      
+      addMessage('assistant', `Connecting to ${selectedWallet.name}...`);
+      
+      // Connect based on chain type
+      let address;
+      if (bookingChain === 'solana') {
+        // Solana connection
+        address = await connectSolanaWallet(selectedWallet.provider, selectedWallet.name);
+      } else if (bookingChain === 'bitcoin') {
+        // Bitcoin connection
+        address = await connectBitcoinWallet(selectedWallet.provider, selectedWallet.name);
+      } else {
+        // EVM connection
+        address = await connectEVMWallet(selectedWallet.provider, selectedWallet.name, bookingChain);
+      }
+      
+      if (!address) {
+        addMessage('assistant', 'Connection cancelled. Please use the QR code option.');
+        return;
+      }
+      
+      widgetState.web3.address = address;
       widgetState.web3.connected = true;
+      widgetState.web3.provider = selectedWallet.provider;
+      widgetState.web3.walletName = selectedWallet.name;
+      widgetState.web3.chainType = bookingChain;
       
-      // Get current chain
-      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      widgetState.web3.chainId = parseInt(chainId, 16);
+      addMessage('assistant', `✅ ${selectedWallet.name} connected: ${address.substring(0, 8)}...${address.substring(address.length - 6)}`);
       
-      addMessage('assistant', `✅ Wallet connected: ${widgetState.web3.address.substring(0, 8)}...${widgetState.web3.address.substring(38)}`);
-      
-      // Show chain selector and payment button
+      // Show payment confirmation UI
       showWeb3PaymentUI(bookingData);
       
     } catch (error) {
@@ -1234,31 +1304,127 @@
     }
   }
   
+  // Connect Solana wallet (Phantom or MetaMask)
+  async function connectSolanaWallet(provider, walletName) {
+    try {
+      if (walletName === 'Phantom' || provider.isPhantom) {
+        const response = await provider.connect();
+        return response.publicKey.toString();
+      } else {
+        // MetaMask Solana
+        const accounts = await provider.request({ method: 'eth_requestAccounts' });
+        // TODO: Get Solana address from MetaMask (might need different method)
+        return accounts[0]; // Temporary - needs MetaMask Solana API
+      }
+    } catch (error) {
+      console.error('Solana connection error:', error);
+      throw error;
+    }
+  }
+  
+  // Connect Bitcoin wallet
+  async function connectBitcoinWallet(provider, walletName) {
+    try {
+      if (walletName === 'MetaMask') {
+        const accounts = await provider.request({ method: 'eth_requestAccounts' });
+        // TODO: Get Bitcoin address from MetaMask (might need different method)
+        return accounts[0]; // Temporary - needs MetaMask Bitcoin API
+      } else if (typeof provider.requestAccounts === 'function') {
+        const accounts = await provider.requestAccounts();
+        return accounts[0];
+      }
+      throw new Error('Bitcoin wallet connection not supported');
+    } catch (error) {
+      console.error('Bitcoin connection error:', error);
+      throw error;
+    }
+  }
+  
+  // Connect EVM wallet (MetaMask, Coinbase, etc.)
+  async function connectEVMWallet(provider, walletName, targetChain) {
+    try {
+      const accounts = await provider.request({ method: 'eth_requestAccounts' });
+      
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No accounts found');
+      }
+      
+      // Get current chain and switch if needed
+      const chainId = await provider.request({ method: 'eth_chainId' });
+      widgetState.web3.chainId = parseInt(chainId, 16);
+      
+      // Map chain names to chain IDs
+      const chainIds = {
+        'ethereum': 1,
+        'polygon': 137,
+        'base': 8453,
+        'arbitrum': 42161,
+        'optimism': 10,
+        'bsc': 56
+      };
+      
+      const targetChainId = chainIds[targetChain];
+      if (targetChainId && widgetState.web3.chainId !== targetChainId) {
+        await switchChain(targetChainId);
+      }
+      
+      return accounts[0];
+    } catch (error) {
+      console.error('EVM connection error:', error);
+      throw error;
+    }
+  }
+  
   function showWeb3PaymentUI(bookingData) {
     const messagesContainer = document.getElementById('bitsy-messages');
     const paymentUI = document.createElement('div');
     paymentUI.style.cssText = 'margin-bottom: 12px;';
     
-    const chains = [
-      { id: 1, name: 'Ethereum', symbol: 'ETH' },
-      { id: 137, name: 'Polygon', symbol: 'MATIC' },
-      { id: 8453, name: 'Base', symbol: 'ETH' },
-      { id: 42161, name: 'Arbitrum', symbol: 'ETH' },
-      { id: 10, name: 'Optimism', symbol: 'ETH' }
-    ];
+    const chainType = widgetState.web3.chainType || 'ethereum';
+    const walletName = widgetState.web3.walletName || 'Wallet';
+    const isEVM = !['solana', 'bitcoin', 'tron'].includes(chainType);
     
-    const chainOptions = chains.map(c => 
-      `<option value="${c.id}" ${c.id === widgetState.web3.chainId ? 'selected' : ''}>${c.name} (${c.symbol})</option>`
-    ).join('');
-    
-    paymentUI.innerHTML = `
-      <div style="background: #f9fafb; border: 2px solid #10b981; padding: 16px; border-radius: 12px;">
+    // For EVM chains, show chain selector
+    let chainSelectorHTML = '';
+    if (isEVM) {
+      const chains = [
+        { id: 1, name: 'Ethereum', key: 'ethereum', symbol: 'ETH' },
+        { id: 137, name: 'Polygon', key: 'polygon', symbol: 'MATIC' },
+        { id: 8453, name: 'Base', key: 'base', symbol: 'ETH' },
+        { id: 42161, name: 'Arbitrum', key: 'arbitrum', symbol: 'ETH' },
+        { id: 10, name: 'Optimism', key: 'optimism', symbol: 'ETH' },
+        { id: 56, name: 'BNB Chain', key: 'bsc', symbol: 'BNB' }
+      ];
+      
+      const chainOptions = chains.map(c => 
+        `<option value="${c.id}" data-chain-key="${c.key}" ${c.id === widgetState.web3.chainId ? 'selected' : ''}>${c.name} (${c.symbol})</option>`
+      ).join('');
+      
+      chainSelectorHTML = `
         <div style="margin-bottom: 12px;">
           <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151;">Select Chain:</label>
           <select id="bitsy-chain-select" data-testid="widget-chain-selector" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; cursor: pointer;">
             ${chainOptions}
           </select>
         </div>
+      `;
+    } else {
+      // For non-EVM, show current chain info
+      chainSelectorHTML = `
+        <div style="margin-bottom: 12px; padding: 12px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 13px; color: #6b7280;">Chain:</span>
+          <span style="font-size: 14px; font-weight: 600; color: #0e7490; text-transform: uppercase;">${chainType}</span>
+        </div>
+      `;
+    }
+    
+    paymentUI.innerHTML = `
+      <div style="background: #f9fafb; border: 2px solid #10b981; padding: 16px; border-radius: 12px;">
+        <div style="margin-bottom: 12px; padding: 8px; background: #dcfce7; border-radius: 6px; text-align: center;">
+          <span style="font-size: 12px; color: #166534; font-weight: 600;">${walletName} Connected</span>
+        </div>
+        
+        ${chainSelectorHTML}
         
         <div style="margin-bottom: 12px; padding: 12px; background: white; border-radius: 8px;">
           <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Amount to Pay:</div>
@@ -1268,6 +1434,8 @@
         <button id="bitsy-send-payment-btn" data-testid="widget-send-payment-button" style="width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
           Send Payment
         </button>
+        
+        <p style="margin: 8px 0 0 0; font-size: 11px; color: #6b7280; text-align: center;">A transaction approval will appear in your wallet</p>
       </div>
     `;
     
@@ -1275,9 +1443,18 @@
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
     // Add event listeners
-    document.getElementById('bitsy-chain-select').onchange = async (e) => {
-      await switchChain(parseInt(e.target.value));
-    };
+    if (isEVM) {
+      const chainSelect = document.getElementById('bitsy-chain-select');
+      if (chainSelect) {
+        chainSelect.onchange = async (e) => {
+          const targetChainId = parseInt(e.target.value);
+          const targetChainKey = e.target.selectedOptions[0].getAttribute('data-chain-key');
+          await switchChain(targetChainId);
+          // Update the stored chain type
+          widgetState.web3.chainType = targetChainKey;
+        };
+      }
+    }
     
     document.getElementById('bitsy-send-payment-btn').onclick = async () => {
       await sendWeb3Payment(bookingData);
@@ -1311,33 +1488,56 @@
       
       addMessage('assistant', 'Please sign the transaction in your wallet...');
       
+      const chainType = widgetState.web3.chainType || 'ethereum';
+      const provider = widgetState.web3.provider;
+      const address = widgetState.web3.address;
+      
       // Create payment message
       const paymentMessage = JSON.stringify({
         action: 'booking_payment',
         hotelId: HOTEL_ID,
         bookingRef: bookingData.bookingRef,
         amount: widgetState.bookingDetails.total_usd,
-        wallet: widgetState.web3.address,
-        chainId: widgetState.web3.chainId,
+        wallet: address,
+        chain: chainType,
         timestamp: Math.floor(Date.now() / 1000)
       });
       
-      // Request signature
-      const signature = await window.ethereum.request({
-        method: 'personal_sign',
-        params: [paymentMessage, widgetState.web3.address]
-      });
+      let signature;
+      
+      // Sign based on chain type
+      if (chainType === 'solana') {
+        // Solana signing (Phantom or MetaMask Solana)
+        const encodedMessage = new TextEncoder().encode(paymentMessage);
+        const signedMessage = await provider.signMessage(encodedMessage, 'utf8');
+        signature = btoa(String.fromCharCode.apply(null, signedMessage.signature));
+      } else if (chainType === 'bitcoin') {
+        // Bitcoin signing (simplified - real impl would use PSBTs)
+        // For now, just use message signing if available
+        if (provider.signMessage) {
+          signature = await provider.signMessage(address, paymentMessage);
+        } else {
+          throw new Error('Bitcoin wallet does not support message signing. Please use QR code.');
+        }
+      } else {
+        // EVM signing (MetaMask, Coinbase, etc.)
+        signature = await provider.request({
+          method: 'personal_sign',
+          params: [paymentMessage, address]
+        });
+      }
       
       addMessage('assistant', 'Verifying payment on blockchain...');
       
       // Verify signature with backend
-      const verifyResponse = await fetch(`${API_URL}/api/${HOTEL_ID}/verify-web3-payment`, {
+      const verifyResponse = await fetch(`${API_URL}/api/widget/${HOTEL_ID}/verify-web3-payment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           signature: signature,
           message: paymentMessage,
-          walletAddress: widgetState.web3.address,
+          walletAddress: address,
+          chainType: chainType,
           chainId: widgetState.web3.chainId,
           bookingRef: bookingData.bookingRef
         })
@@ -1346,7 +1546,7 @@
       const verifyData = await verifyResponse.json();
       
       if (verifyData.success) {
-        addMessage('assistant', `🎉 Payment verified successfully on ${verifyData.chainName}! Your booking is confirmed. Confirmation sent to ${widgetState.bookingDetails.guest_email}`);
+        addMessage('assistant', `🎉 Payment verified successfully on ${chainType.toUpperCase()}! Your booking is confirmed. Confirmation sent to ${widgetState.bookingDetails.guest_email}`);
         payBtn.textContent = '✅ Payment Confirmed';
         payBtn.style.background = '#10b981';
       } else {

@@ -1,6 +1,6 @@
 [
   {
-    "content": "Test complete billing flow: create bookings to exceed $5k, verify grace period, test blocking",
+    "content": "Create final summary and update plan",
     "status": "completed"
   }
 ]
