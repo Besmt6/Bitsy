@@ -1,58 +1,26 @@
 [
   {
-    "content": "Create Admin model and authentication in backend",
+    "content": "Create full-page ChatPage component at /chat route",
     "status": "completed"
   },
   {
-    "content": "Create admin API routes (login, platform stats, hotels list, commission tracking)",
+    "content": "Create backend /api/chat endpoint with OpenAI integration",
     "status": "completed"
   },
   {
-    "content": "Add admin theme tokens to frontend index.css",
+    "content": "Update navigation - redirect 'Browse Hotels' to /chat",
     "status": "completed"
   },
   {
-    "content": "Create AdminShell layout component with sidebar navigation",
+    "content": "Update landing page guest CTA to point to /chat",
     "status": "completed"
   },
   {
-    "content": "Create reusable admin components (KpiCard, StatusPill)",
+    "content": "Test AI chat conversation flow",
     "status": "completed"
   },
   {
-    "content": "Build Admin Login page (/admin/login)",
-    "status": "completed"
-  },
-  {
-    "content": "Build Admin Dashboard Home with platform metrics",
-    "status": "completed"
-  },
-  {
-    "content": "Build Hotel Management page with table",
-    "status": "completed"
-  },
-  {
-    "content": "Build Commission Tracking page",
-    "status": "completed"
-  },
-  {
-    "content": "Build Billing Alerts page",
-    "status": "completed"
-  },
-  {
-    "content": "Build Activity Feed page",
-    "status": "completed"
-  },
-  {
-    "content": "Build Hotel Details page",
-    "status": "completed"
-  },
-  {
-    "content": "Add admin routes to App.js",
-    "status": "completed"
-  },
-  {
-    "content": "Test admin dashboard functionality",
-    "status": "completed"
+    "content": "Enhance chat UI with hotel display and side panel",
+    "status": "in_progress"
   }
 ]

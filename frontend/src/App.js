@@ -36,6 +36,9 @@ import AdminCommissions from './pages/admin/AdminCommissions';
 import AdminBilling from './pages/admin/AdminBilling';
 import AdminActivity from './pages/admin/AdminActivity';
 
+// Guest Chat
+import ChatPage from './pages/ChatPage';
+
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
 
@@ -64,6 +67,9 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      
+      {/* AI Chat Interface */}
+      <Route path="/chat" element={<ChatPage />} />
       
       {/* Video Mockup Routes */}
       <Route path="/mockup/widget" element={<WidgetMockup />} />

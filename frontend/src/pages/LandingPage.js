@@ -40,7 +40,7 @@ const LandingPage = () => {
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/browse" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-browse-link">Browse Hotels</Link>
+            <Link to="/chat" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-browse-link">Browse Hotels</Link>
             <a href="#features" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-features-link">Features</a>
             <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-pricing-link">Pricing</a>
             <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-how-it-works-link">How It Works</a>
@@ -82,14 +82,14 @@ const LandingPage = () => {
                 </Card>
               </Link>
 
-              <Link to="/guest">
+              <Link to="/chat">
                 <Card className="border-2 border-muted hover:border-primary/50 hover:shadow-xl transition-all duration-300 cursor-pointer group h-full">
                   <CardContent className="pt-6 text-center">
                     <Users className="h-10 w-10 mx-auto text-primary mb-3 group-hover:scale-110 transition-transform" />
                     <h3 className="font-heading font-bold text-xl mb-1">I'm a Guest</h3>
-                    <p className="text-sm text-muted-foreground mb-4">View or manage my booking</p>
+                    <p className="text-sm text-muted-foreground mb-4">Book hotels with AI assistance</p>
                     <Button size="lg" variant="outline" className="w-full" data-testid="hero-guest-cta">
-                      Guest Portal
+                      Chat with Bitsy AI
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </CardContent>
