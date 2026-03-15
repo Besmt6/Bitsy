@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-export const sendNotification = async ({ hotel, bookingRef, bookingDetails, walletAddress, isReturningGuest = false }) => {
+export const sendNotification = async ({ hotel, bookingRef, bookingDetails, walletAddress, isReturningGuest = false, web3Verified = false }) => {
   try {
     const returningBadge = isReturningGuest ? '🔁 RETURNING GUEST' : '🆕 NEW GUEST';
+    const web3Badge = web3Verified ? '⛓️  WEB3 VERIFIED ON-CHAIN' : '';
     
     // Format console notification
     const consoleNotification = `
@@ -13,6 +14,7 @@ ${'='.repeat(60)}
 📋 Reference: ${bookingRef}
 🏨 Hotel: ${hotel.hotelName}
 ${returningBadge}
+${web3Badge}
 
 👤 Guest Details:
    Name: ${bookingDetails.guest_name}
@@ -28,11 +30,14 @@ ${returningBadge}
 
 💰 Payment:
    Total: $${bookingDetails.total_usd}
-   Crypto: ${bookingDetails.crypto_choice.toUpperCase()}
+   ${bookingDetails.paymentAmount || bookingDetails.crypto_choice?.toUpperCase() || 'Crypto'}
+   ${bookingDetails.chain ? `Chain: ${bookingDetails.chain}` : ''}
+   ${web3Verified ? `✅ Verified on blockchain` : 'Status: Guest confirmed payment sent'}
+   ${bookingDetails.txHash ? `Tx: ${bookingDetails.txHash}` : ''}
+   ${bookingDetails.explorerUrl ? `Explorer: ${bookingDetails.explorerUrl}` : ''}
    Wallet: ${walletAddress}
-   Status: Guest confirmed payment sent
 
-⚠️  IMPORTANT: Verify payment in your ${bookingDetails.crypto_choice.toUpperCase()} wallet
+${web3Verified ? '✅ Payment automatically verified on-chain' : '⚠️  IMPORTANT: Verify payment in your wallet'}
 
 ${'='.repeat(60)}
 `;
@@ -44,6 +49,7 @@ ${'='.repeat(60)}
       try {
         const telegramMessage = `🔔 NEW BITSY BOOKING
 ${isReturningGuest ? '🔁 RETURNING GUEST' : '🆕 NEW GUEST'}
+${web3Verified ? '⛓️  WEB3 VERIFIED' : ''}
 
 📋 Ref: ${bookingRef}
 👤 ${bookingDetails.guest_name}
@@ -51,10 +57,11 @@ ${isReturningGuest ? '🔁 RETURNING GUEST' : '🆕 NEW GUEST'}
 📧 ${bookingDetails.guest_email}
 📅 ${bookingDetails.check_in} to ${bookingDetails.check_out} (${bookingDetails.nights} nights)
 🛏️ ${bookingDetails.room_type} Room
-💰 $${bookingDetails.total_usd} ${bookingDetails.crypto_choice.toUpperCase()}
+💰 $${bookingDetails.total_usd} ${bookingDetails.paymentAmount || bookingDetails.crypto_choice?.toUpperCase() || ''}
 
-⚠️ Verify payment in wallet:
-${walletAddress}`;
+${web3Verified ? '✅ Verified on-chain' : '⚠️ Verify payment in wallet:'}
+${bookingDetails.explorerUrl || walletAddress}`;
+
 
         const telegramUrl = `https://api.telegram.org/bot${hotel.telegramBotToken}/sendMessage`;
         

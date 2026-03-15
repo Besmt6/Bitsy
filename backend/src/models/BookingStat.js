@@ -47,7 +47,21 @@ const bookingStatSchema = new mongoose.Schema({
   cryptoType: {
     type: String,
     required: true,
-    enum: ['bitcoin', 'ethereum', 'polygon', 'solana', 'tron']
+    enum: ['bitcoin', 'ethereum', 'polygon', 'solana', 'tron', 'base', 'arbitrum', 'optimism', 'bsc']
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['qr_code', 'web3'],
+    default: 'qr_code'
+  },
+  web3Data: {
+    txHash: String,
+    chain: String,
+    paymentType: String, // 'native', 'USDC', 'USDT', etc.
+    blockNumber: Number,
+    explorerUrl: String,
+    from: String,
+    verifiedAt: Date
   },
   timestamp: {
     type: Date,

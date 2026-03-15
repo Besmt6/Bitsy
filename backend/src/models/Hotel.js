@@ -47,7 +47,11 @@ const hotelSchema = new mongoose.Schema({
     ethereum: { type: String, default: '' },
     polygon: { type: String, default: '' },
     solana: { type: String, default: '' },
-    tron: { type: String, default: '' }
+    tron: { type: String, default: '' },
+    base: { type: String, default: '' },
+    arbitrum: { type: String, default: '' },
+    optimism: { type: String, default: '' },
+    bsc: { type: String, default: '' }
   },
   widgetSettings: {
     theme: { type: String, default: 'light' },

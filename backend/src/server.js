@@ -12,6 +12,7 @@ import roomRoutes from './routes/room.js';
 import walletRoutes from './routes/wallet.js';
 import widgetRoutes from './routes/widget.js';
 import statsRoutes from './routes/stats.js';
+import mcpRoutes from './routes/mcp.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -71,6 +72,7 @@ app.use('/api/rooms', roomRoutes);
 app.use('/api/wallets', walletRoutes);
 app.use('/api/widget', widgetRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/mcp', mcpRoutes);
 
 // Root route
 app.get('/api', (req, res) => {
