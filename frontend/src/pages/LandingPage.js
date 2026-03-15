@@ -91,6 +91,12 @@ const LandingPage = () => {
                 variant="outline" 
                 className="text-lg h-14 px-10 hover:bg-muted/70 transition-colors"
                 data-testid="hero-watch-demo-button"
+                onClick={() => {
+                  const videoSection = document.getElementById('demo-video');
+                  if (videoSection) {
+                    videoSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
               >
                 Watch Demo
               </Button>
@@ -131,6 +137,60 @@ const LandingPage = () => {
               <div className="text-sm text-muted-foreground">Commission Rate</div>
             </div>
             <div className="text-center space-y-1">
+
+
+      {/* Demo Video Section */}
+      <section id="demo-video" className="py-20 bg-gradient-to-br from-primary/5 to-accent/5" data-testid="landing-video-section">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12 space-y-4">
+              <Badge className="mb-2">Product Demo</Badge>
+              <h2 className="text-4xl md:text-5xl font-heading font-bold">
+                See Bitsy in Action
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Watch how hotels are accepting crypto and getting discovered by AI assistants
+              </p>
+            </div>
+            
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-primary/10 bg-gradient-to-br from-primary/20 to-accent/20">
+              <div className="aspect-video">
+                {/* Temporary: Replace with proper HeyGen embed code */}
+                <iframe
+                  src="https://app.heygen.com/share/3b8ffc9e898949499cbfb0c0eeac741f"
+                  allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                  data-testid="demo-video-iframe"
+                  title="Bitsy Demo Video"
+                  style={{ border: 'none' }}
+                />
+                {/* Fallback if video doesn't load */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="text-center text-white/80">
+                    <div className="w-20 h-20 border-4 border-white/30 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm bg-black/20">
+                      <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                      </svg>
+                    </div>
+                    <p className="text-sm font-medium">Loading demo video...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="text-center mt-8">
+              <Link to="/register">
+                <Button size="lg" className="h-12 px-8 shadow-md hover:shadow-lg transition-all">
+                  Start Your Free Trial
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
               <div className="text-3xl md:text-4xl font-heading font-bold text-accent" data-testid="stat-chains">6 Chains</div>
               <div className="text-sm text-muted-foreground">Crypto Networks</div>
             </div>
