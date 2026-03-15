@@ -344,34 +344,46 @@ const LandingPage = () => {
           <div className="text-center mb-16 space-y-4">
             <Badge className="mb-2" data-testid="pricing-badge">Pricing</Badge>
             <h2 className="text-4xl md:text-5xl font-heading font-bold">
-              Simple, Transparent Pricing
+              Pay Only What You Save
             </h2>
-            <p className="text-xl text-muted-foreground">
-              No hidden fees. No commission. Ever.
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Try everything free for your first $5,000 in bookings. Then pay 2-4% per booking vs OTA's 20%.
             </p>
+            <div className="inline-flex items-center gap-2 bg-[hsl(var(--success))]/10 border border-[hsl(var(--success))]/30 rounded-full px-6 py-3 mt-4">
+              <CheckCircle2 className="h-5 w-5 text-[hsl(var(--success))]" />
+              <span className="font-semibold text-[hsl(var(--success))]">First $5,000 in bookings completely FREE</span>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <Card className="border-2 hover:shadow-lg transition-all" data-testid="pricing-card-free">
               <CardHeader className="space-y-4">
-                <CardTitle className="text-2xl font-heading">Free</CardTitle>
-                <CardDescription>Perfect for trying out Bitsy</CardDescription>
+                <CardTitle className="text-2xl font-heading">Starter</CardTitle>
+                <CardDescription>For small independent hotels</CardDescription>
                 <div className="pt-2">
-                  <span className="text-5xl font-heading font-bold">$0</span>
-                  <span className="text-muted-foreground text-lg">/month</span>
+                  <span className="text-5xl font-heading font-bold">2%</span>
+                  <span className="text-muted-foreground text-lg">/booking</span>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  After first $5,000 free
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
+                <div className="bg-muted/50 rounded-lg p-4 text-center border">
+                  <p className="text-xs text-muted-foreground mb-1">Example: $100 booking</p>
+                  <p className="text-2xl font-heading font-bold text-[hsl(var(--success))]">You keep $98</p>
+                  <p className="text-xs text-muted-foreground mt-1">vs $80 with OTAs</p>
+                </div>
                 <ul className="space-y-3">
-                  {['Bitsy AI widget', 'Bitcoin payments', 'QR code generation', 'Max 10 bookings/month', 'Email notifications'].map(f => (
-                    <li key={f} className="flex items-center gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                  {['AI booking widget (conversational + calendar picker)', 'Bitcoin + Ethereum payments', 'Web3 wallet integration', 'Basic dashboard & stats', 'Email notifications', '1 hotel property'].map(f => (
+                    <li key={f} className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                       <span className="text-sm">{f}</span>
                     </li>
                   ))}
                 </ul>
                 <Link to="/register">
-                  <Button variant="outline" className="w-full h-11" data-testid="pricing-free-cta">Get Started</Button>
+                  <Button variant="outline" className="w-full h-11" data-testid="pricing-free-cta">Start Free Trial</Button>
                 </Link>
               </CardContent>
             </Card>
@@ -380,17 +392,25 @@ const LandingPage = () => {
               <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground" data-testid="pricing-pro-badge">Most Popular</Badge>
               <CardHeader className="space-y-4">
                 <CardTitle className="text-2xl font-heading">Pro</CardTitle>
-                <CardDescription>For growing hotels</CardDescription>
+                <CardDescription>For hotels maximizing AI discovery</CardDescription>
                 <div className="pt-2">
-                  <span className="text-5xl font-heading font-bold">$99</span>
-                  <span className="text-muted-foreground text-lg">/month</span>
+                  <span className="text-5xl font-heading font-bold">3%</span>
+                  <span className="text-muted-foreground text-lg">/booking</span>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  After first $5,000 free
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
+                <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20">
+                  <p className="text-xs text-muted-foreground mb-1">Example: $200K/year</p>
+                  <p className="text-2xl font-heading font-bold text-primary">Save $34,000</p>
+                  <p className="text-xs text-muted-foreground mt-1">vs $40K in OTA fees</p>
+                </div>
                 <ul className="space-y-3">
-                  {['Everything in Free', '6 blockchains (ETH, BTC, Polygon, Base, Arbitrum, Optimism)', 'Web3 wallet integration', 'MCP AI discovery', 'Unlimited bookings', 'Analytics dashboard', 'Telegram notifications'].map(f => (
-                    <li key={f} className="flex items-center gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                  {['Everything in Starter', '🔥 MCP AI Discovery (ChatGPT, Claude, Perplexity)', 'All 6 blockchains (ETH, BTC, Polygon, Base, Arbitrum, Optimism)', 'Analytics dashboard (track AI searches)', 'Photo/video uploads', 'Telegram notifications', 'Priority support'].map(f => (
+                    <li key={f} className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                       <span className="text-sm">{f}</span>
                     </li>
                   ))}
@@ -401,30 +421,106 @@ const LandingPage = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-2 hover:shadow-lg transition-all" data-testid="pricing-card-enterprise">
+            <Card className="border-2 hover:shadow-lg transition-all relative overflow-hidden" data-testid="pricing-card-enterprise">
+              <div className="absolute top-4 right-4 bg-accent text-white text-xs font-bold px-3 py-1 rounded-full">
+                Coming Q2 2026
+              </div>
               <CardHeader className="space-y-4">
                 <CardTitle className="text-2xl font-heading">Enterprise</CardTitle>
-                <CardDescription>For hotel chains</CardDescription>
+                <CardDescription>For hotel chains & management companies</CardDescription>
                 <div className="pt-2">
-                  <span className="text-5xl font-heading font-bold">$299</span>
-                  <span className="text-muted-foreground text-lg">/month</span>
+                  <span className="text-5xl font-heading font-bold">4%</span>
+                  <span className="text-muted-foreground text-lg">/booking</span>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  After first $5,000 free per property
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
+                <div className="bg-accent/5 rounded-lg p-4 text-center border border-accent/20">
+                  <p className="text-xs text-muted-foreground mb-1">Example: $500K/year (5 properties)</p>
+                  <p className="text-2xl font-heading font-bold text-accent">Save $80,000</p>
+                  <p className="text-xs text-muted-foreground mt-1">vs $100K in OTA fees</p>
+                </div>
                 <ul className="space-y-3">
-                  {['Everything in Pro', 'White-label widget', 'Multi-property support', 'Custom integrations', 'Dedicated support', 'Priority features', 'Custom branding'].map(f => (
-                    <li key={f} className="flex items-center gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                  {['Everything in Pro', '✨ Unlimited hotel properties', 'Multi-property dashboard', 'Consolidated analytics', 'White-label widget', 'API access', 'Dedicated support'].map(f => (
+                    <li key={f} className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                       <span className="text-sm">{f}</span>
                     </li>
                   ))}
                 </ul>
-                <Button variant="outline" className="w-full h-11" data-testid="pricing-enterprise-cta">Contact Sales</Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full h-11" 
+                  data-testid="pricing-enterprise-cta"
+                  onClick={() => window.open('mailto:hello@getbitsy.ai?subject=Enterprise Pre-Order Interest', '_blank')}
+                >
+                  Join Waitlist
+                </Button>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
+
+
+      {/* FAQ Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <h3 className="text-2xl font-heading font-bold text-center mb-12">Common Questions</h3>
+            
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">How does billing work?</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                  <p>Your first <strong>$5,000 in booking revenue is completely free</strong> (or 30 days, whichever comes first). After that, we track every booking and send you a monthly invoice. If you don't pay, your widget gets disabled after 30 days - but we know you will because Bitsy is saving you thousands! 😊</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Do I need to create crypto wallets?</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                  <p>Yes - you create wallets outside Bitsy (using <a href="https://metamask.io" target="_blank" className="text-primary hover:underline">MetaMask</a>, Coinbase, or any wallet app). Then just paste your <strong>public addresses</strong> into the Bitsy dashboard. Guests pay directly to YOUR wallets. We never touch your funds or private keys.</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">How do I add Bitsy to my website?</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                  <p>After signing up, go to Dashboard → <strong>Widget</strong> tab. Copy the embed code (one line of JavaScript) and paste it into your website's HTML before the closing <code className="bg-muted px-2 py-0.5 rounded">&lt;/body&gt;</code> tag. Takes 2 minutes. Works with any website builder (WordPress, Wix, Squarespace, custom HTML).</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">What happens after I reach $5,000 in bookings?</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                  <p>We'll send you an email with your usage summary and let you <strong>choose your plan</strong> (Starter 2%, Pro 3%, or Enterprise 4%). You pick based on which features you actually used during the trial. Then you'll get a monthly invoice going forward.</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Can I manage multiple hotels?</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                  <p>Multi-property management is coming in our <strong>Enterprise tier (Q2 2026)</strong>. For now, each account can manage 1 hotel. If you operate multiple properties, <a href="mailto:hello@getbitsy.ai?subject=Enterprise Waitlist" className="text-primary hover:underline">join the waitlist</a> and we'll notify you when it launches!</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       {/* CTA Section */}
       <section className="py-20 md:py-28 bg-primary text-primary-foreground relative overflow-hidden" data-testid="landing-final-cta-section">
