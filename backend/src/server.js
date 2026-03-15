@@ -50,6 +50,9 @@ app.use('/uploads', express.static(join(__dirname, '../public/uploads')));
 // Static files for demo assets
 app.use('/demo-assets', express.static(join(__dirname, '../public/demo-assets')));
 
+// Static files for videos
+app.use('/videos', express.static(join(__dirname, '../public/videos')));
+
 // Serve widget test page
 app.get('/widget-test.html', (req, res) => {
   res.sendFile(join(__dirname, '../public/widget-test.html'));

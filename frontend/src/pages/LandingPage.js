@@ -153,29 +153,17 @@ const LandingPage = () => {
               </p>
             </div>
             
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-primary/10 bg-gradient-to-br from-primary/20 to-accent/20">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-primary/10 bg-black">
               <div className="aspect-video">
-                {/* Temporary: Replace with proper HeyGen embed code */}
-                <iframe
-                  src="https://app.heygen.com/share/3b8ffc9e898949499cbfb0c0eeac741f"
-                  allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                  data-testid="demo-video-iframe"
-                  title="Bitsy Demo Video"
-                  style={{ border: 'none' }}
-                />
-                {/* Fallback if video doesn't load */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="text-center text-white/80">
-                    <div className="w-20 h-20 border-4 border-white/30 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm bg-black/20">
-                      <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                      </svg>
-                    </div>
-                    <p className="text-sm font-medium">Loading demo video...</p>
-                  </div>
-                </div>
+                <video
+                  controls
+                  className="w-full h-full object-contain bg-black"
+                  data-testid="demo-video-player"
+                  preload="metadata"
+                >
+                  <source src={`${process.env.REACT_APP_BACKEND_URL}/videos/bitsy-demo.mp4`} type="video/mp4" />
+                  Your browser doesn't support video playback.
+                </video>
               </div>
             </div>
             
