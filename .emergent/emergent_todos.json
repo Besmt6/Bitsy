@@ -1,6 +1,14 @@
 [
   {
-    "content": "Test analytics tracking end-to-end",
+    "content": "Record 2: Widget AI chat booking flow",
+    "status": "pending"
+  },
+  {
+    "content": "Record 3: MetaMask wallet payment",
+    "status": "pending"
+  },
+  {
+    "content": "Record 5: Landing page hero + calculator",
     "status": "completed"
   }
 ]
