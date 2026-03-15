@@ -1,18 +1,30 @@
 [
   {
-    "content": "Add change password API endpoint for admin",
+    "content": "Create GitHub Actions workflow for CI/CD",
     "status": "completed"
   },
   {
-    "content": "Create admin settings page with password change form",
+    "content": "Add test job (Jest + Playwright) to workflow",
     "status": "completed"
   },
   {
-    "content": "Add settings route to admin navigation",
+    "content": "Add build job to verify compilation",
     "status": "completed"
   },
   {
-    "content": "Test admin password change functionality",
+    "content": "Create deployment job template for AWS",
+    "status": "completed"
+  },
+  {
+    "content": "Create GitHub secrets documentation",
+    "status": "completed"
+  },
+  {
+    "content": "Create README for CI/CD setup",
+    "status": "completed"
+  },
+  {
+    "content": "Update plan.md to mark Phase 10.4 as completed",
     "status": "completed"
   }
 ]
