@@ -24,6 +24,8 @@ import GuestBookingDetails from './pages/GuestBookingDetails';
 import Marketplace from './pages/Marketplace';
 import HotelBookings from './pages/HotelBookings';
 import ForgotPassword from './pages/ForgotPassword';
+import BrowseHotels from './pages/BrowseHotels';
+import PublicHotelPage from './pages/PublicHotelPage';
 
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -66,6 +68,10 @@ const AppRoutes = () => {
       
       {/* Marketplace (Public) */}
       <Route path="/marketplace" element={<Marketplace />} />
+      
+      {/* Public Hotel Pages */}
+      <Route path="/browse" element={<BrowseHotels />} />
+      <Route path="/book/:hotelSlug" element={<PublicHotelPage />} />
       
       <Route path="/dashboard" element={
         <ProtectedRoute>

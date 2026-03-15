@@ -222,6 +222,7 @@ async function searchHotels({ location, checkIn, checkOut, blockchain, maxPrice,
     results.push({
       hotelId: hotel._id.toString(),
       name: hotel.hotelName,
+      slug: hotel.publicSlug,
       logoUrl: hotel.logoUrl,
       photos: hotel.photos || [],
       videoUrl: hotel.videoUrl,
@@ -231,7 +232,12 @@ async function searchHotels({ location, checkIn, checkOut, blockchain, maxPrice,
       availableRooms: affordableRooms.length,
       supportedChains,
       web3Enabled: true,
-      bookingUrl: `${process.env.APP_URL}?hotel=${hotel._id}`,
+      publicPageUrl: hotel.publicSlug 
+        ? `${process.env.APP_URL}/book/${hotel.publicSlug}`
+        : `${process.env.APP_URL}/book/${hotel._id}`,
+      bookingUrl: hotel.publicSlug 
+        ? `${process.env.APP_URL}/book/${hotel.publicSlug}`
+        : `${process.env.APP_URL}/book/${hotel._id}`,
       widgetAvailable: true
     });
   }
@@ -259,6 +265,7 @@ async function getHotelDetails(hotelId) {
   return {
     id: hotel._id.toString(),
     name: hotel.hotelName,
+    slug: hotel.publicSlug,
     logoUrl: hotel.logoUrl,
     photos: hotel.photos || [],
     videoUrl: hotel.videoUrl,
@@ -283,8 +290,13 @@ async function getHotelDetails(hotelId) {
     },
     bookingWidget: {
       embedCode: `<script src="${process.env.APP_URL}/widget/bitsy-widget.js" data-hotel-id="${hotelId}"></script>`,
-      url: `${process.env.APP_URL}?hotel=${hotelId}`
+      url: hotel.publicSlug 
+        ? `${process.env.APP_URL}/book/${hotel.publicSlug}`
+        : `${process.env.APP_URL}/book/${hotelId}`
     },
+    publicPageUrl: hotel.publicSlug 
+      ? `${process.env.APP_URL}/book/${hotel.publicSlug}`
+      : `${process.env.APP_URL}/book/${hotelId}`,
     features: [
       'Instant Web3 payment verification',
       'No OTA commissions',
@@ -317,7 +329,7 @@ function formatSearchResults(results, params) {
       text += `   🎥 Video tour: ${hotel.videoUrl}\n`;
     }
     
-    text += `   🔗 Book: ${hotel.bookingUrl}\n`;
+    text += `   🔗 View hotel: ${hotel.publicPageUrl}\n`;
     text += `   ✅ Web3 payment verification enabled\n\n`;
   });
   
@@ -380,7 +392,8 @@ function formatHotelDetails(hotel) {
   });
   
   text += `\n## Booking\n`;
-  text += `Direct booking URL: ${hotel.bookingWidget.url}\n`;
+  text += `Public page: ${hotel.publicPageUrl}\n`;
+  text += `Direct booking: Available via Bitsy AI chat\n`;
   text += `Widget embed code available for hotel website integration.\n`;
   text += `\n⚠️  Important: All crypto payments are verified on-chain and are non-refundable.`;
   

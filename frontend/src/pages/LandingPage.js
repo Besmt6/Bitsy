@@ -40,6 +40,7 @@ const LandingPage = () => {
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
+            <Link to="/browse" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-browse-link">Browse Hotels</Link>
             <a href="#features" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-features-link">Features</a>
             <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-pricing-link">Pricing</a>
             <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors" data-testid="nav-how-it-works-link">How It Works</a>

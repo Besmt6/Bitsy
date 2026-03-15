@@ -1,4 +1,4 @@
-# plan.md — Bitsy: Payment Flexibility + Guest Dashboard + Crypto Marketplace + Billing Enforcement + Multi-Wallet UX (UPDATED)
+# plan.md — Bitsy: Payment Flexibility + Guest Dashboard + Crypto Marketplace + Billing Enforcement + Multi-Wallet UX + Public Hotel Pages (UPDATED)
 
 ## 1) Objectives
 - ✅ Ship a **crypto-first** booking system where **crypto is the default** payment method.
@@ -7,12 +7,14 @@
 - ✅ Ship a **Guest Dashboard** (email + phone lookup) to view/cancel/manage bookings without requiring an account.
 - ✅ Ship a **secondary marketplace** (**crypto bookings only**, **zero commission**) to list/transfer bookings with on-chain-verifiable payment proof.
 - ✅ Implement **auto-cancel** for unconfirmed pay-at-property bookings at **exactly 48 hours before check-in**, plus marketplace listing expiry cleanup.
-- ✅ Self-host the **demo video** (remove HeyGen dependency / monthly fee).
+- ⚠️ Demo video reliability: self-hosted routing fixed, but **optimize/host video** to prevent production timeouts.
 - ✅ Security/UX hardening: **remove external wallet download links** (avoid phishing/spam links); direct users to official app stores and avoid spam URLs.
 - ✅ **Monetization**: Implement **“Pay What You Save” billing enforcement** (free $5,000, then commission) with trial tracking, grace period, and booking blocking after grace.
 - ✅ **Spam prevention**: Add **hotel location verification** (address submission + status tracking) to reduce fake/spam hotel listings.
 - ✅ **Wallet UX clarification**: Ensure hotels/guests understand modern wallets (MetaMask 2026) support multiple networks; document address-format differences and reduce setup mistakes.
+- ✅ Landing page navigation: clear CTAs for **Guests** vs **Hotel owners**, plus **Browse Hotels** discovery.
 - ⚠️ (In progress) **Multi-wallet guest UX**: Improve the widget so guests can seamlessly use **MetaMask + Phantom** (and other injected providers) where possible while keeping the QR flow as the universal fallback.
+- ✅ Provide **Public Hotel Pages** (AI-first, display-only) + **Browse/Search** so hotels without websites can share a link and MCP can reference a canonical page.
 
 ---
 
@@ -156,10 +158,12 @@
   - Daily listing expiry cleanup
 - ✅ Auto-cancel script functional and manually runnable.
 - ✅ All pages rendering correctly; frontend builds cleanly.
-- ✅ Demo video self-hosted:
+- ✅ Demo video routing fixed:
   - Video stored at `backend/public/videos/bitsy-demo.mp4`
-  - Served at `/videos/bitsy-demo.mp4`
-- ✅ Security: Removed external wallet download links from landing FAQ and wallets page; updated copy to recommend official app stores and warn about suspicious links.
+  - Served at `/api/videos/bitsy-demo.mp4` with correct `Content-Type: video/mp4`
+
+**Known limitation / follow-up**
+- ⚠️ In production, the demo video may fail due to size/timeouts. Plan: compress (<5MB) or host on CDN (Cloudinary/YouTube/Vimeo) and update `LandingPage.js`.
 
 **Optional future enhancements (not required for MVP, recommended next)**
 - Add email templates for:
@@ -291,14 +295,69 @@
 
 ---
 
+### Phase 8 — Public Hotel Pages (AI-first, display-only) + Browse/Search ✅ COMPLETED
+
+> Strategy: **Not a traditional booking funnel.** The public pages are **inventory/reference pages** so hotels without websites can share a link, and AI (MCP/Bitsy) can cite a canonical source. Actual booking is expected to be handled conversationally.
+
+#### 8.1 Product decisions (confirmed)
+- ✅ **Public pages are FREE** (no extra charge).
+- ✅ Pages are **display-only** (no traditional checkout UI):
+  - Hotel hero image + key info
+  - Room types + room photos + rates
+  - Optional hotel video link
+  - Clear CTA: “Book with Bitsy (Chat)”
+  - No date picker / checkout / payment UI
+- ✅ Guests can **browse/search by town/city name**.
+- ✅ Canonical URL format: `/book/:hotelSlug` (human-readable slug).
+
+#### 8.2 Data / URL requirements ✅ Delivered
+- ✅ Added a stable public identifier:
+  - `Hotel.publicSlug` (unique, derived from `hotelName`, collisions handled).
+  - Backward compatibility: public endpoint can resolve by `_id` if needed.
+
+#### 8.3 Backend — APIs ✅ Delivered
+- ✅ `GET /api/public/hotels/search?query=<cityOrName>`
+  - Searches by hotel name + `locationVerification` fields.
+  - Returns: `{ id, name, slug, primaryPhoto, location, lowestRate, availableRooms }`
+- ✅ `GET /api/public/hotels/:identifier`
+  - Identifier supports slug first, then falls back to Mongo `_id`.
+  - Returns safe public hotel profile + rooms + `supportedChains`.
+
+#### 8.4 Frontend — Pages/routes ✅ Delivered
+- ✅ `/browse`
+  - Search input + results grid.
+  - Marketplace theme (`data-theme='marketplace'`).
+- ✅ `/book/:hotelSlug`
+  - Inventory display page.
+  - Rooms list (cards) + rates.
+  - CTA module: “Open Bitsy Bot”.
+
+#### 8.5 Dashboard integration ✅ Delivered
+- ✅ Added “Public Booking Page” section in `/dashboard/settings`:
+  - Shows share link: `https://<domain>/book/<hotelSlug>`
+  - Copy-to-clipboard button
+  - Preview button
+
+#### 8.6 MCP integration update ✅ Delivered
+- ✅ Updated MCP outputs to reference the canonical public URL:
+  - `search_hotels` now returns `publicPageUrl` and sets `bookingUrl` to `/book/<slug>`.
+  - `get_hotel_details` returns `publicPageUrl` and updates `bookingWidget.url` accordingly.
+
+#### 8.7 Testing / exit criteria ✅ Met
+- ✅ Verified `/browse` works and returns results.
+- ✅ Verified `/book/:hotelSlug` renders on desktop and mobile.
+- ✅ Verified MCP returns public URLs pointing to the working pages.
+
+---
+
 ## 3) Next Actions (Immediate)
-1. ✅ Billing enforcement + location verification are live (Phase 6 complete).
-2. ✅ Wallet setup clarity shipped (Wallets page + `WALLET_SETUP_GUIDE.md`).
-3. ⚠️ Finalize widget wallet-connect UX (Phase 7.3):
+1. ✅ Public pages are live in preview; confirm desired production domain structure for `/browse` and `/book/:slug`.
+2. ⚠️ Finalize widget wallet-connect UX (Phase 7.3):
    - Decide between (A) Reown AppKit integration or (B) lightweight injected-provider detection.
    - Ensure the widget does not mislead users about automatic payment sending.
-4. ⚠️ Replace placeholder Bitsy receiving addresses with real production wallets and decide commission payment verification workflow.
-5. ⚠️ Add production-grade email delivery (SES/Resend) for booking + marketplace notifications.
+3. ⚠️ Replace placeholder Bitsy receiving addresses with real production wallets and decide commission payment verification workflow.
+4. ⚠️ Add production-grade email delivery (SES/Resend) for booking + marketplace notifications.
+5. ⚠️ Optimize or CDN-host demo video to ensure reliable playback.
 6. ✅ Deploy to AWS using `/app/DEPLOYMENT_AWS.md` (Emergent native deployment is incompatible with Node + Web3).
 
 ---
@@ -310,16 +369,18 @@
 - ✅ Pay-at-property bookings show exact 48h confirmation deadline; auto-cancel works.
 - ✅ Guests can lookup bookings via email+phone, cancel eligible bookings, and list crypto bookings.
 - ✅ Marketplace supports crypto-only listings with on-chain proof and reliable transfer.
-- ✅ Demo video is self-hosted and working.
 - ✅ Trial usage accurately tracked ($5k) across crypto + confirmed pay-at-property.
 - ✅ Grace period begins at $5k and lasts 7 days.
 - ✅ Bookings blocked only after grace period ends (not immediately).
 - ✅ Dashboard shows clear trial/grace/blocked/active state + progress indicator.
 - ✅ Location verification UI and status tracking implemented to reduce spam hotel listings.
 - ✅ Wallet UX clarified: Hotels understand EVM vs Solana/Bitcoin address formats; Wallets page guidance updated; setup doc created.
+- ✅ Landing page has clear navigation for guests vs hotels and includes **Browse Hotels**.
+- ✅ Public Pages + Browse/Search are implemented and MCP returns canonical public URLs.
 
 **Remaining / Future**
 - ⚠️ Automated commission reconciliation (on-chain verification of billing payment tx hash; admin review workflow).
-- ⚠️ Policy decisions: whether to restrict widget activation or marketplace visibility until hotel location is verified.
+- ⚠️ Policy decisions: whether to restrict marketplace visibility or public listing until hotel location is verified.
 - ⚠️ Finalize multi-wallet guest connect UX in widget (MetaMask + Phantom + QR fallback).
 - ⚠️ Full AWS production deployment + environment hardening.
+- ⚠️ Demo video optimization/CDN hosting.

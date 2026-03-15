@@ -1,6 +1,34 @@
 [
   {
-    "content": "Create final summary and update plan",
+    "content": "Add publicSlug field to Hotel model for human-readable URLs",
+    "status": "completed"
+  },
+  {
+    "content": "Create backend API: GET /api/public/hotels/search (search by city/name)",
+    "status": "completed"
+  },
+  {
+    "content": "Create backend API: GET /api/public/hotels/:slug (get hotel profile by slug)",
+    "status": "completed"
+  },
+  {
+    "content": "Create frontend PublicHotelPage.js at route /book/:hotelSlug with marketplace theme",
+    "status": "completed"
+  },
+  {
+    "content": "Create frontend BrowseHotels.js at route /browse with search by location",
+    "status": "completed"
+  },
+  {
+    "content": "Add public link display + copy button in hotel Settings page",
+    "status": "completed"
+  },
+  {
+    "content": "Update MCP routes to return public page URLs instead of ?hotel=id format",
+    "status": "completed"
+  },
+  {
+    "content": "Test public pages with screenshots and verify SEO-friendly structure",
     "status": "completed"
   }
 ]

@@ -12,7 +12,7 @@ import { PhotoUploader } from '../components/PhotoUploader';
 import { PageLoadingSkeleton } from '../components/LoadingSkeletons';
 import { hotelAPI, billingAPI } from '../lib/api';
 import { toast } from 'sonner';
-import { Save, AlertCircle, CheckCircle, CreditCard, MapPin, Shield, Coins } from 'lucide-react';
+import { Save, AlertCircle, CheckCircle, CreditCard, MapPin, Shield, Coins, Sparkles } from 'lucide-react';
 import TelegramSetupWizard from '../components/TelegramSetupWizard';
 import { PaymentMethodComparison } from '../components/PaymentMethodComparison';
 
@@ -218,6 +218,74 @@ const Settings = () => {
                 />
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Public Booking Link */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              Public Booking Page
+            </CardTitle>
+            <CardDescription>Share this link with your guests for direct bookings via Bitsy Bot</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {user?.publicSlug ? (
+              <>
+                <div className="space-y-2">
+                  <Label>Your Public Booking Link</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={`${window.location.origin}/book/${user.publicSlug}`}
+                      readOnly
+                      className="font-mono text-sm"
+                      data-testid="public-link-input"
+                    />
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${window.location.origin}/book/${user.publicSlug}`);
+                        toast.success('Link copied to clipboard!');
+                      }}
+                      data-testid="copy-public-link-button"
+                    >
+                      Copy
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Share this link on social media, WhatsApp, or your marketing materials
+                  </p>
+                </div>
+
+                <Alert>
+                  <Sparkles className="h-4 w-4" />
+                  <AlertDescription className="text-xs">
+                    This page displays your hotel information and room inventory. Guests can view details and book through Bitsy AI chat.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="pt-2">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    data-testid="preview-public-page-button"
+                  >
+                    <a href={`/book/${user.publicSlug}`} target="_blank" rel="noopener noreferrer">
+                      Preview Your Public Page
+                    </a>
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                  Your public booking link will be generated automatically. Please save your hotel name above if you haven't already.
+                </AlertDescription>
+              </Alert>
+            )}
           </CardContent>
         </Card>
 

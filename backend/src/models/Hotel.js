@@ -18,6 +18,13 @@ const hotelSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  publicSlug: {
+    type: String,
+    unique: true,
+    sparse: true,
+    lowercase: true,
+    trim: true
+  },
   logoUrl: {
     type: String,
     default: ''
@@ -119,6 +126,28 @@ const hotelSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+});
+
+// Generate public slug from hotel name
+hotelSchema.pre('save', async function(next) {
+  // Generate slug if not exists or hotel name changed
+  if (!this.publicSlug || this.isModified('hotelName')) {
+    let baseSlug = this.hotelName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    
+    // Handle collisions
+    let slug = baseSlug;
+    let counter = 1;
+    while (await mongoose.model('Hotel').findOne({ publicSlug: slug, _id: { $ne: this._id } })) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+    this.publicSlug = slug;
+  }
+  
+  next();
 });
 
 // Hash password before saving
